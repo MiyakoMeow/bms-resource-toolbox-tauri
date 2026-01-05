@@ -46,9 +46,15 @@ const config: Linter.Config[] = [
       'better-tailwindcss/no-unnecessary-whitespace': 'warn',
       'better-tailwindcss/no-unregistered-classes': 'warn',
       // 使用绝对路径
-      'tailwind-canonical-classes/tailwind-canonical-classes': ['warn', { cssPath: tailwindCssPath }],
+      'tailwind-canonical-classes/tailwind-canonical-classes': [
+        'warn',
+        { cssPath: tailwindCssPath },
+      ],
       // 自定义插件也使用绝对路径（而不是默认配置）
-      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': ['warn', { cssPath: tailwindCssPath }],
+      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': [
+        'warn',
+        { cssPath: tailwindCssPath },
+      ],
     },
     settings: {
       'better-tailwindcss': {
