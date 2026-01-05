@@ -29,42 +29,7 @@ const config: Linter.Config[] = [
   // JavaScript/TypeScript 基础配置
   js.configs.recommended,
 
-  // Better Tailwind CSS 配置
-  {
-    files: ['**/*.svelte', '**/*.ts', '**/*.tsx'],
-    plugins: {
-      'better-tailwindcss': betterTailwind,
-      'tailwind-canonical-classes': tailwindCanonicalClasses,
-      'svelte-tailwind-canonical': svelteTailwindCanonical,
-    },
-    rules: {
-      'better-tailwindcss/enforce-consistent-class-order': 'warn',
-      'better-tailwindcss/enforce-consistent-line-wrapping': 'warn',
-      'better-tailwindcss/no-conflicting-classes': 'error',
-      'better-tailwindcss/no-deprecated-classes': 'error',
-      'better-tailwindcss/no-duplicate-classes': 'warn',
-      'better-tailwindcss/no-unnecessary-whitespace': 'warn',
-      'better-tailwindcss/no-unregistered-classes': 'warn',
-      // 使用绝对路径
-      'tailwind-canonical-classes/tailwind-canonical-classes': [
-        'warn',
-        { cssPath: tailwindCssPath },
-      ],
-      // 自定义插件也使用绝对路径（而不是默认配置）
-      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': [
-        'warn',
-        { cssPath: tailwindCssPath },
-      ],
-    },
-    settings: {
-      'better-tailwindcss': {
-        // 使用绝对路径
-        entryPoint: tailwindCssPath,
-      },
-    },
-  },
-
-  // TypeScript 配置
+  // TypeScript + Svelte + Tailwind CSS 合并配置
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.svelte'],
     languageOptions: {
@@ -81,8 +46,12 @@ const config: Linter.Config[] = [
     },
     plugins: {
       '@typescript-eslint': ts as Plugin,
+      'better-tailwindcss': betterTailwind,
+      'tailwind-canonical-classes': tailwindCanonicalClasses,
+      'svelte-tailwind-canonical': svelteTailwindCanonical,
     },
     rules: {
+      // TypeScript 规则
       ...ts.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
@@ -96,6 +65,66 @@ const config: Linter.Config[] = [
         'error',
         { prefer: 'type-imports', disallowTypeAnnotations: false },
       ],
+
+      // Tailwind CSS 规则
+      'better-tailwindcss/no-conflicting-classes': 'error',
+      'better-tailwindcss/no-deprecated-classes': 'error',
+      'better-tailwindcss/no-duplicate-classes': 'warn',
+      'better-tailwindcss/no-unnecessary-whitespace': 'warn',
+      'better-tailwindcss/no-unregistered-classes': 'warn',
+      'tailwind-canonical-classes/tailwind-canonical-classes': [
+        'warn',
+        { cssPath: tailwindCssPath },
+      ],
+      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': [
+        'warn',
+        { cssPath: tailwindCssPath },
+      ],
+      // 避免与Prettier冲突
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+      'better-tailwindcss/enforce-consistent-class-order': 'off',
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: tailwindCssPath,
+      },
+    },
+  },
+
+  // CSS 文件配置（仅 Tailwind 检查，格式由 Prettier 处理）
+  {
+    files: ['**/*.css'],
+    languageOptions: {
+      parser: {
+        // 空解析器：跳过语法检查，格式由 Prettier 负责
+        parseForESLint: () =>
+          ({
+            ast: {
+              type: 'Program',
+              body: [],
+              tokens: [],
+              comments: [],
+              loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
+              range: [0, 0],
+              sourceType: 'module',
+            },
+            scopeManager: null,
+          }) as never,
+      },
+    },
+    plugins: {
+      'better-tailwindcss': betterTailwind,
+    },
+    rules: {
+      'better-tailwindcss/no-unregistered-classes': 'warn',
+      // 避免与Prettier冲突
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+      'better-tailwindcss/enforce-consistent-class-order': 'off',
+    },
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: tailwindCssPath,
+      },
     },
   },
 
