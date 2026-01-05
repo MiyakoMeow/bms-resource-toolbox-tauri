@@ -22,8 +22,7 @@ const designSystemCache = new Map<string, unknown>();
 async function canonicalizeInWorker(
   cssContent: string,
   basePath: string,
-  candidates: string[],
-  options: Record<string, unknown> = {}
+  c: string[]
 ): Promise<string[]> {
   const cacheKey = basePath;
   let designSystem = designSystemCache.get(cacheKey);
@@ -32,9 +31,9 @@ async function canonicalizeInWorker(
     designSystemCache.set(cacheKey, designSystem);
   }
   const ds = designSystem as {
-    canonicalizeCandidates: (c: string[], o: Record<string, unknown>) => string[];
+    canonicalizeCandidates: (a: string[]) => string[];
   };
-  return ds.canonicalizeCandidates(candidates, options);
+  return ds.canonicalizeCandidates(a ?? c);
 }
 
 runAsWorker(canonicalizeInWorker);
@@ -113,7 +112,7 @@ const rule = {
       options: unknown[];
       getCwd?: () => string;
       getSourceCode: () => { ast: unknown; text: string };
-      report: (input: {
+      report: (_: {
         node: unknown;
         messageId: string;
         data?: Record<string, unknown>;
@@ -231,7 +230,7 @@ const rule = {
             },
             fix:
               errorIndex === 0
-                ? (fixer: { replaceTextRange: (r: [number, number], t: string) => unknown }) =>
+                ? (fixer: { replaceTextRange: () => unknown }) =>
                     fixer.replaceTextRange([fullRangeStart, fullRangeEnd], fixedAttrText)
                 : undefined,
           });

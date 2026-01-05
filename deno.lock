@@ -13,7 +13,6 @@
     "npm:@tauri-apps/plugin-opener@2": "2.5.2",
     "npm:@types/eslint-config-prettier@^6.11.3": "6.11.3",
     "npm:@types/node@^25.0.3": "25.0.3",
-    "npm:@typescript-eslint/eslint-plugin@^7.18.0": "7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
     "npm:@typescript-eslint/parser@^7.18.0": "7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
     "npm:autoprefixer@^10.4.23": "10.4.23_postcss@8.5.6",
     "npm:eslint-config-prettier@^9.1.2": "9.1.2_eslint@9.39.2__jiti@2.6.1",
@@ -29,6 +28,7 @@
     "npm:svelte@5": "5.46.1_acorn@8.15.0",
     "npm:synckit@~0.11.11": "0.11.11",
     "npm:tailwindcss@4": "4.1.18",
+    "npm:typescript-eslint@^8.52.0": "8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3_@typescript-eslint+parser@8.52.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3",
     "npm:typescript@~5.6.2": "5.6.3",
     "npm:vite@^6.0.3": "6.4.1_@types+node@25.0.3_picomatch@4.0.3"
   },
@@ -254,7 +254,7 @@
         "debug",
         "espree@10.4.0_acorn@8.15.0",
         "globals@14.0.0",
-        "ignore",
+        "ignore@5.3.2",
         "import-fresh",
         "js-yaml",
         "minimatch@3.1.2",
@@ -789,90 +789,159 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@types/node/-/node-25.0.3.tgz"
     },
-    "@typescript-eslint/eslint-plugin@7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
-      "integrity": "sha512-94EQTWZ40mzBc42ATNIBimBEDltSJ9RQHCC8vc/PDbxi4k8dVwUAv4o98dk50M1zB+JGFxp43FP7f8+FP8R6Sw==",
+    "@typescript-eslint/eslint-plugin@8.52.0_@typescript-eslint+parser@8.52.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
+      "integrity": "sha512-okqtOgqu2qmZJ5iN4TWlgfF171dZmx2FzdOv2K/ixL2LZWDStL8+JgQerI2sa8eAEfoydG9+0V96m7V+P8yE1Q==",
       "dependencies": [
         "@eslint-community/regexpp",
-        "@typescript-eslint/parser",
-        "@typescript-eslint/scope-manager",
+        "@typescript-eslint/parser@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
+        "@typescript-eslint/scope-manager@8.52.0",
         "@typescript-eslint/type-utils",
         "@typescript-eslint/utils",
-        "@typescript-eslint/visitor-keys",
+        "@typescript-eslint/visitor-keys@8.52.0",
         "eslint",
-        "graphemer",
-        "ignore",
+        "ignore@7.0.5",
         "natural-compare",
-        "ts-api-utils"
+        "ts-api-utils@2.4.0_typescript@5.6.3",
+        "typescript"
       ],
-      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-7.18.0.tgz"
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.52.0.tgz"
     },
     "@typescript-eslint/parser@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
       "integrity": "sha512-4Z+L8I2OqhZV8qA132M4wNL30ypZGYOQVBfMgxDH/K5UX0PNqTu1c6za9ST5r9+tavvHiTWmBnKzpCJ/GlVFtg==",
       "dependencies": [
-        "@typescript-eslint/scope-manager",
-        "@typescript-eslint/types",
-        "@typescript-eslint/typescript-estree",
-        "@typescript-eslint/visitor-keys",
+        "@typescript-eslint/scope-manager@7.18.0",
+        "@typescript-eslint/types@7.18.0",
+        "@typescript-eslint/typescript-estree@7.18.0_typescript@5.6.3",
+        "@typescript-eslint/visitor-keys@7.18.0",
         "debug",
         "eslint"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/parser/-/parser-7.18.0.tgz"
     },
+    "@typescript-eslint/parser@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
+      "integrity": "sha512-iIACsx8pxRnguSYhHiMn2PvhvfpopO9FXHyn1mG5txZIsAaB6F0KwbFnUQN3KCiG3Jcuad/Cao2FAs1Wp7vAyg==",
+      "dependencies": [
+        "@typescript-eslint/scope-manager@8.52.0",
+        "@typescript-eslint/types@8.52.0",
+        "@typescript-eslint/typescript-estree@8.52.0_typescript@5.6.3",
+        "@typescript-eslint/visitor-keys@8.52.0",
+        "debug",
+        "eslint",
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/parser/-/parser-8.52.0.tgz"
+    },
+    "@typescript-eslint/project-service@8.52.0_typescript@5.6.3": {
+      "integrity": "sha512-xD0MfdSdEmeFa3OmVqonHi+Cciab96ls1UhIF/qX/O/gPu5KXD0bY9lu33jj04fjzrXHcuvjBcBC+D3SNSadaw==",
+      "dependencies": [
+        "@typescript-eslint/tsconfig-utils",
+        "@typescript-eslint/types@8.52.0",
+        "debug",
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/project-service/-/project-service-8.52.0.tgz"
+    },
     "@typescript-eslint/scope-manager@7.18.0": {
       "integrity": "sha512-jjhdIE/FPF2B7Z1uzc6i3oWKbGcHb87Qw7AWj6jmEqNOfDFbJWtjt/XfwCpvNkpGWlcJaog5vTR+VV8+w9JflA==",
       "dependencies": [
-        "@typescript-eslint/types",
-        "@typescript-eslint/visitor-keys"
+        "@typescript-eslint/types@7.18.0",
+        "@typescript-eslint/visitor-keys@7.18.0"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/scope-manager/-/scope-manager-7.18.0.tgz"
     },
-    "@typescript-eslint/type-utils@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
-      "integrity": "sha512-XL0FJXuCLaDuX2sYqZUUSOJ2sG5/i1AAze+axqmLnSkNEVMVYLF+cbwlB2w8D1tinFuSikHmFta+P+HOofrLeA==",
+    "@typescript-eslint/scope-manager@8.52.0": {
+      "integrity": "sha512-ixxqmmCcc1Nf8S0mS0TkJ/3LKcC8mruYJPOU6Ia2F/zUUR4pApW7LzrpU3JmtePbRUTes9bEqRc1Gg4iyRnDzA==",
       "dependencies": [
-        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/types@8.52.0",
+        "@typescript-eslint/visitor-keys@8.52.0"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/scope-manager/-/scope-manager-8.52.0.tgz"
+    },
+    "@typescript-eslint/tsconfig-utils@8.52.0_typescript@5.6.3": {
+      "integrity": "sha512-jl+8fzr/SdzdxWJznq5nvoI7qn2tNYV/ZBAEcaFMVXf+K6jmXvAFrgo/+5rxgnL152f//pDEAYAhhBAZGrVfwg==",
+      "dependencies": [
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.52.0.tgz"
+    },
+    "@typescript-eslint/type-utils@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
+      "integrity": "sha512-JD3wKBRWglYRQkAtsyGz1AewDu3mTc7NtRjR/ceTyGoPqmdS5oCdx/oZMWD5Zuqmo6/MpsYs0wp6axNt88/2EQ==",
+      "dependencies": [
+        "@typescript-eslint/types@8.52.0",
+        "@typescript-eslint/typescript-estree@8.52.0_typescript@5.6.3",
         "@typescript-eslint/utils",
         "debug",
         "eslint",
-        "ts-api-utils"
+        "ts-api-utils@2.4.0_typescript@5.6.3",
+        "typescript"
       ],
-      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/type-utils/-/type-utils-7.18.0.tgz"
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/type-utils/-/type-utils-8.52.0.tgz"
     },
     "@typescript-eslint/types@7.18.0": {
       "integrity": "sha512-iZqi+Ds1y4EDYUtlOOC+aUmxnE9xS/yCigkjA7XpTKV6nCBd3Hp/PRGGmdwnfkV2ThMyYldP1wRpm/id99spTQ==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/types/-/types-7.18.0.tgz"
     },
+    "@typescript-eslint/types@8.52.0": {
+      "integrity": "sha512-LWQV1V4q9V4cT4H5JCIx3481iIFxH1UkVk+ZkGGAV1ZGcjGI9IoFOfg3O6ywz8QqCDEp7Inlg6kovMofsNRaGg==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/types/-/types-8.52.0.tgz"
+    },
     "@typescript-eslint/typescript-estree@7.18.0_typescript@5.6.3": {
       "integrity": "sha512-aP1v/BSPnnyhMHts8cf1qQ6Q1IFwwRvAQGRvBFkWlo3/lH29OXA3Pts+c10nxRxIBrDnoMqzhgdwVe5f2D6OzA==",
       "dependencies": [
-        "@typescript-eslint/types",
-        "@typescript-eslint/visitor-keys",
+        "@typescript-eslint/types@7.18.0",
+        "@typescript-eslint/visitor-keys@7.18.0",
         "debug",
         "globby",
         "is-glob",
         "minimatch@9.0.5",
         "semver",
-        "ts-api-utils"
+        "ts-api-utils@1.4.3_typescript@5.6.3"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/typescript-estree/-/typescript-estree-7.18.0.tgz"
     },
-    "@typescript-eslint/utils@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
-      "integrity": "sha512-kK0/rNa2j74XuHVcoCZxdFBMF+aq/vH83CXAOHieC+2Gis4mF8jJXT5eAfyD3K0sAxtPuwxaIOIOvhwzVDt/kw==",
+    "@typescript-eslint/typescript-estree@8.52.0_typescript@5.6.3": {
+      "integrity": "sha512-XP3LClsCc0FsTK5/frGjolyADTh3QmsLp6nKd476xNI9CsSsLnmn4f0jrzNoAulmxlmNIpeXuHYeEQv61Q6qeQ==",
+      "dependencies": [
+        "@typescript-eslint/project-service",
+        "@typescript-eslint/tsconfig-utils",
+        "@typescript-eslint/types@8.52.0",
+        "@typescript-eslint/visitor-keys@8.52.0",
+        "debug",
+        "minimatch@9.0.5",
+        "semver",
+        "tinyglobby",
+        "ts-api-utils@2.4.0_typescript@5.6.3",
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/typescript-estree/-/typescript-estree-8.52.0.tgz"
+    },
+    "@typescript-eslint/utils@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
+      "integrity": "sha512-wYndVMWkweqHpEpwPhwqE2lnD2DxC6WVLupU/DOt/0/v+/+iQbbzO3jOHjmBMnhu0DgLULvOaU4h4pwHYi2oRQ==",
       "dependencies": [
         "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1",
-        "@typescript-eslint/scope-manager",
-        "@typescript-eslint/types",
-        "@typescript-eslint/typescript-estree",
-        "eslint"
+        "@typescript-eslint/scope-manager@8.52.0",
+        "@typescript-eslint/types@8.52.0",
+        "@typescript-eslint/typescript-estree@8.52.0_typescript@5.6.3",
+        "eslint",
+        "typescript"
       ],
-      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/utils/-/utils-7.18.0.tgz"
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/utils/-/utils-8.52.0.tgz"
     },
     "@typescript-eslint/visitor-keys@7.18.0": {
       "integrity": "sha512-cDF0/Gf81QpY3xYyJKDV14Zwdmid5+uuENhjH2EqFaF0ni+yAyq/LzMaIJdhNJXZI7uLzwIlA+V7oWoyn6Curg==",
       "dependencies": [
-        "@typescript-eslint/types",
+        "@typescript-eslint/types@7.18.0",
         "eslint-visitor-keys@3.4.3"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/visitor-keys/-/visitor-keys-7.18.0.tgz"
+    },
+    "@typescript-eslint/visitor-keys@8.52.0": {
+      "integrity": "sha512-ink3/Zofus34nmBsPjow63FP5M7IGff0RKAgqR6+CFpdk22M7aLwC9gOcLGYqr7MczLPzZVERW9hRog3O4n1sQ==",
+      "dependencies": [
+        "@typescript-eslint/types@8.52.0",
+        "eslint-visitor-keys@4.2.1"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/visitor-keys/-/visitor-keys-8.52.0.tgz"
     },
     "acorn-jsx@5.3.2_acorn@8.15.0": {
       "integrity": "sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==",
@@ -1235,7 +1304,7 @@
         "file-entry-cache",
         "find-up",
         "glob-parent@6.0.2",
-        "ignore",
+        "ignore@5.3.2",
         "imurmurhash",
         "is-glob",
         "jiti",
@@ -1418,7 +1487,7 @@
         "array-union",
         "dir-glob",
         "fast-glob",
-        "ignore",
+        "ignore@5.3.2",
         "merge2",
         "slash"
       ],
@@ -1427,10 +1496,6 @@
     "graceful-fs@4.2.11": {
       "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/graceful-fs/-/graceful-fs-4.2.11.tgz"
-    },
-    "graphemer@1.4.0": {
-      "integrity": "sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==",
-      "tarball": "https://mirrors.huaweicloud.com/repository/npm/graphemer/-/graphemer-1.4.0.tgz"
     },
     "has-flag@4.0.0": {
       "integrity": "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==",
@@ -1446,6 +1511,10 @@
     "ignore@5.3.2": {
       "integrity": "sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/ignore/-/ignore-5.3.2.tgz"
+    },
+    "ignore@7.0.5": {
+      "integrity": "sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/ignore/-/ignore-7.0.5.tgz"
     },
     "import-fresh@3.3.1": {
       "integrity": "sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==",
@@ -2109,6 +2178,13 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/ts-api-utils/-/ts-api-utils-1.4.3.tgz"
     },
+    "ts-api-utils@2.4.0_typescript@5.6.3": {
+      "integrity": "sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==",
+      "dependencies": [
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/ts-api-utils/-/ts-api-utils-2.4.0.tgz"
+    },
     "tsconfig-paths-webpack-plugin@4.2.0": {
       "integrity": "sha512-zbem3rfRS8BgeNK50Zz5SIQgXzLafiHjOwUAvk/38/o1jHn/V5QAgVUcz884or7WYcPaH3N2CIfUc2u0ul7UcA==",
       "dependencies": [
@@ -2138,6 +2214,18 @@
         "prelude-ls"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/type-check/-/type-check-0.4.0.tgz"
+    },
+    "typescript-eslint@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3_@typescript-eslint+parser@8.52.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3": {
+      "integrity": "sha512-atlQQJ2YkO4pfTVQmQ+wvYQwexPDOIgo+RaVcD7gHgzy/IQA+XTyuxNM9M9TVXvttkF7koBHmcwisKdOAf2EcA==",
+      "dependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser@8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
+        "@typescript-eslint/typescript-estree@8.52.0_typescript@5.6.3",
+        "@typescript-eslint/utils",
+        "eslint",
+        "typescript"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/typescript-eslint/-/typescript-eslint-8.52.0.tgz"
     },
     "typescript@5.6.3": {
       "integrity": "sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==",
@@ -2239,7 +2327,6 @@
         "npm:@tauri-apps/plugin-opener@2",
         "npm:@types/eslint-config-prettier@^6.11.3",
         "npm:@types/node@^25.0.3",
-        "npm:@typescript-eslint/eslint-plugin@^7.18.0",
         "npm:@typescript-eslint/parser@^7.18.0",
         "npm:autoprefixer@^10.4.23",
         "npm:eslint-config-prettier@^9.1.2",
@@ -2255,6 +2342,7 @@
         "npm:svelte@5",
         "npm:synckit@~0.11.11",
         "npm:tailwindcss@4",
+        "npm:typescript-eslint@^8.52.0",
         "npm:typescript@~5.6.2",
         "npm:vite@^6.0.3"
       ]

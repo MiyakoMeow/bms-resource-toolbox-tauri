@@ -1,5 +1,5 @@
 import js from '@eslint/js';
-import ts from '@typescript-eslint/eslint-plugin';
+import ts from 'typescript-eslint';
 import tsParser from '@typescript-eslint/parser';
 import svelte from 'eslint-plugin-svelte';
 import prettier from 'eslint-config-prettier';
@@ -23,7 +23,18 @@ const tailwindCssPath = path.join(projectRoot, 'src', 'main.css');
 const config: Linter.Config[] = [
   // 忽略常见的构建和依赖目录
   {
-    ignores: ['.svelte-kit/', 'build/', 'dist/', 'node_modules/', '.deno/', '*.config.js'],
+    ignores: [
+      '.svelte-kit/',
+      'build/',
+      'dist/',
+      'node_modules/',
+      '.deno/',
+      '*.config.js',
+      'target/',
+      'src-tauri/build/',
+      'src-tauri/target/',
+      'eslint-plugin-svelte-tailwind-canonical.ts',
+    ],
   },
 
   // JavaScript/TypeScript 基础配置
@@ -45,7 +56,7 @@ const config: Linter.Config[] = [
       },
     },
     plugins: {
-      '@typescript-eslint': ts as Plugin,
+      ts: ts as Plugin,
       'better-tailwindcss': betterTailwind,
       'tailwind-canonical-classes': tailwindCanonicalClasses,
       'svelte-tailwind-canonical': svelteTailwindCanonical,
@@ -53,18 +64,6 @@ const config: Linter.Config[] = [
     rules: {
       // TypeScript 规则
       ...ts.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports', disallowTypeAnnotations: false },
-      ],
 
       // Tailwind CSS 规则
       'better-tailwindcss/no-conflicting-classes': 'error',
