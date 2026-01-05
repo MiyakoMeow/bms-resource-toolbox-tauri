@@ -32,7 +32,7 @@ bms-rs = { version = "0.10.1", features = ["bmson"] }
 encoding_rs = "0.8"
 
 # Compression
-zip = "5"
+zip = "7"
 sevenz-rust = "0.6"
 unrar = "0.5"
 
@@ -46,7 +46,7 @@ clap = { version = "4", features = ["derive"] }
 blocking = "1"
 unicode-segmentation = "1"
 unicode-width = "0.2"
-rfd = "0.15"
+rfd = "0.17"
 
 # Logging
 log = "0.4"
