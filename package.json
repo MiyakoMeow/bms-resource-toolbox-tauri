@@ -9,17 +9,11 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --concurrency=auto",
+    "lint:fix": "eslint . --fix --concurrency=auto",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "tauri": "tauri",
-    "rust:check": "cd src-tauri && cargo check --all-targets --all-features",
-    "rust:clippy": "cd src-tauri && cargo clippy --all-targets --all-features",
-    "rust:clippy:fix": "cd src-tauri && cargo clippy --fix --allow-dirty --all-targets --all-features",
-    "rust:fmt": "cd src-tauri && cargo fmt",
-    "rust:fmt:check": "cd src-tauri && cargo fmt --check",
-    "rust:test": "cd src-tauri && cargo test --all-targets --all-features"
+    "tauri": "tauri"
   },
   "license": "MIT",
   "dependencies": {

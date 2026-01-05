@@ -12,9 +12,11 @@ vite.config.ts.timestamp-*
 # Tauri generated files
 src-tauri/gen
 src-tauri/target
+src-tauri/build
 
 # Other Package Managers
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 bun.lock
+target
