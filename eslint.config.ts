@@ -9,6 +9,16 @@ import type { Linter } from 'eslint';
 import type { Plugin } from '@eslint/core';
 import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
 import svelteTailwindCanonical from './eslint-plugin-svelte-tailwind-canonical.ts';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// 获取项目根目录（配置文件所在目录）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = __dirname;
+
+// Tailwind CSS 文件路径（相对于项目根目录）
+const tailwindCssPath = path.join(projectRoot, 'src', 'main.css');
 
 const config: Linter.Config[] = [
   // 忽略常见的构建和依赖目录
@@ -35,13 +45,15 @@ const config: Linter.Config[] = [
       'better-tailwindcss/no-duplicate-classes': 'warn',
       'better-tailwindcss/no-unnecessary-whitespace': 'warn',
       'better-tailwindcss/no-unregistered-classes': 'warn',
-      'tailwind-canonical-classes/tailwind-canonical-classes': ['warn', { cssPath: './src/main.css' }],
-      // 使用默认配置（cssPath: './src/main.css'）
-      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': 'warn',
+      // 使用绝对路径
+      'tailwind-canonical-classes/tailwind-canonical-classes': ['warn', { cssPath: tailwindCssPath }],
+      // 自定义插件也使用绝对路径（而不是默认配置）
+      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': ['warn', { cssPath: tailwindCssPath }],
     },
     settings: {
       'better-tailwindcss': {
-        entryPoint: './src/main.css',
+        // 使用绝对路径
+        entryPoint: tailwindCssPath,
       },
     },
   },
