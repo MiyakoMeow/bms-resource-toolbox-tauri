@@ -5,9 +5,9 @@ import svelte from "eslint-plugin-svelte";
 import prettier from "eslint-config-prettier";
 import globals from "globals";
 import betterTailwind from "eslint-plugin-better-tailwindcss";
+import type { Linter } from "eslint";
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+const config: Linter.Config[] = [
   // 忽略常见的构建和依赖目录
   {
     ignores: [
@@ -17,7 +17,6 @@ export default [
       "node_modules/",
       ".deno/",
       "*.config.js",
-      "*.config.ts",
     ],
   },
 
@@ -98,3 +97,5 @@ export default [
   // Prettier 配置（必须放在最后以覆盖其他规则）
   prettier,
 ];
+
+export default config;
