@@ -1,11 +1,12 @@
 import { defineConfig } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
+import tailwindcss from "@tailwindcss/vite";
 import type { UserConfig } from "vite";
 
 const host = process.env.TAURI_DEV_HOST ?? false;
 
 const config: UserConfig = {
-  plugins: [sveltekit()],
+  plugins: [tailwindcss(), sveltekit()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
