@@ -19,8 +19,8 @@ async function greet(event: Event) {
       href="https://vite.dev"
       target="_blank"
       class="
-        font-medium text-[#646cff] no-underline
-        hover:text-[#535bf2]
+        text-link hover:text-link-hover font-medium
+        no-underline
         dark:hover:text-[#24c8db]
       "
     >
@@ -37,8 +37,8 @@ async function greet(event: Event) {
       href="https://tauri.app"
       target="_blank"
       class="
-        font-medium text-[#646cff] no-underline
-        hover:text-[#535bf2]
+        text-link hover:text-link-hover font-medium
+        no-underline
         dark:hover:text-[#24c8db]
       "
     >
@@ -55,8 +55,8 @@ async function greet(event: Event) {
       href="https://svelte.dev"
       target="_blank"
       class="
-        font-medium text-[#646cff] no-underline
-        hover:text-[#535bf2]
+        text-link hover:text-link-hover font-medium
+        no-underline
         dark:hover:text-[#24c8db]
       "
     >
@@ -78,23 +78,23 @@ async function greet(event: Event) {
       placeholder="Enter a name..."
       bind:value={name}
       class="
-        mr-[5px] rounded-lg border border-transparent bg-white px-[1.2em]
-        py-[0.6em] text-base font-medium text-[#0f0f0f]
-        shadow-[0_2px_2px_rgba(0,0,0,0.2)] transition-[border-color_0.25s]
-        outline-none
-        dark:bg-[#0f0f0f98] dark:text-white
+        text-text-primary dark:bg-dark-bg-secondary mr-1.25 rounded-lg border border-transparent
+        bg-white px-[1.2em] py-[0.6em] text-base
+        font-medium shadow-[0_2px_2px_rgba(0,0,0,0.2)]
+        transition-[border-color_0.25s]
+        outline-none dark:text-white
       "
     />
     <button
       type="submit"
       class="
-        cursor-pointer rounded-lg border border-transparent bg-white px-[1.2em]
-        py-[0.6em] text-base font-medium text-[#0f0f0f]
-        shadow-[0_2px_2px_rgba(0,0,0,0.2)] transition-[border-color_0.25s]
-        outline-none
-        hover:border-[#396cd8]
-        active:border-[#396cd8] active:bg-[#e8e8e8]
-        dark:bg-[#0f0f0f98] dark:text-white dark:active:bg-[#0f0f0f69]
+        text-text-primary hover:border-border-focus active:border-border-focus active:bg-bg-active dark:bg-dark-bg-secondary dark:active:bg-dark-bg-active
+        cursor-pointer rounded-lg border border-transparent
+        bg-white px-[1.2em]
+        py-[0.6em]
+        text-base
+        font-medium shadow-[0_2px_2px_rgba(0,0,0,0.2)]
+        transition-[border-color_0.25s] outline-none dark:text-white
       "
     >
       Greet
