@@ -79,7 +79,7 @@ const config: Linter.Config[] = [
       },
     },
     plugins: {
-      '@typescript-eslint': ts,
+      '@typescript-eslint': ts as Plugin,
     },
     rules: {
       ...ts.configs.recommended.rules,
