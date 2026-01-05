@@ -10,11 +10,12 @@
     "npm:@tauri-apps/cli@2": "2.9.6",
     "npm:@tauri-apps/plugin-opener@2": "2.5.2",
     "npm:@types/node@^25.0.3": "25.0.3",
-    "npm:@typescript-eslint/eslint-plugin@^7.18.0": "7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2__typescript@5.6.3_eslint@9.39.2_typescript@5.6.3",
-    "npm:@typescript-eslint/parser@^7.18.0": "7.18.0_eslint@9.39.2_typescript@5.6.3",
-    "npm:eslint-config-prettier@^9.1.2": "9.1.2_eslint@9.39.2",
-    "npm:eslint-plugin-svelte@^2.46.1": "2.46.1_eslint@9.39.2_svelte@5.46.1__acorn@8.15.0_postcss@8.5.6",
-    "npm:eslint@^9.39.2": "9.39.2",
+    "npm:@typescript-eslint/eslint-plugin@^7.18.0": "7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
+    "npm:@typescript-eslint/parser@^7.18.0": "7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
+    "npm:eslint-config-prettier@^9.1.2": "9.1.2_eslint@9.39.2__jiti@2.6.1",
+    "npm:eslint-plugin-better-tailwindcss@^3.8.0": "3.8.0_eslint@9.39.2__jiti@2.6.1_tailwindcss@4.1.18_jiti@2.6.1_postcss@8.5.6",
+    "npm:eslint-plugin-svelte@^2.46.1": "2.46.1_eslint@9.39.2__jiti@2.6.1_svelte@5.46.1__acorn@8.15.0_postcss@8.5.6",
+    "npm:eslint@^9.39.2": "9.39.2_jiti@2.6.1",
     "npm:globals@17": "17.0.0",
     "npm:prettier-plugin-svelte@^3.4.1": "3.4.1_prettier@3.7.4_svelte@5.46.1__acorn@8.15.0",
     "npm:prettier-plugin-tailwindcss@~0.7.2": "0.7.2_prettier@3.7.4_prettier-plugin-svelte@3.4.1__prettier@3.7.4__svelte@5.46.1___acorn@8.15.0_svelte@5.46.1__acorn@8.15.0",
@@ -182,7 +183,15 @@
       "cpu": ["x64"],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@esbuild/win32-x64/-/win32-x64-0.25.12.tgz"
     },
-    "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2": {
+    "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1": {
+      "integrity": "sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==",
+      "dependencies": [
+        "eslint",
+        "eslint-visitor-keys@3.4.3"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@eslint-community/eslint-utils/-/eslint-utils-4.9.1.tgz"
+    },
+    "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1_jiti@2.6.1": {
       "integrity": "sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==",
       "dependencies": [
         "eslint",
@@ -216,6 +225,14 @@
         "@types/json-schema"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@eslint/core/-/core-0.17.0.tgz"
+    },
+    "@eslint/css-tree@3.6.8": {
+      "integrity": "sha512-s0f40zY7dlMp8i0Jf0u6l/aSswS0WRAgkhgETgiCJRcxIWb4S/Sp9uScKHWbkM3BnoFLbJbmOYk5AZUDFVxaLA==",
+      "dependencies": [
+        "mdn-data",
+        "source-map-js"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@eslint/css-tree/-/css-tree-3.6.8.tgz"
     },
     "@eslint/eslintrc@3.3.3": {
       "integrity": "sha512-Kr+LPIUVKz2qkx1HAMH8q1q6azbqBAsXJUxBl/ODDuVPX45Z9DfwB8tPjTi6nNZ8BuM3nbJxC5zCAg5elnBUTQ==",
@@ -319,6 +336,10 @@
         "fastq"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@nodelib/fs.walk/-/fs.walk-1.2.8.tgz"
+    },
+    "@pkgr/core@0.2.9": {
+      "integrity": "sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@pkgr/core/-/core-0.2.9.tgz"
     },
     "@polka/url@1.0.0-next.29": {
       "integrity": "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==",
@@ -747,7 +768,7 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@types/node/-/node-25.0.3.tgz"
     },
-    "@typescript-eslint/eslint-plugin@7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2__typescript@5.6.3_eslint@9.39.2_typescript@5.6.3": {
+    "@typescript-eslint/eslint-plugin@7.18.0_@typescript-eslint+parser@7.18.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
       "integrity": "sha512-94EQTWZ40mzBc42ATNIBimBEDltSJ9RQHCC8vc/PDbxi4k8dVwUAv4o98dk50M1zB+JGFxp43FP7f8+FP8R6Sw==",
       "dependencies": [
         "@eslint-community/regexpp",
@@ -764,7 +785,7 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/eslint-plugin/-/eslint-plugin-7.18.0.tgz"
     },
-    "@typescript-eslint/parser@7.18.0_eslint@9.39.2_typescript@5.6.3": {
+    "@typescript-eslint/parser@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
       "integrity": "sha512-4Z+L8I2OqhZV8qA132M4wNL30ypZGYOQVBfMgxDH/K5UX0PNqTu1c6za9ST5r9+tavvHiTWmBnKzpCJ/GlVFtg==",
       "dependencies": [
         "@typescript-eslint/scope-manager",
@@ -784,7 +805,7 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/scope-manager/-/scope-manager-7.18.0.tgz"
     },
-    "@typescript-eslint/type-utils@7.18.0_eslint@9.39.2_typescript@5.6.3": {
+    "@typescript-eslint/type-utils@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
       "integrity": "sha512-XL0FJXuCLaDuX2sYqZUUSOJ2sG5/i1AAze+axqmLnSkNEVMVYLF+cbwlB2w8D1tinFuSikHmFta+P+HOofrLeA==",
       "dependencies": [
         "@typescript-eslint/typescript-estree",
@@ -813,10 +834,10 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@typescript-eslint/typescript-estree/-/typescript-estree-7.18.0.tgz"
     },
-    "@typescript-eslint/utils@7.18.0_eslint@9.39.2_typescript@5.6.3": {
+    "@typescript-eslint/utils@7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3": {
       "integrity": "sha512-kK0/rNa2j74XuHVcoCZxdFBMF+aq/vH83CXAOHieC+2Gis4mF8jJXT5eAfyD3K0sAxtPuwxaIOIOvhwzVDt/kw==",
       "dependencies": [
-        "@eslint-community/eslint-utils",
+        "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1",
         "@typescript-eslint/scope-manager",
         "@typescript-eslint/types",
         "@typescript-eslint/typescript-estree",
@@ -1035,7 +1056,7 @@
       "integrity": "sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz"
     },
-    "eslint-compat-utils@0.5.1_eslint@9.39.2": {
+    "eslint-compat-utils@0.5.1_eslint@9.39.2__jiti@2.6.1": {
       "integrity": "sha512-3z3vFexKIEnjHE3zCMRo6fn/e44U7T1khUjg+Hp0ZQMCigh28rALD0nPFBcGZuiLC5rLZa2ubQHDRln09JfU2Q==",
       "dependencies": [
         "eslint",
@@ -1043,7 +1064,7 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/eslint-compat-utils/-/eslint-compat-utils-0.5.1.tgz"
     },
-    "eslint-config-prettier@9.1.2_eslint@9.39.2": {
+    "eslint-config-prettier@9.1.2_eslint@9.39.2__jiti@2.6.1": {
       "integrity": "sha512-iI1f+D2ViGn+uvv5HuHVUamg8ll4tN+JRHGc6IJi4TP9Kl976C57fzPXgseXNs8v0iA8aSJpHsTWjDb9QJamGQ==",
       "dependencies": [
         "eslint"
@@ -1051,10 +1072,26 @@
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/eslint-config-prettier/-/eslint-config-prettier-9.1.2.tgz"
     },
-    "eslint-plugin-svelte@2.46.1_eslint@9.39.2_svelte@5.46.1__acorn@8.15.0_postcss@8.5.6": {
+    "eslint-plugin-better-tailwindcss@3.8.0_eslint@9.39.2__jiti@2.6.1_tailwindcss@4.1.18_jiti@2.6.1_postcss@8.5.6": {
+      "integrity": "sha512-bRJVOb47d3ONK4Qb6Zt58ra37E8rMCexWy7RuNgLQZS/Ch92oLRFBupa/s+FB1O9XRdph9ZMCXBiEFKc4gAGTQ==",
+      "dependencies": [
+        "@eslint/css-tree",
+        "enhanced-resolve",
+        "eslint",
+        "jiti",
+        "postcss",
+        "postcss-import",
+        "synckit",
+        "tailwind-csstree",
+        "tailwindcss",
+        "tsconfig-paths-webpack-plugin"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/eslint-plugin-better-tailwindcss/-/eslint-plugin-better-tailwindcss-3.8.0.tgz"
+    },
+    "eslint-plugin-svelte@2.46.1_eslint@9.39.2__jiti@2.6.1_svelte@5.46.1__acorn@8.15.0_postcss@8.5.6": {
       "integrity": "sha512-7xYr2o4NID/f9OEYMqxsEQsCsj4KaMy4q5sANaKkAb6/QeCjYFxRmDm2S3YC3A3pl1kyPZ/syOx/i7LcWYSbIw==",
       "dependencies": [
-        "@eslint-community/eslint-utils",
+        "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1",
         "@jridgewell/sourcemap-codec",
         "eslint",
         "eslint-compat-utils",
@@ -1097,10 +1134,10 @@
       "integrity": "sha512-Uhdk5sfqcee/9H/rCOJikYz67o0a2Tw2hGRPOG2Y1R2dg7brRe1uG0yaNQDHu+TO/uQPF/5eCapvYSmHUjt7JQ==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/eslint-visitor-keys/-/eslint-visitor-keys-4.2.1.tgz"
     },
-    "eslint@9.39.2": {
+    "eslint@9.39.2_jiti@2.6.1": {
       "integrity": "sha512-LEyamqS7W5HB3ujJyvi0HQK/dtVINZvd5mAAp9eT5S/ujByGjiZLCzPcHVzuXbpJDJF/cxwHlfceVUDZ2lnSTw==",
       "dependencies": [
-        "@eslint-community/eslint-utils",
+        "@eslint-community/eslint-utils@4.9.1_eslint@9.39.2__jiti@2.6.1_jiti@2.6.1",
         "@eslint-community/regexpp",
         "@eslint/config-array",
         "@eslint/config-helpers",
@@ -1129,11 +1166,15 @@
         "ignore",
         "imurmurhash",
         "is-glob",
+        "jiti",
         "json-stable-stringify-without-jsonify",
         "lodash.merge",
         "minimatch@3.1.2",
         "natural-compare",
         "optionator"
+      ],
+      "optionalPeers": [
+        "jiti"
       ],
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/eslint/-/eslint-9.39.2.tgz"
@@ -1269,6 +1310,10 @@
       "scripts": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/fsevents/-/fsevents-2.3.3.tgz"
     },
+    "function-bind@1.1.2": {
+      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/function-bind/-/function-bind-1.1.2.tgz"
+    },
     "glob-parent@5.1.2": {
       "integrity": "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==",
       "dependencies": [
@@ -1315,6 +1360,13 @@
       "integrity": "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/has-flag/-/has-flag-4.0.0.tgz"
     },
+    "hasown@2.0.2": {
+      "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",
+      "dependencies": [
+        "function-bind"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/hasown/-/hasown-2.0.2.tgz"
+    },
     "ignore@5.3.2": {
       "integrity": "sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/ignore/-/ignore-5.3.2.tgz"
@@ -1330,6 +1382,13 @@
     "imurmurhash@0.1.4": {
       "integrity": "sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/imurmurhash/-/imurmurhash-0.1.4.tgz"
+    },
+    "is-core-module@2.16.1": {
+      "integrity": "sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w==",
+      "dependencies": [
+        "hasown"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/is-core-module/-/is-core-module-2.16.1.tgz"
     },
     "is-extglob@2.1.1": {
       "integrity": "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==",
@@ -1381,6 +1440,11 @@
     "json-stable-stringify-without-jsonify@1.0.1": {
       "integrity": "sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
+    },
+    "json5@2.2.3": {
+      "integrity": "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==",
+      "bin": true,
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/json5/-/json5-2.2.3.tgz"
     },
     "keyv@4.5.4": {
       "integrity": "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==",
@@ -1517,6 +1581,10 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/magic-string/-/magic-string-0.30.21.tgz"
     },
+    "mdn-data@2.23.0": {
+      "integrity": "sha512-786vq1+4079JSeu2XdcDjrhi/Ry7BWtjDl9WtGPWLiIHb2T66GvIVflZTBoSNZ5JqTtJGYEVMuFA/lbQlMOyDQ==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/mdn-data/-/mdn-data-2.23.0.tgz"
+    },
     "merge2@1.4.1": {
       "integrity": "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/merge2/-/merge2-1.4.1.tgz"
@@ -1542,6 +1610,10 @@
         "brace-expansion@2.0.2"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/minimatch/-/minimatch-9.0.5.tgz"
+    },
+    "minimist@1.2.8": {
+      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/minimist/-/minimist-1.2.8.tgz"
     },
     "mri@1.2.0": {
       "integrity": "sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==",
@@ -1605,6 +1677,10 @@
       "integrity": "sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/path-key/-/path-key-3.1.1.tgz"
     },
+    "path-parse@1.0.7": {
+      "integrity": "sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/path-parse/-/path-parse-1.0.7.tgz"
+    },
     "path-type@4.0.0": {
       "integrity": "sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/path-type/-/path-type-4.0.0.tgz"
@@ -1620,6 +1696,20 @@
     "picomatch@4.0.3": {
       "integrity": "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/picomatch/-/picomatch-4.0.3.tgz"
+    },
+    "pify@2.3.0": {
+      "integrity": "sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/pify/-/pify-2.3.0.tgz"
+    },
+    "postcss-import@16.1.1_postcss@8.5.6": {
+      "integrity": "sha512-2xVS1NCZAfjtVdvXiyegxzJ447GyqCeEI5V7ApgQVOWnros1p5lGNovJNapwPpMombyFBfqDwt7AD3n2l0KOfQ==",
+      "dependencies": [
+        "postcss",
+        "postcss-value-parser",
+        "read-cache",
+        "resolve"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/postcss-import/-/postcss-import-16.1.1.tgz"
     },
     "postcss-load-config@3.1.4_postcss@8.5.6": {
       "integrity": "sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==",
@@ -1654,6 +1744,10 @@
         "util-deprecate"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/postcss-selector-parser/-/postcss-selector-parser-6.1.2.tgz"
+    },
+    "postcss-value-parser@4.2.0": {
+      "integrity": "sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz"
     },
     "postcss@8.5.6": {
       "integrity": "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==",
@@ -1700,6 +1794,13 @@
       "integrity": "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/queue-microtask/-/queue-microtask-1.2.3.tgz"
     },
+    "read-cache@1.0.0": {
+      "integrity": "sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==",
+      "dependencies": [
+        "pify"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/read-cache/-/read-cache-1.0.0.tgz"
+    },
     "readdirp@4.1.2": {
       "integrity": "sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/readdirp/-/readdirp-4.1.2.tgz"
@@ -1707,6 +1808,16 @@
     "resolve-from@4.0.0": {
       "integrity": "sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/resolve-from/-/resolve-from-4.0.0.tgz"
+    },
+    "resolve@1.22.11": {
+      "integrity": "sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==",
+      "dependencies": [
+        "is-core-module",
+        "path-parse",
+        "supports-preserve-symlinks-flag"
+      ],
+      "bin": true,
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/resolve/-/resolve-1.22.11.tgz"
     },
     "reusify@1.1.0": {
       "integrity": "sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==",
@@ -1796,6 +1907,10 @@
       "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/source-map-js/-/source-map-js-1.2.1.tgz"
     },
+    "strip-bom@3.0.0": {
+      "integrity": "sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/strip-bom/-/strip-bom-3.0.0.tgz"
+    },
     "strip-json-comments@3.1.1": {
       "integrity": "sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/strip-json-comments/-/strip-json-comments-3.1.1.tgz"
@@ -1806,6 +1921,10 @@
         "has-flag"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/supports-color/-/supports-color-7.2.0.tgz"
+    },
+    "supports-preserve-symlinks-flag@1.0.0": {
+      "integrity": "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz"
     },
     "svelte-check@4.3.5_svelte@5.46.1__acorn@8.15.0_typescript@5.6.3": {
       "integrity": "sha512-e4VWZETyXaKGhpkxOXP+B/d0Fp/zKViZoJmneZWe/05Y2aqSKj3YN2nLfYPJBQ87WEiY4BQCQ9hWGu9mPT1a1Q==",
@@ -1857,6 +1976,17 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/svelte/-/svelte-5.46.1.tgz"
     },
+    "synckit@0.11.11": {
+      "integrity": "sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw==",
+      "dependencies": [
+        "@pkgr/core"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/synckit/-/synckit-0.11.11.tgz"
+    },
+    "tailwind-csstree@0.1.4": {
+      "integrity": "sha512-FzD187HuFIZEyeR7Xy6sJbJll2d4SybS90satC8SKIuaNRC05CxMvdzN7BUsfDQffcnabckRM5OIcfArjsZ0mg==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/tailwind-csstree/-/tailwind-csstree-0.1.4.tgz"
+    },
     "tailwindcss@4.1.18": {
       "integrity": "sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/tailwindcss/-/tailwindcss-4.1.18.tgz"
@@ -1890,6 +2020,25 @@
         "typescript"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/ts-api-utils/-/ts-api-utils-1.4.3.tgz"
+    },
+    "tsconfig-paths-webpack-plugin@4.2.0": {
+      "integrity": "sha512-zbem3rfRS8BgeNK50Zz5SIQgXzLafiHjOwUAvk/38/o1jHn/V5QAgVUcz884or7WYcPaH3N2CIfUc2u0ul7UcA==",
+      "dependencies": [
+        "chalk",
+        "enhanced-resolve",
+        "tapable",
+        "tsconfig-paths"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/tsconfig-paths-webpack-plugin/-/tsconfig-paths-webpack-plugin-4.2.0.tgz"
+    },
+    "tsconfig-paths@4.2.0": {
+      "integrity": "sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==",
+      "dependencies": [
+        "json5",
+        "minimist",
+        "strip-bom"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/tsconfig-paths/-/tsconfig-paths-4.2.0.tgz"
     },
     "type-check@0.4.0": {
       "integrity": "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==",
@@ -1988,6 +2137,7 @@
         "npm:@typescript-eslint/eslint-plugin@^7.18.0",
         "npm:@typescript-eslint/parser@^7.18.0",
         "npm:eslint-config-prettier@^9.1.2",
+        "npm:eslint-plugin-better-tailwindcss@^3.8.0",
         "npm:eslint-plugin-svelte@^2.46.1",
         "npm:eslint@^9.39.2",
         "npm:globals@17",
