@@ -1,0 +1,56 @@
+[workspace]
+members = ["src-tauri"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+authors = ["you"]
+
+[workspace.dependencies]
+# Tauri
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-build = { version = "2", features = [] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Common dependencies
+smol = "2"
+sha3 = "0.10"
+num_cpus = "1"
+futures = "0.3"
+sysinfo = { version = "0.37", default-features = false, features = ["disk"] }
+regex = "1"
+once_cell = "1"
+
+# BMS
+bms-rs = { version = "0.10.1", features = ["bmson"] }
+encoding_rs = "0.8"
+
+# Compression
+zip = "5"
+sevenz-rust = "0.6"
+unrar = "0.5"
+
+# File system
+which = "8"
+strsim = "0.11"
+xlsxwriter = "0.6"
+
+# GUI
+clap = { version = "4", features = ["derive"] }
+blocking = "1"
+unicode-segmentation = "1"
+unicode-width = "0.2"
+rfd = "0.15"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Utilities
+tempfile = "3"
