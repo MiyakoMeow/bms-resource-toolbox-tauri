@@ -1,0 +1,56 @@
+name: Rust
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+jobs:
+  native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - if: matrix.os == 'ubuntu-latest'
+        name: Install dependencies (ubuntu only)
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          version: 1.0
+      - uses: denoland/setup-deno@v2
+        with:
+          cache: true
+          deno-version: latest
+      - name: Install dependencies
+        run: deno install
+      - name: Setup rustfmt and clippy
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            ./src-tauri -> target
+      - name: Check
+        run: deno task check
+      - name: Check lint
+        run: deno task lint
+      - if: matrix.os != 'windows-latest'
+        name: Check formatting
+        run: deno task format
+      - name: (Rust) Check
+        run: deno task rust:check --verbose
+      - name: (Rust) Clippy
+        run: deno task rust:clippy --verbose -- -D warnings
+      - name: (Rust) Test
+        run: deno task rust:test --verbose
+      - name: (Rust) Format Check
+        run: deno task rust:fmt:check
+      - name: Build
+        run: deno task build
