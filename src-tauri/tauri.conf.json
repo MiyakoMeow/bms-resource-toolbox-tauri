@@ -6,7 +6,7 @@
   "build": {
     "beforeDevCommand": "deno task dev",
     "beforeBuildCommand": "deno task build",
-    "frontendDist": "src-tauri/build"
+    "frontendDist": "../build"
   },
   "app": {
     "windows": [
