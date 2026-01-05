@@ -5,7 +5,7 @@ use smol::{fs, io, stream::StreamExt};
 use super::is_file_same_content;
 use log::info;
 
-/// Equivalent to Python SoftSyncExec
+/// Equivalent to Python `SoftSyncExec`
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SoftSyncExec {
     None,
@@ -23,6 +23,21 @@ impl std::fmt::Display for SoftSyncExec {
     }
 }
 
+/// File comparison strategy
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct FileCompareStrategy {
+    pub check_size: bool,
+    pub check_mtime: bool,
+    pub check_sha512: bool,
+}
+
+/// Cleanup strategy
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct CleanupStrategy {
+    pub remove_dst_extra: bool,
+    pub remove_src_same: bool,
+}
+
 /// Sync preset
 #[derive(Debug, Clone)]
 pub struct SoftSyncPreset {
@@ -30,13 +45,10 @@ pub struct SoftSyncPreset {
     pub allow_src_exts: Vec<String>,
     pub disallow_src_exts: Vec<String>,
     pub allow_other_exts: bool,
-    /// (from_exts, to_exts)
+    /// (`from_exts`, `to_exts`)
     pub no_activate_ext_bound_pairs: Vec<(Vec<String>, Vec<String>)>,
-    pub remove_dst_extra_files: bool,
-    pub check_file_size: bool,
-    pub check_file_mtime: bool,
-    pub check_file_sha512: bool,
-    pub remove_src_same_files: bool,
+    pub cleanup: CleanupStrategy,
+    pub file_compare: FileCompareStrategy,
     pub exec: SoftSyncExec,
 }
 
@@ -48,11 +60,15 @@ impl Default for SoftSyncPreset {
             disallow_src_exts: Vec::new(),
             allow_other_exts: true,
             no_activate_ext_bound_pairs: Vec::new(),
-            remove_dst_extra_files: true,
-            check_file_size: true,
-            check_file_mtime: true,
-            check_file_sha512: false,
-            remove_src_same_files: false,
+            cleanup: CleanupStrategy {
+                remove_dst_extra: true,
+                remove_src_same: false,
+            },
+            file_compare: FileCompareStrategy {
+                check_size: true,
+                check_mtime: true,
+                check_sha512: false,
+            },
             exec: SoftSyncExec::Copy,
         }
     }
@@ -70,25 +86,25 @@ impl std::fmt::Display for SoftSyncPreset {
         if !self.disallow_src_exts.is_empty() {
             write!(f, " Reject extensions: {:?}", self.disallow_src_exts)?;
         }
-        if self.remove_src_same_files {
+        if self.cleanup.remove_src_same {
             write!(
                 f,
                 " Remove files in source that don't need sync relative to target"
             )?;
         }
-        if self.remove_dst_extra_files {
+        if self.cleanup.remove_dst_extra {
             write!(
                 f,
                 " Remove extra files in target folder relative to source folder"
             )?;
         }
-        if self.check_file_mtime {
+        if self.file_compare.check_mtime {
             write!(f, " Check modification time")?;
         }
-        if self.check_file_size {
+        if self.file_compare.check_size {
             write!(f, " Check size")?;
         }
-        if self.check_file_sha512 {
+        if self.file_compare.check_sha512 {
             write!(f, " Check SHA-512")?;
         }
         Ok(())
@@ -96,60 +112,79 @@ impl std::fmt::Display for SoftSyncPreset {
 }
 
 /* ---------- Presets ---------- */
+#[must_use]
 pub fn preset_default() -> SoftSyncPreset {
     SoftSyncPreset::default()
 }
 
+#[must_use]
 pub fn preset_for_append() -> SoftSyncPreset {
     SoftSyncPreset {
         name: "Sync preset (for update pack)".into(),
-        check_file_size: true,
-        check_file_mtime: false,
-        check_file_sha512: true,
-        remove_src_same_files: true,
-        remove_dst_extra_files: false,
+        file_compare: FileCompareStrategy {
+            check_size: true,
+            check_mtime: false,
+            check_sha512: true,
+        },
+        cleanup: CleanupStrategy {
+            remove_dst_extra: false,
+            remove_src_same: true,
+        },
         exec: SoftSyncExec::None,
         ..Default::default()
     }
 }
 
+#[must_use]
 pub fn preset_flac() -> SoftSyncPreset {
     SoftSyncPreset {
         allow_src_exts: vec!["flac".into()],
         allow_other_exts: false,
-        remove_dst_extra_files: false,
+        cleanup: CleanupStrategy {
+            remove_dst_extra: false,
+            ..Default::default()
+        },
         ..Default::default()
     }
 }
 
+#[must_use]
 pub fn preset_mp4_avi() -> SoftSyncPreset {
     SoftSyncPreset {
         allow_src_exts: vec!["mp4".into(), "avi".into()],
         allow_other_exts: false,
-        remove_dst_extra_files: false,
+        cleanup: CleanupStrategy {
+            remove_dst_extra: false,
+            ..Default::default()
+        },
         ..Default::default()
     }
 }
 
+#[must_use]
 pub fn preset_cache() -> SoftSyncPreset {
     SoftSyncPreset {
         allow_src_exts: vec!["mp4".into(), "avi".into(), "flac".into()],
         allow_other_exts: false,
-        remove_dst_extra_files: false,
+        cleanup: CleanupStrategy {
+            remove_dst_extra: false,
+            ..Default::default()
+        },
         exec: SoftSyncExec::None,
         ..Default::default()
     }
 }
 
 /// Recursive sync
+///
+/// # Errors
+///
+/// Returns an error if directory reading or file operations fail
 pub async fn sync_folder(
-    src_dir: impl AsRef<Path>,
-    dst_dir: impl AsRef<Path>,
+    src_dir: &Path,
+    dst_dir: &Path,
     preset: &SoftSyncPreset,
 ) -> io::Result<()> {
-    let src_dir = src_dir.as_ref();
-    let dst_dir = dst_dir.as_ref();
-
     let mut src_copy_files = Vec::new();
     let mut src_move_files = Vec::new();
     let mut src_remove_files = Vec::new();
@@ -232,16 +267,16 @@ pub async fn sync_folder(
             let src_md = fs::metadata(&src_path).await?;
             let dst_md = fs::metadata(&dst_path).await?;
 
-            if preset.check_file_size && same {
+            if preset.file_compare.check_size && same {
                 same &= src_md.len() == dst_md.len();
             }
-            if preset.check_file_mtime && same {
+            if preset.file_compare.check_mtime && same {
                 // Compare mtime at second level is sufficient
                 let src_mtime = src_md.modified()?;
                 let dst_mtime = dst_md.modified()?;
                 same &= src_mtime == dst_mtime;
             }
-            if preset.check_file_sha512 && same {
+            if preset.file_compare.check_sha512 && same {
                 same &= is_file_same_content(&src_path, &dst_path).await?;
             }
         }
@@ -261,19 +296,19 @@ pub async fn sync_folder(
             }
         }
 
-        if preset.remove_src_same_files && dst_file_exists && same {
+        if preset.cleanup.remove_src_same && dst_file_exists && same {
             fs::remove_file(&src_path).await?;
             src_remove_files.push(name.to_string_lossy().into_owned());
         }
     }
 
     // 2. Clean up extra target entries
-    if preset.remove_dst_extra_files {
+    if preset.cleanup.remove_dst_extra {
         for (name, entry) in dst_map {
             let src_path = src_dir.join(&name);
             let dst_path = entry.path();
 
-            if !smol::block_on(async { src_path.exists() }) {
+            if !src_path.exists() {
                 if entry.file_type().await?.is_dir() {
                     fs::remove_dir_all(&dst_path).await?;
                     dst_remove_dirs.push(name.to_string_lossy().into_owned());

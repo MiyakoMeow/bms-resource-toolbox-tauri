@@ -18,7 +18,8 @@ pub enum BMSEvent {
 
 impl BMSEvent {
     /// Event list page
-    pub fn list_url(&self) -> &'static str {
+    #[must_use]
+    pub const fn list_url(&self) -> &'static str {
         match self {
             BMSEvent::BOFNT => "https://manbow.nothing.sh/event/event.cgi?action=sp&event=142",
             BMSEvent::BOFTT => "https://manbow.nothing.sh/event/event.cgi?action=sp&event=146",
@@ -30,6 +31,7 @@ impl BMSEvent {
     }
 
     /// Event work details page
+    #[must_use]
     pub fn work_info_url(&self, work_num: u32) -> String {
         match self {
             BMSEvent::BOFNT => format!(
@@ -88,7 +90,11 @@ impl FromStr for BMSEvent {
 }
 
 /// Open default browser
-pub async fn open_browser(url: &str) -> io::Result<()> {
+///
+/// # Errors
+///
+/// Returns an error if the browser command cannot be executed
+pub fn open_browser(url: &str) -> io::Result<()> {
     #[cfg(target_os = "windows")]
     {
         let _cmd = Command::new("cmd")
@@ -109,17 +115,25 @@ pub async fn open_browser(url: &str) -> io::Result<()> {
 }
 
 /// Open BMS event list page
-pub async fn open_event_list(event: BMSEvent) -> io::Result<()> {
+///
+/// # Errors
+///
+/// Returns an error if the browser command cannot be executed
+pub fn open_event_list(event: BMSEvent) -> io::Result<()> {
     log::info!("Opening BMS event list: {}", event);
-    open_browser(event.list_url()).await
+    open_browser(event.list_url())
 }
 
 /// Open multiple BMS event work details pages
-pub async fn open_event_works(event: BMSEvent, work_ids: &[u32]) -> io::Result<()> {
+///
+/// # Errors
+///
+/// Returns an error if the browser command cannot be executed
+pub fn open_event_works(event: BMSEvent, work_ids: &[u32]) -> io::Result<()> {
     log::info!("Opening BMS event works: {} (IDs: {:?})", event, work_ids);
     for &work_id in work_ids {
         let url = event.work_info_url(work_id);
-        open_browser(&url).await?;
+        open_browser(&url)?;
     }
     Ok(())
 }

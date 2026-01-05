@@ -50,9 +50,9 @@ impl ReplaceOptions {
 /// 预设的替换策略
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ReplacePreset {
-    /// 与 ReplaceOptions::default() 等价
+    /// 与 `ReplaceOptions::default()` 等价
     Default = 0,
-    /// 与 replace_options_update_pack() 等价
+    /// 与 `replace_options_update_pack()` 等价
     UpdatePack = 1,
 }
 
@@ -85,7 +85,8 @@ impl clap::ValueEnum for ReplacePreset {
     }
 }
 
-/// 从预设获取具体的 ReplaceOptions
+/// 从预设获取具体的 `ReplaceOptions`
+#[must_use]
 pub fn replace_options_from_preset(preset: ReplacePreset) -> ReplaceOptions {
     match preset {
         ReplacePreset::Default => ReplaceOptions::default(),
@@ -94,6 +95,7 @@ pub fn replace_options_from_preset(preset: ReplacePreset) -> ReplaceOptions {
 }
 
 /// Default update pack strategy
+#[must_use]
 pub fn replace_options_update_pack() -> ReplaceOptions {
     ReplaceOptions {
         ext: {
@@ -109,6 +111,10 @@ pub fn replace_options_update_pack() -> ReplaceOptions {
 }
 
 /// Recursively move directory contents (using loops instead of recursion)
+///
+/// # Errors
+///
+/// Returns an error if file system operations fail
 pub async fn move_elements_across_dir(
     dir_path_ori: impl AsRef<Path>,
     dir_path_dst: impl AsRef<Path>,
@@ -146,9 +152,8 @@ pub async fn move_elements_across_dir(
             if e.kind() == io::ErrorKind::NotFound {
                 fs::rename(&dir_path_ori, &dir_path_dst).await?;
                 return Ok(());
-            } else {
-                return Err(e);
             }
+            return Err(e);
         }
     }
 
@@ -755,12 +760,12 @@ mod tests {
             );
 
             // Verify other file was replaced
-            let content = fs::read_to_string(dst_dir.join("file3.other"))
+            let other_content = fs::read_to_string(dst_dir.join("file3.other"))
                 .await
                 .expect("Failed to read file");
-            assert_eq!(content, "content3", "other file should be replaced");
+            assert_eq!(other_content, "content3", "other file should be replaced");
 
             cleanup_test_dir(&temp_dir).await;
-        })
+        });
     }
 }

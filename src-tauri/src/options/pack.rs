@@ -19,8 +19,7 @@ use crate::{
 };
 
 /// Remove empty folders
-async fn remove_empty_folder(parent_dir: impl AsRef<Path>) -> io::Result<()> {
-    let parent_dir = parent_dir.as_ref();
+async fn remove_empty_folder(parent_dir: &Path) -> io::Result<()> {
     let mut entries = fs::read_dir(parent_dir).await?;
 
     while let Some(entry) = entries.next().await {
@@ -45,6 +44,10 @@ async fn remove_empty_folder(parent_dir: impl AsRef<Path>) -> io::Result<()> {
 
 /// Raw pack -> HQ pack
 /// This function is for parsing Raw version to HQ version. Just for beatoraja/Qwilight players.
+///
+/// # Errors
+///
+/// Returns an error if audio processing or file operations fail
 pub async fn pack_raw_to_hq(root_dir: impl AsRef<Path>) -> io::Result<()> {
     let root_dir = root_dir.as_ref();
 
@@ -69,6 +72,10 @@ pub async fn pack_raw_to_hq(root_dir: impl AsRef<Path>) -> io::Result<()> {
 
 /// HQ pack -> LQ pack
 /// This file is for parsing HQ version to LQ version. Just for LR2 players.
+///
+/// # Errors
+///
+/// Returns an error if audio/video processing or file operations fail
 pub async fn pack_hq_to_lq(root_dir: impl AsRef<Path>) -> io::Result<()> {
     let root_dir = root_dir.as_ref();
 
@@ -133,10 +140,14 @@ fn pack_setup_rawpack_to_hq_check(pack_dir: &Path, root_dir: &Path) -> bool {
 }
 
 /// Pack generation script: Raw pack -> HQ pack
-/// BMS Pack Generator by MiyakoMeow.
+/// BMS Pack Generator by `MiyakoMeow`.
 /// - For Pack Create:
 ///   Fast creating pack script, from: Raw Packs set numed, to: target bms folder.
-///   You need to set pack num before running this script, see options/rawpack.rs => set_file_num
+///   You need to set pack num before running this script, see options/rawpack.rs => `set_file_num`
+///
+/// # Errors
+///
+/// Returns an error if pack processing or file operations fail
 pub async fn pack_setup_rawpack_to_hq(
     pack_dir: impl AsRef<Path>,
     root_dir: impl AsRef<Path>,
@@ -251,10 +262,14 @@ fn pack_update_rawpack_to_hq_check(pack_dir: &Path, root_dir: &Path, sync_dir: &
 }
 
 /// Pack update script: Raw pack -> HQ pack
-/// BMS Pack Generator by MiyakoMeow.
+/// BMS Pack Generator by `MiyakoMeow`.
 /// - For Pack Update:
 ///   Fast update script, from: Raw Packs set numed, to: delta bms folder just for making pack update.
-///   You need to set pack num before running this script, see scripts_rawpack/rawpack_set_num.py
+///   You need to set pack num before running this script, see `scripts_rawpack/rawpack_set_num.py`
+///
+/// # Errors
+///
+/// Returns an error if pack processing or file operations fail
 pub async fn pack_update_rawpack_to_hq(
     pack_dir: impl AsRef<Path>,
     root_dir: impl AsRef<Path>,

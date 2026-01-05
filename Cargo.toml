@@ -73,7 +73,7 @@ codegen-units = 1
 lto = "thin"
 
 [workspace.lints.rust]
-missing_docs = "warn"
+missing_docs = "allow"
 unused_crate_dependencies = "allow"
 unused_extern_crates = "warn"
 

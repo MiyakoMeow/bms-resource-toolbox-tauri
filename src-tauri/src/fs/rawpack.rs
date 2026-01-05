@@ -8,6 +8,10 @@ use smol::{fs, io};
 use crate::fs::moving::{ReplacePreset, move_elements_across_dir, replace_options_from_preset};
 
 /// Extract supported archives to specified cache directory
+///
+/// # Errors
+///
+/// Returns an error if file extraction or copy operations fail
 pub async fn unzip_file_to_cache_dir(
     file_path: impl AsRef<Path>,
     cache_dir_path: impl AsRef<Path>,
@@ -27,9 +31,9 @@ pub async fn unzip_file_to_cache_dir(
         .to_lowercase();
 
     match ext.as_str() {
-        "zip" => extract_zip(file_path, cache_dir_path).await?,
-        "7z" => extract_7z(file_path, cache_dir_path).await?,
-        "rar" => extract_rar(file_path, cache_dir_path).await?,
+        "zip" => extract_zip(file_path, cache_dir_path)?,
+        "7z" => extract_7z(file_path, cache_dir_path)?,
+        "rar" => extract_rar(file_path, cache_dir_path)?,
         _ => {
             // Not an archive => copy after space
             let target_name = file_name
@@ -44,7 +48,7 @@ pub async fn unzip_file_to_cache_dir(
 }
 
 /* ---------- ZIP ---------- */
-async fn extract_zip(src: &Path, dst: &Path) -> io::Result<()> {
+fn extract_zip(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (zip)", src.display(), dst.display());
     let file = std::fs::File::open(src)?;
     let mut archive = zip::ZipArchive::new(file)?;
@@ -52,7 +56,7 @@ async fn extract_zip(src: &Path, dst: &Path) -> io::Result<()> {
 }
 
 /* ---------- 7z ---------- */
-async fn extract_7z(src: &Path, dst: &Path) -> io::Result<()> {
+fn extract_7z(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (7z)", src.display(), dst.display());
     // sevenz-rust is a synchronous library, spawn_blocking
     let src = src.to_path_buf();
@@ -62,7 +66,7 @@ async fn extract_7z(src: &Path, dst: &Path) -> io::Result<()> {
 }
 
 /* ---------- RAR ---------- */
-async fn extract_rar(src: &Path, dst: &Path) -> io::Result<()> {
+fn extract_rar(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (RAR)", src.display(), dst.display());
     // unrar is a synchronous library
     let src = src.to_path_buf();
@@ -89,6 +93,10 @@ async fn extract_rar(src: &Path, dst: &Path) -> io::Result<()> {
 }
 
 /// Extract "numeric prefix" file name list from pack directory
+///
+/// # Errors
+///
+/// Returns an error if directory reading fails
 pub fn get_num_set_file_names(pack_dir: impl AsRef<Path>) -> io::Result<Vec<String>> {
     let mut res = Vec::new();
     for entry in std::fs::read_dir(pack_dir.as_ref())? {
@@ -103,6 +111,10 @@ pub fn get_num_set_file_names(pack_dir: impl AsRef<Path>) -> io::Result<Vec<Stri
 }
 
 /// Flatten next level files/directories in cache directory to current level
+///
+/// # Errors
+///
+/// Returns an error if file system operations fail
 pub async fn move_out_files_in_folder_in_cache_dir(
     cache_dir_path: impl AsRef<Path>,
     replace_preset: ReplacePreset,

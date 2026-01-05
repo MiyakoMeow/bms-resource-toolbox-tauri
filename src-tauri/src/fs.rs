@@ -13,21 +13,26 @@ use smol::{
 
 /// Signs:
 ///  ：＼／＊？＂＜＞｜
+#[must_use]
 pub fn get_vaild_fs_name(ori_name: &str) -> String {
     ori_name
-        .replace(":", "：")
-        .replace("\\", "＼")
-        .replace("/", "／")
-        .replace("*", "＊")
-        .replace("?", "？")
-        .replace("!", "！")
+        .replace(':', "：")
+        .replace('\\', "＼")
+        .replace('/', "／")
+        .replace('*', "＊")
+        .replace('?', "？")
+        .replace('!', "！")
         .replace('"', "＂")
-        .replace("<", "＜")
-        .replace(">", "＞")
-        .replace("|", "｜")
+        .replace('<', "＜")
+        .replace('>', "＞")
+        .replace('|', "｜")
 }
 
 /// Quick check if two files have the same content (SHA256)
+///
+/// # Errors
+///
+/// Returns an error if file metadata cannot be read or if file hashing fails
 pub async fn is_file_same_content(a: &Path, b: &Path) -> io::Result<bool> {
     async fn sha256(path: &Path) -> io::Result<Output<Sha3_512>> {
         let mut file = fs::File::open(path).await?;
@@ -38,7 +43,7 @@ pub async fn is_file_same_content(a: &Path, b: &Path) -> io::Result<bool> {
             if n == 0 {
                 break;
             }
-            hasher.update(&buf[..n]);
+            hasher.update(buf.get(..n).unwrap_or(&[]));
         }
         Ok(hasher.finalize())
     }
@@ -53,6 +58,10 @@ pub async fn is_file_same_content(a: &Path, b: &Path) -> io::Result<bool> {
 }
 
 /// Check if directory "contains files"
+///
+/// # Errors
+///
+/// Returns an error if the directory cannot be read
 pub async fn is_dir_having_file(dir: &Path) -> io::Result<bool> {
     let mut entries = fs::read_dir(dir).await?;
     while let Some(entry) = entries.next().await {
@@ -72,7 +81,11 @@ pub const MEDIA_EXT_LIST: &[&str] = {
     ]
 };
 
-/// Remove all empty directories under parent_dir
+/// Remove all empty directories under `parent_dir`
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn remove_empty_folders(parent_dir: impl AsRef<Path>, dry_run: bool) -> io::Result<()> {
     let parent = parent_dir.as_ref();
     let mut entries = fs::read_dir(parent).await?;
@@ -137,6 +150,10 @@ async fn fetch_dir_elements(dir: impl AsRef<Path>) -> io::Result<DirElements> {
 }
 
 /// Calculate similarity between two directories (intersection of media file stems / smaller set)
+///
+/// # Errors
+///
+/// Returns an error if directory cannot be read
 pub async fn bms_dir_similarity(
     dir_a: impl AsRef<Path>,
     dir_b: impl AsRef<Path>,

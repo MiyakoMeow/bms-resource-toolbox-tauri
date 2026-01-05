@@ -10,6 +10,7 @@ use std::collections::HashMap;
 ///
 /// # Returns
 /// Extracted common work name (post-processed)
+#[must_use]
 pub fn extract_work_name(
     titles: &[&str],
     remove_unclosed_pair: bool,

@@ -1,3 +1,5 @@
+#![recursion_limit = "512"]
+
 pub mod bms;
 pub mod fs;
 pub mod media;
@@ -109,10 +111,10 @@ pub enum WorkCommands {
         /// Work directory path
         #[arg(value_name = "Work directory")]
         dir: PathBuf,
-        /// Set type: replace_title_artist, append_title_artist, append_artist
+        /// Set type: `replace_title_artist`, `append_title_artist`, `append_artist`
         #[arg(long, default_value = "replace_title_artist", value_name = "Set type")]
         set_type: BmsFolderSetNameType,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -132,7 +134,7 @@ pub enum WorkCommands {
         /// Work directory path
         #[arg(value_name = "Work directory")]
         dir: PathBuf,
-        /// Set type: replace_title_artist, append_title_artist, append_artist
+        /// Set type: `replace_title_artist`, `append_title_artist`, `append_artist`
         #[arg(long, default_value = "append_artist", value_name = "Set type")]
         set_type: BmsFolderSetNameType,
         /// Dry run: only print actions
@@ -268,7 +270,7 @@ pub enum RawpackCommands {
         /// Root directory path
         #[arg(value_name = "Root directory")]
         root_dir: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -291,7 +293,7 @@ pub enum RawpackCommands {
         /// Root directory path
         #[arg(value_name = "Root directory")]
         root_dir: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -325,10 +327,10 @@ pub enum RootCommands {
         /// Root directory path
         #[arg(value_name = "Root directory")]
         dir: PathBuf,
-        /// Set type: replace_title_artist, append_title_artist, append_artist
+        /// Set type: `replace_title_artist`, `append_title_artist`, `append_artist`
         #[arg(long, default_value = "replace_title_artist", value_name = "Set type")]
         set_type: BmsFolderSetNameType,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -347,7 +349,7 @@ pub enum RootCommands {
         /// Root directory path
         #[arg(value_name = "Root directory")]
         dir: PathBuf,
-        /// Set type: replace_title_artist, append_title_artist, append_artist
+        /// Set type: `replace_title_artist`, `append_title_artist`, `append_artist`
         #[arg(long, default_value = "append_artist", value_name = "Set type")]
         set_type: BmsFolderSetNameType,
         /// Dry run: only print actions
@@ -385,7 +387,7 @@ pub enum RootCommands {
         /// Root directory path
         #[arg(value_name = "Root directory")]
         dir: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -404,7 +406,7 @@ pub enum RootCommands {
         /// Target directory path
         #[arg(value_name = "Target directory")]
         to: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -420,7 +422,7 @@ pub enum RootCommands {
         /// Target root directory path
         #[arg(value_name = "Target root directory")]
         dir: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -439,7 +441,7 @@ pub enum RootCommands {
         /// Target directory path
         #[arg(value_name = "Target directory")]
         to: PathBuf,
-        /// Replace preset: default, update_pack
+        /// Replace preset: default, `update_pack`
         #[arg(
             long,
             value_enum,
@@ -527,6 +529,11 @@ pub enum PackCommands {
     },
 }
 
+/// Run CLI command
+///
+/// # Errors
+///
+/// Returns an error if command execution fails
 pub async fn run_command(command: &Commands) -> Result<(), Box<dyn std::error::Error>> {
     match command {
         Commands::Work { command } => match command {
@@ -834,19 +841,21 @@ pub async fn run_command(command: &Commands) -> Result<(), Box<dyn std::error::E
             }
             RawpackCommands::SetFileNum { dir, allowed_exts } => {
                 info!("Setting file numbers: {}", dir.display());
-                let allowed_exts_slice: &[&str] =
-                    &allowed_exts.iter().map(|s| s.as_str()).collect::<Vec<_>>();
+                let allowed_exts_slice: &[&str] = &allowed_exts
+                    .iter()
+                    .map(std::string::String::as_str)
+                    .collect::<Vec<_>>();
                 set_file_num(dir, allowed_exts_slice).await?;
                 info!("Setting completed");
             }
         },
         Commands::BmsEvent { command } => match command {
             BmsEventCommands::OpenList { event } => {
-                crate::options::bms_event::open_event_list(*event).await?;
+                crate::options::bms_event::open_event_list(*event)?;
                 info!("List opened");
             }
             BmsEventCommands::OpenWorks { event, work_ids } => {
-                crate::options::bms_event::open_event_works(*event, work_ids).await?;
+                crate::options::bms_event::open_event_works(*event, work_ids)?;
                 info!("All work pages opened");
             }
         },
@@ -861,19 +870,29 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+/// Run the Tauri application
+///
+/// # Errors
+///
+/// Returns an error if the Tauri application fails to start or run
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
-        .setup(|_app| {
-            #[cfg(debug_assertions)]
-            {
-                println!("Setup called, Tauri will automatically create the window...");
-            }
+pub fn run() -> Result<(), tauri::Error> {
+    // Tauri internally uses process::exit on unrecoverable errors.
+    // This is expected behavior for a GUI application and cannot be avoided
+    // when using the Tauri framework.
+    #[allow(clippy::exit)]
+    {
+        tauri::Builder::default()
+            .plugin(tauri_plugin_opener::init())
+            .invoke_handler(tauri::generate_handler![greet])
+            .setup(|_app| {
+                #[cfg(debug_assertions)]
+                {
+                    println!("Setup called, Tauri will automatically create the window...");
+                }
 
-            Ok(())
-        })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+                Ok(())
+            })
+            .run(tauri::generate_context!())
+    }
 }

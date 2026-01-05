@@ -64,20 +64,24 @@ fn is_already_formatted(dir_name: &str, set_type: BmsFolderSetNameType) -> bool 
     match set_type {
         BmsFolderSetNameType::ReplaceTitleArtist => {
             // 检查是否已经是 "Title [Artist]" 格式
-            dir_name.contains(" [") && dir_name.ends_with("]")
+            dir_name.contains(" [") && dir_name.ends_with(']')
         }
         BmsFolderSetNameType::AppendTitleArtist => {
             // 检查是否已经包含 "Title [Artist]" 格式
-            dir_name.contains(" [") && dir_name.ends_with("]")
+            dir_name.contains(" [") && dir_name.ends_with(']')
         }
         BmsFolderSetNameType::AppendArtist => {
             // 检查是否已经包含 " [Artist]" 格式
-            dir_name.contains(" [") && dir_name.ends_with("]")
+            dir_name.contains(" [") && dir_name.ends_with(']')
         }
     }
 }
 
 /// This script is suitable for cases where you want to append "Title [Artist]" after work folder name
+///
+/// # Errors
+///
+/// Returns an error if directory operations or BMS parsing fails
 pub async fn set_name_by_bms(
     work_dir: &Path,
     set_type: BmsFolderSetNameType,
@@ -95,14 +99,14 @@ pub async fn set_name_by_bms(
     let title = bms_info
         .music_info
         .title
-        .unwrap_or(DEFAULT_TITLE.to_string());
+        .unwrap_or_else(|| DEFAULT_TITLE.to_string());
     let artist = bms_info
         .music_info
         .artist
-        .unwrap_or(DEFAULT_ARTIST.to_string());
+        .unwrap_or_else(|| DEFAULT_ARTIST.to_string());
     let work_dir_name = work_dir
         .file_name()
-        .ok_or(io::Error::other("Dir name not exists"))?
+        .ok_or_else(|| io::Error::other("Dir name not exists"))?
         .to_string_lossy();
 
     // 如果启用了跳过已格式化目录的选项，检查目录名是否已经是目标格式
@@ -124,7 +128,7 @@ pub async fn set_name_by_bms(
     let target_dir_name = get_vaild_fs_name(&target_dir_name);
     let target_work_dir = work_dir
         .parent()
-        .ok_or(io::Error::other("Dir name not exists"))?
+        .ok_or_else(|| io::Error::other("Dir name not exists"))?
         .join(target_dir_name);
 
     // 如果源目录与目标目录相同，则跳过操作
@@ -157,6 +161,11 @@ pub async fn set_name_by_bms(
     Ok(())
 }
 
+/// Undo directory name setting
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn undo_set_name_by_bms(
     work_dir: &Path,
     set_type: BmsFolderSetNameType,
@@ -167,7 +176,7 @@ pub async fn undo_set_name_by_bms(
     }
     let work_dir_name = work_dir
         .file_name()
-        .ok_or(io::Error::other("Dir name not exists"))?
+        .ok_or_else(|| io::Error::other("Dir name not exists"))?
         .to_string_lossy();
 
     // 根据不同的set_type，提取原始目录名
@@ -204,7 +213,7 @@ pub async fn undo_set_name_by_bms(
 
     let new_dir_path = work_dir
         .parent()
-        .ok_or(io::Error::other("Dir name not exists"))?
+        .ok_or_else(|| io::Error::other("Dir name not exists"))?
         .join(original_dir_name);
 
     // 如果源目录与目标目录相同，则跳过操作
@@ -225,7 +234,7 @@ pub async fn undo_set_name_by_bms(
         let new_name = format!("{}_{}", original_dir_name, counter);
         final_dir_path = work_dir
             .parent()
-            .ok_or(io::Error::other("Dir name not exists"))?
+            .ok_or_else(|| io::Error::other("Dir name not exists"))?
             .join(new_name);
         counter += 1;
     }
@@ -247,7 +256,11 @@ pub async fn undo_set_name_by_bms(
     Ok(())
 }
 
-/// Remove all 0-byte files in work_dir and its subdirectories (loop version, smol 2).
+/// Remove all 0-byte files in `work_dir` and its subdirectories (loop version, smol 2).
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn remove_zero_sized_media_files(
     work_dir: impl AsRef<Path>,
     dry_run: bool,

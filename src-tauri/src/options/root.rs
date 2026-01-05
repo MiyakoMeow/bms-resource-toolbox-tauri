@@ -8,6 +8,11 @@ use strsim::jaro_winkler;
 use super::work::BmsFolderSetNameType;
 use crate::fs::moving::ReplacePreset;
 
+/// Set BMS folder name recursively
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn set_name_by_bms(
     root_dir: &Path,
     set_type: BmsFolderSetNameType,
@@ -34,6 +39,11 @@ pub async fn set_name_by_bms(
     Ok(())
 }
 
+/// Undo BMS folder name setting recursively
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn undo_set_name_by_bms(
     root_dir: &Path,
     set_type: BmsFolderSetNameType,
@@ -54,6 +64,10 @@ pub async fn undo_set_name_by_bms(
 /// There is already a folder A, whose subfolder names are in the form of "number + decimal point" like "1.1".
 /// Now there is another folder B, whose subfolder names are only numbers.
 /// Copy the subfolder names from A to the corresponding subfolders in B.
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn copy_numbered_workdir_names(
     root_dir_from: impl AsRef<Path>,
     root_dir_to: impl AsRef<Path>,
@@ -127,6 +141,10 @@ pub async fn copy_numbered_workdir_names(
 ///     })
 /// }
 /// ```
+///
+/// # Errors
+///
+/// Returns an error if directory cannot be read
 pub async fn scan_folder_similar_folders(
     root_dir: impl AsRef<Path>,
     similarity_trigger: f64,
@@ -139,7 +157,7 @@ pub async fn scan_folder_similar_folders(
         let entry = entry?;
         let file_type = entry.file_type().await?;
         if file_type.is_dir() {
-            dir_names.push(entry.file_name().into_string().unwrap());
+            dir_names.push(entry.file_name().to_string_lossy().into_owned());
         }
     }
 
@@ -150,11 +168,13 @@ pub async fn scan_folder_similar_folders(
     let print_tasks = dir_names
         .windows(2)
         .filter_map(|w| {
-            let (former, current) = (&w[0], &w[1]);
-            let similarity = jaro_winkler(former, current); // ← Change is here
+            let (Some(former), Some(current)) = (w.first(), w.get(1)) else {
+                return None;
+            };
+            let similarity = jaro_winkler(former, current);
             (similarity >= similarity_trigger).then_some((
-                former.clone(),
-                current.clone(),
+                former.to_owned(),
+                current.to_owned(),
                 similarity,
             ))
         })

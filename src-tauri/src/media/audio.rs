@@ -33,7 +33,8 @@ impl AudioPreset {
         Self {
             executor: executor.to_string(),
             output_format: output_format.to_string(),
-            arguments: arguments.map(|arr| arr.iter().map(|s| s.to_string()).collect()),
+            arguments: arguments
+                .map(|arr| arr.iter().map(std::string::ToString::to_string).collect()),
         }
     }
 }
@@ -192,15 +193,16 @@ async fn transfer_audio_in_directory(
     let had_error_cloned = had_error.clone();
     stream::iter(tasks)
         .map(|file_path| {
+            #[allow(clippy::shadow_unrelated)]
             let failures = failures_cloned.clone();
+            #[allow(clippy::shadow_unrelated)]
             let had_error = had_error_cloned.clone();
             let presets = presets.to_vec();
             async move {
                 let mut current_preset_index = 0;
                 let mut success = false;
 
-                while current_preset_index < presets.len() {
-                    let preset = &presets[current_preset_index];
+                while let Some(preset) = presets.get(current_preset_index) {
                     let output_path = file_path.with_extension(&preset.output_format);
 
                     // If target file already exists
@@ -263,7 +265,9 @@ async fn transfer_audio_in_directory(
                 if !success {
                     had_error.store(true, Ordering::Relaxed);
                     if let Some(name) = file_path.file_name().and_then(|s| s.to_str()) {
-                        let mut guard = failures.lock().unwrap();
+                        let mut guard = failures.lock().map_err(|_| {
+                            io::Error::other("Failed to acquire lock on failures collection")
+                        })?;
                         guard.push(name.to_string());
                     }
                     if remove_on_fail && let Err(e) = { remove_file(&file_path).await } {
@@ -286,19 +290,22 @@ async fn transfer_audio_in_directory(
     if total_files > 0 {
         log::info!("Processed {} files in {}", total_files, dir_path.display());
     }
-    let failures = failures.lock().unwrap();
-    if !failures.is_empty() {
+    let failures_result = failures
+        .lock()
+        .map_err(|_| io::Error::other("Failed to acquire lock on failures collection"))?;
+    if !failures_result.is_empty() {
         log::info!(
             "{} files failed all presets: {:?}",
-            failures.len(),
-            *failures
+            failures_result.len(),
+            *failures_result
         );
     }
-    if had_error.load(Ordering::Relaxed) && remove_on_fail {
+    let had_error_result = had_error.load(Ordering::Relaxed);
+    if had_error_result && remove_on_fail {
         log::info!("Original files for failed conversions were removed");
     }
 
-    Ok(!had_error.load(Ordering::Relaxed))
+    Ok(!had_error_result)
 }
 
 /// Process all BMS folders under root directory
@@ -310,6 +317,10 @@ async fn transfer_audio_in_directory(
 /// - `remove_on_success`: remove original file on success
 /// - `remove_on_fail`: remove original file on failure
 /// - `skip_on_fail`: skip subsequent processing on error
+///
+/// # Errors
+///
+/// Returns an error if directory operations or audio processing fails
 pub async fn process_bms_folders(
     root_dir: &Path,
     input_extensions: &[&str],

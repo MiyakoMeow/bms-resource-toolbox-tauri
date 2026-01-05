@@ -12,14 +12,17 @@ use std::str::FromStr;
 use crate::fs::moving::{ReplacePreset, move_elements_across_dir, replace_options_from_preset};
 
 // Japanese hiragana
-static RE_JAPANESE_HIRAGANA: once_cell::sync::Lazy<Regex> =
-    once_cell::sync::Lazy::new(|| Regex::new(r"[\u{3040}-\u{309f}]+").unwrap());
+static RE_JAPANESE_HIRAGANA: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(|| {
+    Regex::new(r"[\u{3040}-\u{309f}]+").expect("Invalid regex for hiragana")
+});
 // Japanese katakana
-static RE_JAPANESE_KATAKANA: once_cell::sync::Lazy<Regex> =
-    once_cell::sync::Lazy::new(|| Regex::new(r"[\u{30a0}-\u{30ff}]+").unwrap());
+static RE_JAPANESE_KATAKANA: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(|| {
+    Regex::new(r"[\u{30a0}-\u{30ff}]+").expect("Invalid regex for katakana")
+});
 // Chinese characters
-static RE_CHINESE_CHARACTER: once_cell::sync::Lazy<Regex> =
-    once_cell::sync::Lazy::new(|| Regex::new(r"[\u{4e00}-\u{9fa5}]+").unwrap());
+static RE_CHINESE_CHARACTER: once_cell::sync::Lazy<Regex> = once_cell::sync::Lazy::new(|| {
+    Regex::new(r"[\u{4e00}-\u{9fa5}]+").expect("Invalid regex for Chinese characters")
+});
 
 #[derive(Debug, Clone)]
 struct FirstCharRule {
@@ -125,6 +128,10 @@ fn first_char_rules_find(name: &str) -> &'static str {
 }
 
 /// Split works in this directory into multiple folders according to first character
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn split_folders_with_first_char(
     root_dir: impl AsRef<Path>,
     dry_run: bool,
@@ -193,6 +200,10 @@ pub async fn split_folders_with_first_char(
 }
 
 /// (Undo operation) Split works in this directory into multiple folders according to first character
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn undo_split_pack(
     root_dir: impl AsRef<Path>,
     dry_run: bool,
@@ -261,6 +272,10 @@ pub async fn undo_split_pack(
 }
 
 /// Merge split folders
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn merge_split_folders(
     root_dir: impl AsRef<Path>,
     dry_run: bool,
@@ -382,6 +397,10 @@ pub async fn merge_split_folders(
 }
 
 /// Move works from directory A to directory B (auto merge)
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn move_works_in_pack(
     root_dir_from: impl AsRef<Path>,
     root_dir_to: impl AsRef<Path>,
@@ -458,6 +477,10 @@ pub async fn move_works_in_pack(
 }
 
 /// Move out one level directory (auto merge)
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn move_out_works(
     target_root_dir: impl AsRef<Path>,
     dry_run: bool,
@@ -620,6 +643,7 @@ async fn workdir_remove_unneed_media_files(
     Ok(())
 }
 
+#[must_use]
 pub fn get_remove_media_rule_oraja() -> Vec<RemoveMediaRule> {
     vec![
         (
@@ -644,14 +668,17 @@ pub fn get_remove_media_rule_oraja() -> Vec<RemoveMediaRule> {
     ]
 }
 
+#[must_use]
 pub fn get_remove_media_rule_wav_fill_flac() -> Vec<RemoveMediaRule> {
     vec![(vec!["wav".to_string()], vec!["flac".to_string()])]
 }
 
+#[must_use]
 pub fn get_remove_media_rule_mpg_fill_wmv() -> Vec<RemoveMediaRule> {
     vec![(vec!["mpg".to_string()], vec!["wmv".to_string()])]
 }
 
+#[must_use]
 pub fn get_remove_media_file_rules() -> Vec<Vec<RemoveMediaRule>> {
     vec![
         get_remove_media_rule_oraja(),
@@ -701,6 +728,7 @@ impl ValueEnum for RemoveMediaPreset {
     }
 }
 
+#[must_use]
 pub fn get_remove_media_rule_by_preset(preset: RemoveMediaPreset) -> Vec<RemoveMediaRule> {
     match preset {
         RemoveMediaPreset::Oraja => get_remove_media_rule_oraja(),
@@ -710,6 +738,10 @@ pub fn get_remove_media_rule_by_preset(preset: RemoveMediaPreset) -> Vec<RemoveM
 }
 
 /// Remove unnecessary media files
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn remove_unneed_media_files(
     root_dir: impl AsRef<Path>,
     rule: Vec<RemoveMediaRule>,
@@ -733,7 +765,11 @@ pub async fn remove_unneed_media_files(
     Ok(())
 }
 
-/// Merge subfolders with similar names from source folder (dir_from) to corresponding subfolders in target folder (dir_to)
+/// Merge subfolders with similar names from source folder (`dir_from`) to corresponding subfolders in target folder (`dir_to`)
+///
+/// # Errors
+///
+/// Returns an error if directory operations fail
 pub async fn move_works_with_same_name(
     root_dir_from: impl AsRef<Path>,
     root_dir_to: impl AsRef<Path>,

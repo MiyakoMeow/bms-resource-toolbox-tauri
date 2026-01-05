@@ -8,6 +8,10 @@ use xlsxwriter::{Workbook, XlsxError};
 use crate::bms::get_dir_bms_info;
 
 /// 1. Check if pure numeric folders from 1..=max are missing
+///
+/// # Errors
+///
+/// Returns an error if directory cannot be read
 pub async fn check_num_folder(root: &Path, max: usize) -> io::Result<Vec<PathBuf>> {
     let mut missing = Vec::new();
     for id in 1..=max {
@@ -20,6 +24,10 @@ pub async fn check_num_folder(root: &Path, max: usize) -> io::Result<Vec<PathBuf
 }
 
 /// 2. Create new folders if pure numeric folders don't exist
+///
+/// # Errors
+///
+/// Returns an error if folder creation fails
 pub async fn create_num_folders(root: &Path, count: usize) -> io::Result<()> {
     let mut futs = Vec::new();
     for id in 1..=count {
@@ -30,7 +38,11 @@ pub async fn create_num_folders(root: &Path, count: usize) -> io::Result<()> {
     Ok(())
 }
 
-/// 3. Scan all numeric folders under root directory and write to bms_list.xlsx
+/// 3. Scan all numeric folders under root directory and write to `bms_list.xlsx`
+///
+/// # Errors
+///
+/// Returns an error if directory operations or Excel file creation fails
 pub async fn generate_work_info_table(root: &Path) -> io::Result<()> {
     // First collect all numeric folders
     let mut dir_ids = Vec::new();
@@ -38,7 +50,7 @@ pub async fn generate_work_info_table(root: &Path) -> io::Result<()> {
     while let Some(entry) = entries.next().await {
         let entry = entry?;
         if entry.file_type().await?.is_dir()
-            && let Ok(id) = entry.file_name().into_string().unwrap().parse::<u32>()
+            && let Ok(id) = entry.file_name().to_string_lossy().parse::<u32>()
         {
             dir_ids.push((id, entry.path()));
         }

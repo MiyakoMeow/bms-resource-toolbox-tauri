@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    bms_resource_toolbox_lib::run()
+    bms_resource_toolbox_lib::run().expect("Failed to run Tauri application");
 }

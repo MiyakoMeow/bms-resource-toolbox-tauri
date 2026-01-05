@@ -11,6 +11,10 @@ use crate::fs::{
 };
 
 /// Extract numerically named pack files to BMS folders
+///
+/// # Errors
+///
+/// Returns an error if file extraction or directory operations fail
 pub async fn unzip_numeric_to_bms_folder(
     pack_dir: impl AsRef<Path>,
     cache_dir: impl AsRef<Path>,
@@ -86,11 +90,7 @@ pub async fn unzip_numeric_to_bms_folder(
         }
 
         // Create New Target dir
-        let target_dir_path = if let Some(path) = target_dir_path {
-            path
-        } else {
-            root_dir.join(id_str)
-        };
+        let target_dir_path = target_dir_path.unwrap_or_else(|| root_dir.join(id_str));
 
         // Move cache to bms dir
         info!(
@@ -121,6 +121,10 @@ pub async fn unzip_numeric_to_bms_folder(
 }
 
 /// Extract files with names to BMS folders
+///
+/// # Errors
+///
+/// Returns an error if file extraction or directory operations fail
 pub async fn unzip_with_name_to_bms_folder(
     pack_dir: impl AsRef<Path>,
     cache_dir: impl AsRef<Path>,
@@ -165,11 +169,9 @@ pub async fn unzip_with_name_to_bms_folder(
 
     for file_name in num_set_file_names {
         let file_path = pack_dir.join(&file_name);
-        let file_name_without_ext = if let Some(dot_pos) = file_name.rfind('.') {
-            &file_name[..dot_pos]
-        } else {
-            &file_name
-        };
+        let file_name_without_ext = file_name
+            .rfind('.')
+            .map_or(&file_name[..], |dot_pos| &file_name[..dot_pos]);
 
         let file_name_without_ext = file_name_without_ext.trim_end_matches('.');
 
@@ -243,6 +245,10 @@ async fn _rename_file_with_num(
 }
 
 /// Set file number (interactive loop)
+///
+/// # Errors
+///
+/// Returns an error if directory operations or file renaming fails
 pub async fn set_file_num(dir: impl AsRef<Path>, allowed_exts: &[&str]) -> io::Result<()> {
     let dir = dir.as_ref();
 
@@ -336,29 +342,40 @@ pub async fn set_file_num(dir: impl AsRef<Path>, allowed_exts: &[&str]) -> io::R
         match parts.len() {
             1 => {
                 // Single number: set num [0] to the first selection
-                let Ok(num) = parts[0].parse::<i32>() else {
-                    info!("Invalid number: {}", parts[0]);
+                let Some(part0) = parts.first() else {
+                    info!("Missing number");
                     continue;
                 };
-                if num >= 0 && num < file_names.len() as i32 {
-                    _rename_file_with_num(dir, &file_names[num as usize], 0).await?;
+                let Ok(num) = part0.parse::<i32>() else {
+                    info!("Invalid number: {}", part0);
+                    continue;
+                };
+                if let Some(file_name) = file_names.get(num as usize) {
+                    _rename_file_with_num(dir, file_name, 0).await?;
                 } else {
                     info!("Invalid file index: {}", num);
                 }
             }
             2 => {
                 // Two numbers: set num [1] to the selection in index [0]
-                let Ok(target_num) = parts[0].parse::<i32>() else {
-                    info!("Invalid target number: {}", parts[0]);
+                let Some(part0) = parts.first() else {
+                    info!("Missing target number");
                     continue;
                 };
-                let Ok(file_index) = parts[1].parse::<i32>() else {
-                    info!("Invalid file index: {}", parts[1]);
+                let Some(part1) = parts.get(1) else {
+                    info!("Missing file index");
                     continue;
                 };
-                if file_index >= 0 && file_index < file_names.len() as i32 {
-                    _rename_file_with_num(dir, &file_names[file_index as usize], target_num)
-                        .await?;
+                let Ok(target_num) = part0.parse::<i32>() else {
+                    info!("Invalid target number: {}", part0);
+                    continue;
+                };
+                let Ok(file_index) = part1.parse::<i32>() else {
+                    info!("Invalid file index: {}", part1);
+                    continue;
+                };
+                if let Some(file_name) = file_names.get(file_index as usize) {
+                    _rename_file_with_num(dir, file_name, target_num).await?;
                 } else {
                     info!("Invalid file index: {}", file_index);
                 }

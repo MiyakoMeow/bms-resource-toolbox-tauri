@@ -61,6 +61,7 @@ pub struct VideoPreset {
 
 impl VideoPreset {
     /// Create new video preset
+    #[must_use]
     pub fn new(
         executor: &str,
         input_args: &[&str],
@@ -71,11 +72,20 @@ impl VideoPreset {
     ) -> Self {
         Self {
             executor: executor.to_string(),
-            input_args: input_args.iter().map(|s| s.to_string()).collect(),
-            filter_args: filter_args.iter().map(|s| s.to_string()).collect(),
+            input_args: input_args
+                .iter()
+                .map(std::string::ToString::to_string)
+                .collect(),
+            filter_args: filter_args
+                .iter()
+                .map(std::string::ToString::to_string)
+                .collect(),
             output_ext: output_ext.to_string(),
             output_codec: output_codec.to_string(),
-            extra_args: extra_args.iter().map(|s| s.to_string()).collect(),
+            extra_args: extra_args
+                .iter()
+                .map(std::string::ToString::to_string)
+                .collect(),
         }
     }
 
@@ -232,10 +242,10 @@ async fn get_video_info(file_path: &Path) -> io::Result<VideoInfo> {
         if stream.codec_type == "video" {
             let width = stream
                 .width
-                .ok_or(io::Error::other("Missing width in video stream"))?;
+                .ok_or_else(|| io::Error::other("Missing width in video stream"))?;
             let height = stream
                 .height
-                .ok_or(io::Error::other("Missing height in video stream"))?;
+                .ok_or_else(|| io::Error::other("Missing height in video stream"))?;
 
             // Parse bitrate (may be string or number)
             let bit_rate = stream
@@ -432,6 +442,10 @@ async fn process_videos_in_directory(
 /// - `remove_original`: remove original file on success
 /// - `remove_existing`: remove existing output files
 /// - `use_preferred`: whether to use recommended presets
+///
+/// # Errors
+///
+/// Returns an error if directory operations or video processing fails
 pub async fn process_bms_video_folders(
     root_dir: &Path,
     input_extensions: &[&str],

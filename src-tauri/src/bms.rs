@@ -52,6 +52,10 @@ fn parse_bms_bytes(bytes: &[u8]) -> io::Result<BmsOutput> {
 }
 
 /// 包装：读取 + 解析
+///
+/// # Errors
+///
+/// Returns an error if file reading or parsing fails
 pub async fn parse_bms_file(file: &Path) -> io::Result<BmsOutput> {
     let bytes = read_bms_file(file).await?;
     // 解析阶段保持单线程（不在此处并发）
@@ -90,11 +94,18 @@ fn parse_bmson_bytes(bytes: &[u8]) -> io::Result<BmsOutput> {
 }
 
 /// 包装：读取 + 解析
+///
+/// # Errors
+///
+/// Returns an error if file reading or parsing fails
 pub async fn parse_bmson_file(file: &Path) -> io::Result<BmsOutput> {
     let bytes = read_bmson_file(file).await?;
     parse_bmson_bytes(&bytes)
 }
 
+/// # Errors
+///
+/// Returns an error if directory reading or file parsing fails
 pub async fn get_dir_bms_list(dir: &Path) -> io::Result<Vec<BmsOutput>> {
     // 收集候选文件
     let mut bms_files = Vec::new();
@@ -165,6 +176,10 @@ pub async fn get_dir_bms_list(dir: &Path) -> io::Result<Vec<BmsOutput>> {
 }
 
 /// Get BMS information for an entire directory (information integration)
+///
+/// # Errors
+///
+/// Returns an error if directory reading or file parsing fails
 pub async fn get_dir_bms_info(dir: &Path) -> io::Result<Option<Bms>> {
     let bms_list = get_dir_bms_list(dir).await?;
     if bms_list.is_empty() {
@@ -174,13 +189,13 @@ pub async fn get_dir_bms_info(dir: &Path) -> io::Result<Option<Bms>> {
     // Header
     let titles: Vec<_> = bms_list
         .iter()
-        .filter_map(|BmsOutput { bms, .. }| bms.music_info.title.as_deref())
+        .filter_map(|BmsOutput { bms: bms_entry, .. }| bms_entry.music_info.title.as_deref())
         .collect();
     let title = extract_work_name(titles.as_slice(), true, &[]);
     bms.music_info.title = Some(title);
     let artists: Vec<_> = bms_list
         .iter()
-        .filter_map(|BmsOutput { bms, .. }| bms.music_info.artist.as_deref())
+        .filter_map(|BmsOutput { bms: bms_entry, .. }| bms_entry.music_info.artist.as_deref())
         .collect();
     let artist = extract_work_name(
         artists.as_slice(),
@@ -192,27 +207,33 @@ pub async fn get_dir_bms_info(dir: &Path) -> io::Result<Option<Bms>> {
     bms.music_info.artist = Some(artist);
     let genres: Vec<_> = bms_list
         .iter()
-        .filter_map(|BmsOutput { bms, .. }| bms.music_info.genre.as_deref())
+        .filter_map(|BmsOutput { bms: bms_entry, .. }| bms_entry.music_info.genre.as_deref())
         .collect();
     let genre = extract_work_name(genres.as_slice(), true, &[]);
     bms.music_info.genre = Some(genre);
     // Defines
-    bms.wav.wav_files = bms_list
-        .iter()
-        .fold(HashMap::new(), |mut map, BmsOutput { bms, .. }| {
-            map.extend(bms.wav.wav_files.clone());
+    bms.wav.wav_files = bms_list.iter().fold(
+        HashMap::new(),
+        |mut map, BmsOutput { bms: bms_entry, .. }| {
+            map.extend(bms_entry.wav.wav_files.clone());
             map
-        });
-    bms.bmp.bmp_files = bms_list
-        .iter()
-        .fold(HashMap::new(), |mut map, BmsOutput { bms, .. }| {
-            map.extend(bms.bmp.bmp_files.clone());
+        },
+    );
+    bms.bmp.bmp_files = bms_list.iter().fold(
+        HashMap::new(),
+        |mut map, BmsOutput { bms: bms_entry, .. }| {
+            map.extend(bms_entry.bmp.bmp_files.clone());
             map
-        });
+        },
+    );
     Ok(Some(bms))
 }
 
-/// work_dir: work directory, must contain BMS files
+/// `work_dir`: work directory, must contain BMS files
+///
+/// # Errors
+///
+/// Returns an error if directory reading fails
 pub async fn is_work_dir(dir: &Path) -> io::Result<bool> {
     // Collect all files first
     let mut files = Vec::new();
@@ -252,7 +273,11 @@ pub async fn is_work_dir(dir: &Path) -> io::Result<bool> {
     Ok(false)
 }
 
-/// root_dir: work collection directory, parent of work_dir
+/// `root_dir`: work collection directory, parent of `work_dir`
+///
+/// # Errors
+///
+/// Returns an error if directory reading or subdirectory checking fails
 pub async fn is_root_dir(dir: &Path) -> io::Result<bool> {
     // Collect all directories first
     let mut dirs = Vec::new();
