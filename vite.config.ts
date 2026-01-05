@@ -1,11 +1,10 @@
 import { defineConfig } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
+import type { UserConfig } from "vite";
 
-// @ts-expect-error process is a nodejs global
-const host = process.env.TAURI_DEV_HOST;
+const host = process.env.TAURI_DEV_HOST ?? false;
 
-// https://vite.dev/config/
-export default defineConfig(async () => ({
+const config: UserConfig = {
   plugins: [sveltekit()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -29,4 +28,6 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
-}));
+};
+
+export default defineConfig(() => config);

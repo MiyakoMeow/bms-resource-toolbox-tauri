@@ -1,16 +1,17 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@sveltejs/adapter-static@^3.0.6": "3.0.10_@sveltejs+kit@2.49.2__@sveltejs+vite-plugin-svelte@5.1.1___svelte@5.46.1____acorn@8.15.0___vite@6.4.1____picomatch@4.0.3__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3__acorn@8.15.0_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3",
-    "npm:@sveltejs/kit@^2.9.0": "2.49.2_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_acorn@8.15.0",
-    "npm:@sveltejs/vite-plugin-svelte@5": "5.1.1_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3",
+    "npm:@sveltejs/adapter-static@^3.0.6": "3.0.10_@sveltejs+kit@2.49.2__@sveltejs+vite-plugin-svelte@5.1.1___svelte@5.46.1____acorn@8.15.0___vite@6.4.1____picomatch@4.0.3__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3__acorn@8.15.0_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3",
+    "npm:@sveltejs/kit@^2.9.0": "2.49.2_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_acorn@8.15.0_@types+node@25.0.3",
+    "npm:@sveltejs/vite-plugin-svelte@5": "5.1.1_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3",
     "npm:@tauri-apps/api@2": "2.9.1",
     "npm:@tauri-apps/cli@2": "2.9.6",
     "npm:@tauri-apps/plugin-opener@2": "2.5.2",
+    "npm:@types/node@^25.0.3": "25.0.3",
     "npm:svelte-check@4": "4.3.5_svelte@5.46.1__acorn@8.15.0_typescript@5.6.3",
     "npm:svelte@5": "5.46.1_acorn@8.15.0",
     "npm:typescript@~5.6.2": "5.6.3",
-    "npm:vite@^6.0.3": "6.4.1_picomatch@4.0.3"
+    "npm:vite@^6.0.3": "6.4.1_picomatch@4.0.3_@types+node@25.0.3"
   },
   "npm": {
     "@esbuild/aix-ppc64@0.25.12": {
@@ -348,14 +349,14 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@sveltejs/acorn-typescript/-/acorn-typescript-1.0.8.tgz"
     },
-    "@sveltejs/adapter-static@3.0.10_@sveltejs+kit@2.49.2__@sveltejs+vite-plugin-svelte@5.1.1___svelte@5.46.1____acorn@8.15.0___vite@6.4.1____picomatch@4.0.3__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3__acorn@8.15.0_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3": {
+    "@sveltejs/adapter-static@3.0.10_@sveltejs+kit@2.49.2__@sveltejs+vite-plugin-svelte@5.1.1___svelte@5.46.1____acorn@8.15.0___vite@6.4.1____picomatch@4.0.3__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3__acorn@8.15.0_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3": {
       "integrity": "sha512-7D9lYFWJmB7zxZyTE/qxjksvMqzMuYrrsyh1f4AlZqeZeACPRySjbC3aFiY55wb1tWUaKOQG9PVbm74JcN2Iew==",
       "dependencies": [
         "@sveltejs/kit"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@sveltejs/adapter-static/-/adapter-static-3.0.10.tgz"
     },
-    "@sveltejs/kit@2.49.2_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_acorn@8.15.0": {
+    "@sveltejs/kit@2.49.2_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_acorn@8.15.0_@types+node@25.0.3": {
       "integrity": "sha512-Vp3zX/qlwerQmHMP6x0Ry1oY7eKKRcOWGc2P59srOp4zcqyn+etJyQpELgOi4+ZSUgteX8Y387NuwruLgGXLUQ==",
       "dependencies": [
         "@standard-schema/spec",
@@ -378,7 +379,7 @@
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@sveltejs/kit/-/kit-2.49.2.tgz"
     },
-    "@sveltejs/vite-plugin-svelte-inspector@4.0.1_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3": {
+    "@sveltejs/vite-plugin-svelte-inspector@4.0.1_@sveltejs+vite-plugin-svelte@5.1.1__svelte@5.46.1___acorn@8.15.0__vite@6.4.1___picomatch@4.0.3_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3": {
       "integrity": "sha512-J/Nmb2Q2y7mck2hyCX4ckVHcR5tu2J+MtBEQqpDrrgELZ2uvraQcK/ioCV61AqkdXFgriksOKIceDcQmqnGhVw==",
       "dependencies": [
         "@sveltejs/vite-plugin-svelte",
@@ -388,7 +389,7 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@sveltejs/vite-plugin-svelte-inspector/-/vite-plugin-svelte-inspector-4.0.1.tgz"
     },
-    "@sveltejs/vite-plugin-svelte@5.1.1_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3": {
+    "@sveltejs/vite-plugin-svelte@5.1.1_svelte@5.46.1__acorn@8.15.0_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3": {
       "integrity": "sha512-Y1Cs7hhTc+a5E9Va/xwKlAJoariQyHY+5zBgCZg4PFWNYQ1nMN9sjK1zhw1gK69DuqVP++sht/1GZg1aRwmAXQ==",
       "dependencies": [
         "@sveltejs/vite-plugin-svelte-inspector",
@@ -504,6 +505,13 @@
     "@types/estree@1.0.8": {
       "integrity": "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@types/estree/-/estree-1.0.8.tgz"
+    },
+    "@types/node@25.0.3": {
+      "integrity": "sha512-W609buLVRVmeW693xKfzHeIV6nJGGz98uCPfeXI1ELMLXVeKYZ9m15fAMSaUPBHYLGFsVRcMmSCksQOrZV9BYA==",
+      "dependencies": [
+        "undici-types"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@types/node/-/node-25.0.3.tgz"
     },
     "acorn@8.15.0": {
       "integrity": "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==",
@@ -778,9 +786,14 @@
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/typescript/-/typescript-5.6.3.tgz"
     },
-    "vite@6.4.1_picomatch@4.0.3": {
+    "undici-types@7.16.0": {
+      "integrity": "sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/undici-types/-/undici-types-7.16.0.tgz"
+    },
+    "vite@6.4.1_picomatch@4.0.3_@types+node@25.0.3": {
       "integrity": "sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==",
       "dependencies": [
+        "@types/node",
         "esbuild",
         "fdir",
         "picomatch",
@@ -791,10 +804,13 @@
       "optionalDependencies": [
         "fsevents"
       ],
+      "optionalPeers": [
+        "@types/node"
+      ],
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/vite/-/vite-6.4.1.tgz"
     },
-    "vitefu@1.1.1_vite@6.4.1__picomatch@4.0.3": {
+    "vitefu@1.1.1_vite@6.4.1__picomatch@4.0.3_@types+node@25.0.3": {
       "integrity": "sha512-B/Fegf3i8zh0yFbpzZ21amWzHmuNlLlmJT6n7bu5e+pCHUKQIfXSYokrqOBGEMMe9UG2sostKQF9mml/vYaWJQ==",
       "dependencies": [
         "vite"
@@ -818,6 +834,7 @@
         "npm:@tauri-apps/api@2",
         "npm:@tauri-apps/cli@2",
         "npm:@tauri-apps/plugin-opener@2",
+        "npm:@types/node@^25.0.3",
         "npm:svelte-check@4",
         "npm:svelte@5",
         "npm:typescript@~5.6.2",
