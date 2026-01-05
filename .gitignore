@@ -9,6 +9,10 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Tauri generated files
+src-tauri/gen
+src-tauri/target
+
 # Other Package Managers
 package-lock.json
 yarn.lock
