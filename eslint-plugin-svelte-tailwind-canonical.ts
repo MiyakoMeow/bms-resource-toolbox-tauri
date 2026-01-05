@@ -13,6 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { createSyncFn, runAsWorker } from 'synckit';
 import { __unstable__loadDesignSystem } from '@tailwindcss/node';
@@ -22,7 +23,7 @@ const designSystemCache = new Map<string, unknown>();
 async function canonicalizeInWorker(
   cssContent: string,
   basePath: string,
-  c: string[]
+  candidates: string[]
 ): Promise<string[]> {
   const cacheKey = basePath;
   let designSystem = designSystemCache.get(cacheKey);
@@ -31,9 +32,9 @@ async function canonicalizeInWorker(
     designSystemCache.set(cacheKey, designSystem);
   }
   const ds = designSystem as {
-    canonicalizeCandidates: (a: string[]) => string[];
+    canonicalizeCandidates: (c: string[]) => string[];
   };
-  return ds.canonicalizeCandidates(a ?? c);
+  return ds.canonicalizeCandidates(candidates);
 }
 
 runAsWorker(canonicalizeInWorker);
@@ -112,12 +113,7 @@ const rule = {
       options: unknown[];
       getCwd?: () => string;
       getSourceCode: () => { ast: unknown; text: string };
-      report: (_: {
-        node: unknown;
-        messageId: string;
-        data?: Record<string, unknown>;
-        fix?: unknown;
-      }) => void;
+      report: () => void;
     };
     // 添加默认配置支持
     const options = (ctx.options?.[0] ?? {}) as { cssPath?: string; rootFontSize?: number };

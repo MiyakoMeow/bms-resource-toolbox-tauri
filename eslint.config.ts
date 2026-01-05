@@ -6,11 +6,11 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import betterTailwind from 'eslint-plugin-better-tailwindcss';
 import type { Linter } from 'eslint';
-import type { Plugin } from '@eslint/core';
 import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
 import svelteTailwindCanonical from './eslint-plugin-svelte-tailwind-canonical.ts';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { includeIgnoreFile } from '@eslint/compat';
 
 // 获取项目根目录（配置文件所在目录）
 const __filename = fileURLToPath(import.meta.url);
@@ -20,51 +20,39 @@ const projectRoot = __dirname;
 // Tailwind CSS 文件路径（相对于项目根目录）
 const tailwindCssPath = path.join(projectRoot, 'src', 'main.css');
 
+// Gitignore 路径
+const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
+
 const config: Linter.Config[] = [
-  // 忽略常见的构建和依赖目录
-  {
-    ignores: [
-      '.svelte-kit/',
-      'build/',
-      'dist/',
-      'node_modules/',
-      '.deno/',
-      '*.config.js',
-      'target/',
-      'src-tauri/build/',
-      'src-tauri/target/',
-      'eslint-plugin-svelte-tailwind-canonical.ts',
-    ],
-  },
+  includeIgnoreFile(gitignorePath),
 
   // JavaScript/TypeScript 基础配置
   js.configs.recommended,
 
   // TypeScript + Svelte + Tailwind CSS 合并配置
+  // 第一层：应用 TypeScript 推荐配置（展开数组）
+  ...ts.configs.recommended,
+
+  // 第二层：自定义配置（覆盖和扩展）
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.svelte'],
     languageOptions: {
-      parser: tsParser,
+      // 添加 Svelte 支持
       parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: 'module',
         extraFileExtensions: ['.svelte'],
       },
+      // 合并全局变量
       globals: {
         ...globals.browser,
         ...globals.node,
       },
     },
     plugins: {
-      ts: ts as Plugin,
       'better-tailwindcss': betterTailwind,
       'tailwind-canonical-classes': tailwindCanonicalClasses,
       'svelte-tailwind-canonical': svelteTailwindCanonical,
     },
     rules: {
-      // TypeScript 规则
-      ...ts.configs.recommended.rules,
-
       // Tailwind CSS 规则
       'better-tailwindcss/no-conflicting-classes': 'error',
       'better-tailwindcss/no-deprecated-classes': 'error',

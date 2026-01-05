@@ -3,6 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import autoprefixer from 'autoprefixer';
 import type { UserConfig } from 'vite';
+import process from 'node:process';
 
 const host = process.env.TAURI_DEV_HOST ?? false;
 
