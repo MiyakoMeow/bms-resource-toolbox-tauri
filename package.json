@@ -13,7 +13,13 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "rust:check": "cd src-tauri && cargo check --all-targets --all-features",
+    "rust:clippy": "cd src-tauri && cargo clippy --all-targets --all-features --message-format=short",
+    "rust:clippy:fix": "cd src-tauri && cargo clippy --fix --allow-dirty --all-targets --all-features --message-format=short",
+    "rust:fmt": "cd src-tauri && cargo fmt",
+    "rust:fmt:check": "cd src-tauri && cargo fmt --check",
+    "rust:test": "cd src-tauri && cargo test --all-targets --all-features --message-format=short"
   },
   "license": "MIT",
   "dependencies": {
