@@ -1,3 +1,16 @@
+/**
+ * ESLint Rule: Svelte Tailwind Canonical Classes
+ *
+ * This rule extends eslint-plugin-tailwind-canonical-classes for Svelte components.
+ * It enforces canonical Tailwind CSS class names in Svelte class attributes.
+ *
+ * Note: This plugin is designed to work alongside eslint-plugin-tailwind-canonical-classes:
+ * - eslint-plugin-tailwind-canonical-classes: handles HTML/JSX/TSX files
+ * - eslint-plugin-svelte-tailwind-canonical: handles .svelte files (this plugin)
+ *
+ * Both plugins use the same underlying @tailwindcss/node API for canonicalization.
+ */
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,7 +82,10 @@ const rule = {
   meta: {
     type: 'suggestion' as const,
     docs: {
-      description: 'Enforce canonical Tailwind CSS class names in Svelte class attributes',
+      description:
+        'Enforce canonical Tailwind CSS class names in Svelte class attributes. ' +
+        'This is the Svelte-specific version of eslint-plugin-tailwind-canonical-classes.',
+      recommended: false,
     },
     fixable: 'code' as const,
     messages: {
@@ -87,7 +103,7 @@ const rule = {
             type: 'number',
           },
         },
-        required: ['cssPath'],
+        // 移除 required，使所有选项可选，支持默认配置
         additionalProperties: false,
       },
     ],
@@ -103,24 +119,18 @@ const rule = {
         fix?: unknown;
       }) => void;
     };
+    // 添加默认配置支持
     const options = (ctx.options?.[0] ?? {}) as { cssPath?: string; rootFontSize?: number };
-    if (!options || !options.cssPath) {
-      ctx.report({
-        node: ctx.getSourceCode().ast,
-        messageId: 'cssNotFound',
-        data: {
-          path: 'not specified',
-        },
-      });
-      return {};
-    }
-    let cssPath: string;
-    if (path.isAbsolute(options.cssPath)) {
-      cssPath = path.normalize(options.cssPath);
-    } else {
-      cssPath = path.normalize(path.resolve(process.cwd(), options.cssPath));
-    }
+    const cssPathInput = options.cssPath ?? './src/main.css'; // 默认值
     const rootFontSize = options.rootFontSize ?? 16;
+
+    // 解析 CSS 文件路径
+    let cssPath: string;
+    if (path.isAbsolute(cssPathInput)) {
+      cssPath = path.normalize(cssPathInput);
+    } else {
+      cssPath = path.normalize(path.resolve(process.cwd(), cssPathInput));
+    }
     if (!fs.existsSync(cssPath)) {
       ctx.report({
         node: ctx.getSourceCode().ast,
@@ -228,4 +238,28 @@ const rule = {
   },
 };
 
-export default rule;
+/**
+ * 导出标准 ESLint Plugin 对象
+ *
+ * @example
+ * ```typescript
+ * import svelteTailwindCanonical from './eslint-plugin-svelte-tailwind-canonical.ts';
+ *
+ * {
+ *   plugins: {
+ *     'svelte-tailwind-canonical': svelteTailwindCanonical,
+ *   },
+ *   rules: {
+ *     // 使用默认配置（cssPath: './src/main.css'）
+ *     'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': 'warn',
+ *   },
+ * }
+ * ```
+ */
+const plugin = {
+  rules: {
+    'tailwind-canonical-classes-svelte': rule,
+  },
+};
+
+export default plugin;

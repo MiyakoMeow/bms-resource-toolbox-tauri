@@ -6,27 +6,9 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import betterTailwind from 'eslint-plugin-better-tailwindcss';
 import type { Linter } from 'eslint';
-import type { Plugin, RulesConfig } from '@eslint/core';
+import type { Plugin } from '@eslint/core';
 import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
-import svelteTailwindCanonicalRule from './eslint-plugin-svelte-tailwind-canonical.ts';
-
-const tailwindCanonicalPlugins = { 'tailwind-canonical-classes': tailwindCanonicalClasses };
-const svelteTailwindCanonicalPlugins: Record<string, Plugin> = {
-  'svelte-tailwind-canonical': {
-    rules: {
-      'tailwind-canonical-classes-svelte': svelteTailwindCanonicalRule,
-    },
-  },
-};
-const tailwindCanonicalRules: RulesConfig = {
-  'tailwind-canonical-classes/tailwind-canonical-classes': ['warn', { cssPath: './src/main.css' }],
-};
-const svelteTailwindCanonicalRules: RulesConfig = {
-  'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': [
-    'warn',
-    { cssPath: './src/main.css' },
-  ],
-};
+import svelteTailwindCanonical from './eslint-plugin-svelte-tailwind-canonical.ts';
 
 const config: Linter.Config[] = [
   // 忽略常见的构建和依赖目录
@@ -42,8 +24,8 @@ const config: Linter.Config[] = [
     files: ['**/*.svelte', '**/*.ts', '**/*.tsx'],
     plugins: {
       'better-tailwindcss': betterTailwind,
-      ...tailwindCanonicalPlugins,
-      ...svelteTailwindCanonicalPlugins,
+      'tailwind-canonical-classes': tailwindCanonicalClasses,
+      'svelte-tailwind-canonical': svelteTailwindCanonical,
     },
     rules: {
       'better-tailwindcss/enforce-consistent-class-order': 'warn',
@@ -53,8 +35,9 @@ const config: Linter.Config[] = [
       'better-tailwindcss/no-duplicate-classes': 'warn',
       'better-tailwindcss/no-unnecessary-whitespace': 'warn',
       'better-tailwindcss/no-unregistered-classes': 'warn',
-      ...tailwindCanonicalRules,
-      ...svelteTailwindCanonicalRules,
+      'tailwind-canonical-classes/tailwind-canonical-classes': ['warn', { cssPath: './src/main.css' }],
+      // 使用默认配置（cssPath: './src/main.css'）
+      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': 'warn',
     },
     settings: {
       'better-tailwindcss': {
