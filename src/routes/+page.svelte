@@ -27,7 +27,7 @@ async function greet(event: Event) {
       <img
         src="/vite.svg"
         class="
-          will-change-filter h-24 p-6 transition-[0.75s]
+          h-24 p-6 transition-[0.75s]
           hover:drop-shadow-[0_0_2em_#747bff]
         "
         alt="Vite Logo"
@@ -45,7 +45,7 @@ async function greet(event: Event) {
       <img
         src="/tauri.svg"
         class="
-          will-change-filter h-24 p-6 transition-[0.75s]
+          h-24 p-6 transition-[0.75s]
           hover:drop-shadow-[0_0_2em_#24c8db]
         "
         alt="Tauri Logo"
@@ -63,7 +63,7 @@ async function greet(event: Event) {
       <img
         src="/svelte.svg"
         class="
-          will-change-filter h-24 p-6 transition-[0.75s]
+          h-24 p-6 transition-[0.75s]
           hover:drop-shadow-[0_0_2em_#ff3e00]
         "
         alt="SvelteKit Logo"
@@ -78,8 +78,8 @@ async function greet(event: Event) {
       placeholder="Enter a name..."
       bind:value={name}
       class="
-        font-inherit mr-[5px] rounded-lg border border-transparent bg-white
-        px-[1.2em] py-[0.6em] text-base font-medium text-[#0f0f0f]
+        mr-[5px] rounded-lg border border-transparent bg-white px-[1.2em]
+        py-[0.6em] text-base font-medium text-[#0f0f0f]
         shadow-[0_2px_2px_rgba(0,0,0,0.2)] transition-[border-color_0.25s]
         outline-none
         dark:bg-[#0f0f0f98] dark:text-white
@@ -88,8 +88,8 @@ async function greet(event: Event) {
     <button
       type="submit"
       class="
-        font-inherit cursor-pointer rounded-lg border border-transparent
-        bg-white px-[1.2em] py-[0.6em] text-base font-medium text-[#0f0f0f]
+        cursor-pointer rounded-lg border border-transparent bg-white px-[1.2em]
+        py-[0.6em] text-base font-medium text-[#0f0f0f]
         shadow-[0_2px_2px_rgba(0,0,0,0.2)] transition-[border-color_0.25s]
         outline-none
         hover:border-[#396cd8]
