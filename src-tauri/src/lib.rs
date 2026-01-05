@@ -885,18 +885,10 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
-        .setup(|app| {
+        .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                println!("Setup called, creating window...");
-            }
-
-            // 获取主窗口
-            let window = app.get_webview_window("main").unwrap();
-
-            #[cfg(debug_assertions)]
-            {
-                println!("Window created: {:?}", window.url());
+                println!("Setup called, Tauri will automatically create the window...");
             }
 
             Ok(())

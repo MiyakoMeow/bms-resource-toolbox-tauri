@@ -11,6 +11,8 @@ const config: Config = {
   kit: {
     adapter: adapter({
       fallback: 'index.html',
+      pages: 'src-tauri/build',
+      assets: 'src-tauri/build',
     }),
   },
 };
