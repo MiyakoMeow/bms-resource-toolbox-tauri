@@ -2,8 +2,7 @@ use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::path::Path;
 
-use smol::stream::StreamExt;
-use smol::{fs, io};
+use tokio::{fs, io};
 
 use crate::fs::moving::{ReplacePreset, move_elements_across_dir, replace_options_from_preset};
 
@@ -31,8 +30,8 @@ pub async fn unzip_file_to_cache_dir(
         .to_lowercase();
 
     match ext.as_str() {
-        "zip" => extract_zip(file_path, cache_dir_path)?,
-        "7z" => extract_7z(file_path, cache_dir_path)?,
+        "zip" => extract_zip(file_path, cache_dir_path).await?,
+        "7z" => extract_7z(file_path, cache_dir_path).await?,
         "rar" => extract_rar(file_path, cache_dir_path)?,
         _ => {
             // Not an archive => copy after space
@@ -48,48 +47,55 @@ pub async fn unzip_file_to_cache_dir(
 }
 
 /* ---------- ZIP ---------- */
-fn extract_zip(src: &Path, dst: &Path) -> io::Result<()> {
+async fn extract_zip(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (zip)", src.display(), dst.display());
-    let file = std::fs::File::open(src)?;
-    let mut archive = zip::ZipArchive::new(file)?;
-    smol::block_on(async move { archive.extract(dst) }).map_err(io::Error::other)
+    let src = src.to_path_buf();
+    let dst = dst.to_path_buf();
+    tokio::task::spawn_blocking(move || {
+        let file = std::fs::File::open(&src)?;
+        let mut archive = zip::ZipArchive::new(file)?;
+        archive.extract(&dst)
+    })
+    .await
+    .map_err(io::Error::other)?
+    .map_err(io::Error::other)
 }
 
 /* ---------- 7z ---------- */
-fn extract_7z(src: &Path, dst: &Path) -> io::Result<()> {
+async fn extract_7z(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (7z)", src.display(), dst.display());
     // sevenz-rust is a synchronous library, spawn_blocking
     let src = src.to_path_buf();
     let dst = dst.to_path_buf();
-    smol::block_on(async move { sevenz_rust2::decompress_file(&src, &dst) })
+    tokio::task::spawn_blocking(move || sevenz_rust2::decompress_file(&src, &dst))
+        .await
+        .map_err(io::Error::other)?
         .map_err(io::Error::other)
 }
 
 /* ---------- RAR ---------- */
 fn extract_rar(src: &Path, dst: &Path) -> io::Result<()> {
     log::info!("Extracting {} to {} (RAR)", src.display(), dst.display());
-    // unrar is a synchronous library
-    let src = src.to_path_buf();
-    let dst = dst.to_path_buf();
-    let mut archive =
-        smol::block_on(async move { unrar::Archive::new(&src).open_for_processing() })
-            .map_err(io::Error::other)?;
-    smol::block_on(async move {
-        while let Some(header) = archive.read_header().map_err(io::Error::other)? {
-            log::info!(
-                "{} bytes: {}",
-                header.entry().unpacked_size,
-                header.entry().filename.to_string_lossy(),
-            );
-            let dst_path = dst.join(header.entry().filename.as_path());
-            archive = if header.entry().is_file() {
-                header.extract_to(dst_path).map_err(io::Error::other)?
-            } else {
-                header.skip().map_err(io::Error::other)?
-            };
-        }
-        Ok(())
-    })
+    // unrar is a synchronous library and is not Send
+    // We run it directly in the async context (will block the task)
+    let mut archive = unrar::Archive::new(src)
+        .open_for_processing()
+        .map_err(io::Error::other)?;
+
+    while let Some(header) = archive.read_header().map_err(io::Error::other)? {
+        log::info!(
+            "{} bytes: {}",
+            header.entry().unpacked_size,
+            header.entry().filename.to_string_lossy(),
+        );
+        let dst_path = dst.join(header.entry().filename.as_path());
+        archive = if header.entry().is_file() {
+            header.extract_to(dst_path).map_err(io::Error::other)?
+        } else {
+            header.skip().map_err(io::Error::other)?
+        };
+    }
+    Ok(())
 }
 
 /// Extract "numeric prefix" file name list from pack directory
@@ -132,8 +138,7 @@ pub async fn move_out_files_in_folder_in_cache_dir(
 
         // Rescan directory
         let mut entries = fs::read_dir(cache_dir_path).await?;
-        while let Some(entry) = entries.next().await {
-            let entry = entry?;
+        while let Ok(Some(entry)) = entries.next_entry().await {
             let name = entry.file_name().to_string_lossy().into_owned();
             let path = entry.path();
             if entry.file_type().await?.is_dir() {

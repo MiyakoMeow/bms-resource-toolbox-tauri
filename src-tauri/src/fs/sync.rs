@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use smol::{fs, io, stream::StreamExt};
+use tokio::{fs, io};
 
 use super::is_file_same_content;
 use log::info;
@@ -197,13 +197,11 @@ pub async fn sync_folder(
     let mut src_map = HashMap::new();
     let mut dst_map = HashMap::new();
 
-    while let Some(entry) = src_entries.next().await {
-        let e = entry?;
-        src_map.insert(e.file_name(), e);
+    while let Ok(Some(entry)) = src_entries.next_entry().await {
+        src_map.insert(entry.file_name(), entry);
     }
-    while let Some(entry) = dst_entries.next().await {
-        let e = entry?;
-        dst_map.insert(e.file_name(), e);
+    while let Ok(Some(entry)) = dst_entries.next_entry().await {
+        dst_map.insert(entry.file_name(), entry);
     }
 
     // 1. Process source

@@ -6,8 +6,8 @@ use std::{
 use clap::ValueEnum;
 use log::info;
 use regex::Regex;
-use smol::{fs, io, stream::StreamExt};
 use std::str::FromStr;
+use tokio::{fs, io};
 
 use crate::fs::moving::{ReplacePreset, move_elements_across_dir, replace_options_from_preset};
 
@@ -164,8 +164,7 @@ pub async fn split_folders_with_first_char(
         .ok_or_else(|| io::Error::other("No parent directory"))?;
 
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let element_path = entry.path();
         let element_name = entry.file_name().to_string_lossy().to_string();
 
@@ -225,8 +224,7 @@ pub async fn undo_split_pack(
     let mut pairs = Vec::new();
     let mut entries = fs::read_dir(parent_dir).await?;
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let folder_path = entry.path();
         let folder_name = entry.file_name().to_string_lossy().to_string();
 
@@ -288,8 +286,7 @@ pub async fn merge_split_folders(
     let mut dir_names = Vec::new();
     let mut entries = fs::read_dir(root_dir).await?;
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if path.is_dir()
             && let Some(name) = path.file_name().and_then(|n| n.to_str())
@@ -420,8 +417,7 @@ pub async fn move_works_in_pack(
     let mut move_count = 0;
     let mut entries = fs::read_dir(root_dir_from).await?;
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let bms_dir = entry.path();
         if !bms_dir.is_dir() {
             continue;
@@ -492,16 +488,14 @@ pub async fn move_out_works(
     let target_root_dir = target_root_dir.as_ref();
     let mut entries = fs::read_dir(target_root_dir).await?;
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let root_dir_path = entry.path();
         if !root_dir_path.is_dir() {
             continue;
         }
 
         let mut sub_entries = fs::read_dir(&root_dir_path).await?;
-        while let Some(sub_entry) = sub_entries.next().await {
-            let sub_entry = sub_entry?;
+        while let Ok(Some(sub_entry)) = sub_entries.next_entry().await {
             let work_dir_path = sub_entry.path();
             if !work_dir_path.is_dir() {
                 continue;
@@ -531,7 +525,7 @@ pub async fn move_out_works(
 
         // Check if directory is empty and remove it
         let mut check_entries = fs::read_dir(&root_dir_path).await?;
-        if check_entries.next().await.is_none() && !dry_run {
+        if check_entries.next_entry().await.ok().flatten().is_none() && !dry_run {
             fs::remove_dir(&root_dir_path).await?;
         }
     }
@@ -553,8 +547,7 @@ async fn workdir_remove_unneed_media_files(
     let mut removed_files = HashSet::new();
 
     let mut entries = fs::read_dir(work_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let file_path = entry.path();
         if !file_path.is_file() {
             continue;
@@ -612,8 +605,7 @@ async fn workdir_remove_unneed_media_files(
     // Finished: Count Ext
     let mut ext_count: HashMap<String, Vec<String>> = HashMap::new();
     let mut count_entries = fs::read_dir(work_dir).await?;
-    while let Some(entry) = count_entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = count_entries.next_entry().await {
         let file_path = entry.path();
         if !file_path.is_file() {
             continue;
@@ -752,8 +744,7 @@ pub async fn remove_unneed_media_files(
 
     // Do
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let bms_dir_path = entry.path();
         if !bms_dir_path.is_dir() {
             continue;
@@ -796,8 +787,7 @@ pub async fn move_works_with_same_name(
     // Get all direct subfolders in source directory
     let mut from_subdirs = Vec::new();
     let mut from_entries = fs::read_dir(root_dir_from).await?;
-    while let Some(entry) = from_entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = from_entries.next_entry().await {
         let path = entry.path();
         if path.is_dir()
             && let Some(name) = path.file_name().and_then(|n| n.to_str())
@@ -809,8 +799,7 @@ pub async fn move_works_with_same_name(
     // Get all direct subfolders in target directory
     let mut to_subdirs = Vec::new();
     let mut to_entries = fs::read_dir(root_dir_to).await?;
-    while let Some(entry) = to_entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = to_entries.next_entry().await {
         let path = entry.path();
         if path.is_dir()
             && let Some(name) = path.file_name().and_then(|n| n.to_str())

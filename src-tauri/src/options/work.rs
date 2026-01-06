@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, path::Path, str::FromStr};
 
 use clap::ValueEnum;
-use smol::{fs, io, stream::StreamExt};
+use tokio::{fs, io};
 
 use crate::{
     bms::get_dir_bms_info,
@@ -276,8 +276,7 @@ pub async fn remove_zero_sized_media_files(
 
     while let Some(dir) = stack.pop_back() {
         let mut entries = fs::read_dir(&dir).await?;
-        while let Some(entry) = entries.next().await {
-            let entry = entry?;
+        while let Ok(Some(entry)) = entries.next_entry().await {
             let path = entry.path();
             let meta = entry.metadata().await?;
 
@@ -286,7 +285,7 @@ pub async fn remove_zero_sized_media_files(
                 if dry_run {
                     log::info!("Would remove empty file: {}", path.display());
                 } else {
-                    tasks.push(smol::spawn(async move {
+                    tasks.push(tokio::spawn(async move {
                         fs::remove_file(&path).await?;
                         Ok::<(), io::Error>(())
                     }));
@@ -301,7 +300,7 @@ pub async fn remove_zero_sized_media_files(
     if !dry_run {
         // Wait for all deletion tasks to complete
         for task in tasks {
-            task.await?;
+            task.await??;
         }
     }
 

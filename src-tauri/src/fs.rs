@@ -5,10 +5,9 @@ pub mod sync;
 use std::{collections::HashSet, path::Path};
 
 use sha3::{Digest, Sha3_512, digest::Output};
-use smol::{
+use tokio::{
     fs,
     io::{self, AsyncReadExt},
-    stream::StreamExt,
 };
 
 /// Signs:
@@ -64,8 +63,7 @@ pub async fn is_file_same_content(a: &Path, b: &Path) -> io::Result<bool> {
 /// Returns an error if the directory cannot be read
 pub async fn is_dir_having_file(dir: &Path) -> io::Result<bool> {
     let mut entries = fs::read_dir(dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let ft = entry.file_type().await?;
         if ft.is_file() {
             return Ok(true);
@@ -89,8 +87,7 @@ pub const MEDIA_EXT_LIST: &[&str] = {
 pub async fn remove_empty_folders(parent_dir: impl AsRef<Path>, dry_run: bool) -> io::Result<()> {
     let parent = parent_dir.as_ref();
     let mut entries = fs::read_dir(parent).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         let ft = entry.file_type().await?;
         if !ft.is_dir() {
@@ -124,8 +121,8 @@ async fn fetch_dir_elements(dir: impl AsRef<Path>) -> io::Result<DirElements> {
     let mut media_stems: HashSet<String> = HashSet::new();
     let mut non_media_stems: HashSet<String> = HashSet::new();
 
-    while let Some(entry) = entries.next().await {
-        let file_path = entry?.path();
+    while let Ok(Some(entry)) = entries.next_entry().await {
+        let file_path = entry.path();
         let file_stem = file_path
             .file_stem()
             .and_then(|path| path.to_str())

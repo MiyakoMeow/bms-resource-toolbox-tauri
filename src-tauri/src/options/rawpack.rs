@@ -1,6 +1,6 @@
 use log::info;
-use smol::{fs, io, stream::StreamExt};
 use std::path::Path;
+use tokio::{fs, io};
 
 use crate::fs::{
     is_dir_having_file,
@@ -72,8 +72,7 @@ pub async fn unzip_numeric_to_bms_folder(
         // Find Existing Target dir
         let mut target_dir_path = None;
         let mut entries = fs::read_dir(root_dir).await?;
-        while let Some(entry) = entries.next().await {
-            let entry = entry?;
+        while let Ok(Some(entry)) = entries.next_entry().await {
             let dir_name = entry.file_name().to_string_lossy().into_owned();
             let dir_path = entry.path();
 
@@ -145,8 +144,7 @@ pub async fn unzip_with_name_to_bms_folder(
 
     let mut num_set_file_names = Vec::new();
     let mut entries = fs::read_dir(pack_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let file_name = entry.file_name().to_string_lossy().into_owned();
         if !entry.file_type().await?.is_file() {
             continue;
@@ -256,8 +254,7 @@ pub async fn set_file_num(dir: impl AsRef<Path>, allowed_exts: &[&str]) -> io::R
         let mut file_names = Vec::new();
         let mut entries = fs::read_dir(dir).await?;
 
-        while let Some(entry) = entries.next().await {
-            let entry = entry?;
+        while let Ok(Some(entry)) = entries.next_entry().await {
             let file_name = entry.file_name().to_string_lossy().into_owned();
             let file_path = entry.path();
 

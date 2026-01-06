@@ -4,10 +4,10 @@ use std::{
     sync::Arc,
 };
 
-use smol::{
+use tokio::{
     fs,
     io::{self},
-    lock::Mutex,
+    sync::Mutex,
 };
 
 use futures::stream::{self, StreamExt as FuturesStreamExt, TryStreamExt};
@@ -193,8 +193,7 @@ async fn process_directory(
     let next_folder_paths = Arc::new(Mutex::new(Vec::new()));
     let mut pairs: Vec<(PathBuf, PathBuf)> = Vec::new();
 
-    while let Some(entry) = smol::stream::StreamExt::next(&mut entries).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let src = entry.path();
         let dst = dir_path_dst.join(entry.file_name());
         pairs.push((src, dst));
@@ -204,8 +203,8 @@ async fn process_directory(
     let metas: Vec<(
         PathBuf,
         PathBuf,
-        smol::fs::Metadata,
-        Option<smol::fs::Metadata>,
+        std::fs::Metadata,
+        Option<std::fs::Metadata>,
     )> = stream::iter(pairs.iter().cloned())
         .map(|(src, dst)| async move {
             let src_md = fs::metadata(&src).await?;
@@ -250,7 +249,7 @@ async fn process_directory(
 
     // Stage 1: both side subdirectories exist -> enqueue for next round
     {
-        let mut next = next_folder_paths.lock_arc().await;
+        let mut next = next_folder_paths.lock().await;
         next.extend(subdir_both_exist);
     }
 
@@ -297,7 +296,7 @@ async fn process_directory(
         .await?;
 
     // Return subdirectories that need further processing
-    Ok(next_folder_paths.lock_arc().await.clone())
+    Ok(next_folder_paths.lock().await.clone())
 }
 
 // removed unused move_action
@@ -367,8 +366,8 @@ async fn move_file_rename(src: &Path, dst_dir: &Path) -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use smol::{fs, io};
     use tempfile::{TempDir, tempdir};
+    use tokio::{fs, io};
 
     /// Create test directory structure
     async fn create_test_structure(base_dir: &Path) -> io::Result<()> {
@@ -417,355 +416,339 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_move_elements_across_dir_basic() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_basic() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            create_test_structure(&src_dir)
-                .await
-                .expect("Failed to create test structure");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        create_test_structure(&src_dir)
+            .await
+            .expect("Failed to create test structure");
 
-            // Execute move
-            let replace_options = ReplaceOptions::default();
+        // Execute move
+        let replace_options = ReplaceOptions::default();
 
-            move_elements_across_dir(&src_dir, &dst_dir, replace_options)
-                .await
-                .expect("Move operation failed");
+        move_elements_across_dir(&src_dir, &dst_dir, replace_options)
+            .await
+            .expect("Move operation failed");
 
-            // Verify result
-            let expected_files = [
-                ("file1.txt", "content1"),
-                ("file2.bms", "content2"),
-                ("subdir/file3.txt", "content3"),
-                ("subdir/nested/file4.txt", "content4"),
-            ];
+        // Verify result
+        let expected_files = [
+            ("file1.txt", "content1"),
+            ("file2.bms", "content2"),
+            ("subdir/file3.txt", "content3"),
+            ("subdir/nested/file4.txt", "content4"),
+        ];
 
-            verify_structure(&dst_dir, &expected_files)
-                .await
-                .expect("Failed to verify structure");
+        verify_structure(&dst_dir, &expected_files)
+            .await
+            .expect("Failed to verify structure");
 
-            // Verify source directory has been cleaned up
-            assert!(!src_dir.exists(), "Source directory should be deleted");
+        // Verify source directory has been cleaned up
+        assert!(!src_dir.exists(), "Source directory should be deleted");
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_skip_existing() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_skip_existing() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            create_test_structure(&src_dir)
-                .await
-                .expect("Failed to create test structure");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        create_test_structure(&src_dir)
+            .await
+            .expect("Failed to create test structure");
 
-            // Create file with same name in target directory
-            fs::create_dir_all(&dst_dir)
-                .await
-                .expect("Failed to create target directory");
-            fs::write(dst_dir.join("file1.txt"), "existing_content")
-                .await
-                .expect("Failed to create file");
+        // Create file with same name in target directory
+        fs::create_dir_all(&dst_dir)
+            .await
+            .expect("Failed to create target directory");
+        fs::write(dst_dir.join("file1.txt"), "existing_content")
+            .await
+            .expect("Failed to create file");
 
-            // Use Skip strategy
-            let replace_options = ReplaceOptions {
-                default: ReplaceAction::Skip,
-                ..Default::default()
-            };
+        // Use Skip strategy
+        let replace_options = ReplaceOptions {
+            default: ReplaceAction::Skip,
+            ..Default::default()
+        };
 
-            move_elements_across_dir(&src_dir, &dst_dir, replace_options)
-                .await
-                .expect("Move operation failed");
+        move_elements_across_dir(&src_dir, &dst_dir, replace_options)
+            .await
+            .expect("Move operation failed");
 
-            // Verify target file keeps original content
-            let content = fs::read_to_string(dst_dir.join("file1.txt"))
-                .await
-                .expect("Failed to read file");
-            assert_eq!(
-                content, "existing_content",
-                "File content should remain unchanged"
-            );
+        // Verify target file keeps original content
+        let content = fs::read_to_string(dst_dir.join("file1.txt"))
+            .await
+            .expect("Failed to read file");
+        assert_eq!(
+            content, "existing_content",
+            "File content should remain unchanged"
+        );
 
-            // Verify other files were moved
-            assert!(dst_dir.join("file2.bms").exists());
-            assert!(dst_dir.join("subdir").exists());
+        // Verify other files were moved
+        assert!(dst_dir.join("file2.bms").exists());
+        assert!(dst_dir.join("subdir").exists());
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_rename_conflict() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_rename_conflict() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            fs::write(src_dir.join("file1.txt"), "new_content")
-                .await
-                .expect("Failed to create file");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        fs::write(src_dir.join("file1.txt"), "new_content")
+            .await
+            .expect("Failed to create file");
 
-            // Create file with same name in target directory
-            fs::create_dir_all(&dst_dir)
-                .await
-                .expect("Failed to create target directory");
-            fs::write(dst_dir.join("file1.txt"), "existing_content")
-                .await
-                .expect("Failed to create file");
+        // Create file with same name in target directory
+        fs::create_dir_all(&dst_dir)
+            .await
+            .expect("Failed to create target directory");
+        fs::write(dst_dir.join("file1.txt"), "existing_content")
+            .await
+            .expect("Failed to create file");
 
-            // Use Rename strategy
-            let replace_options = ReplaceOptions {
-                default: ReplaceAction::Rename,
-                ..Default::default()
-            };
+        // Use Rename strategy
+        let replace_options = ReplaceOptions {
+            default: ReplaceAction::Rename,
+            ..Default::default()
+        };
 
-            move_elements_across_dir(&src_dir, &dst_dir, replace_options)
-                .await
-                .expect("Move operation failed");
+        move_elements_across_dir(&src_dir, &dst_dir, replace_options)
+            .await
+            .expect("Move operation failed");
 
-            // Verify original file exists
-            let content = fs::read_to_string(dst_dir.join("file1.txt"))
-                .await
-                .expect("Failed to read file");
-            assert_eq!(
-                content, "existing_content",
-                "Original file should remain unchanged"
-            );
+        // Verify original file exists
+        let content = fs::read_to_string(dst_dir.join("file1.txt"))
+            .await
+            .expect("Failed to read file");
+        assert_eq!(
+            content, "existing_content",
+            "Original file should remain unchanged"
+        );
 
-            // Verify new file was renamed
-            assert!(
-                dst_dir.join("file1.1.txt").exists(),
-                "Should create renamed file"
-            );
+        // Verify new file was renamed
+        assert!(
+            dst_dir.join("file1.1.txt").exists(),
+            "Should create renamed file"
+        );
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_check_replace() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_check_replace() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            fs::write(src_dir.join("file1.txt"), "same_content")
-                .await
-                .expect("Failed to create file");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        fs::write(src_dir.join("file1.txt"), "same_content")
+            .await
+            .expect("Failed to create file");
 
-            // Create file with same name in target directory, same content
-            fs::create_dir_all(&dst_dir)
-                .await
-                .expect("Failed to create target directory");
-            fs::write(dst_dir.join("file1.txt"), "same_content")
-                .await
-                .expect("Failed to create file");
+        // Create file with same name in target directory, same content
+        fs::create_dir_all(&dst_dir)
+            .await
+            .expect("Failed to create target directory");
+        fs::write(dst_dir.join("file1.txt"), "same_content")
+            .await
+            .expect("Failed to create file");
 
-            // Use CheckReplace strategy
-            let replace_options = ReplaceOptions {
-                default: ReplaceAction::CheckReplace,
-                ..Default::default()
-            };
+        // Use CheckReplace strategy
+        let replace_options = ReplaceOptions {
+            default: ReplaceAction::CheckReplace,
+            ..Default::default()
+        };
 
-            move_elements_across_dir(&src_dir, &dst_dir, replace_options)
-                .await
-                .expect("Move operation failed");
+        move_elements_across_dir(&src_dir, &dst_dir, replace_options)
+            .await
+            .expect("Move operation failed");
 
-            // Verify file was overwritten (because content is the same)
-            let content = fs::read_to_string(dst_dir.join("file1.txt"))
-                .await
-                .expect("Failed to read file");
-            assert_eq!(
-                content, "same_content",
-                "File content should remain unchanged"
-            );
+        // Verify file was overwritten (because content is the same)
+        let content = fs::read_to_string(dst_dir.join("file1.txt"))
+            .await
+            .expect("Failed to read file");
+        assert_eq!(
+            content, "same_content",
+            "File content should remain unchanged"
+        );
 
-            // Verify source directory was cleaned up
-            assert!(!src_dir.exists(), "Source directory should be deleted");
+        // Verify source directory was cleaned up
+        assert!(!src_dir.exists(), "Source directory should be deleted");
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_same_directory() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_same_directory() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            create_test_structure(&src_dir)
-                .await
-                .expect("Failed to create test structure");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        create_test_structure(&src_dir)
+            .await
+            .expect("Failed to create test structure");
 
-            // Try to move to the same directory
-            let replace_options = ReplaceOptions::default();
-            let result = move_elements_across_dir(&src_dir, &src_dir, replace_options).await;
-            assert!(result.is_ok(), "Moving to same directory should succeed");
+        // Try to move to the same directory
+        let replace_options = ReplaceOptions::default();
+        let result = move_elements_across_dir(&src_dir, &src_dir, replace_options).await;
+        assert!(result.is_ok(), "Moving to same directory should succeed");
 
-            // Verify directory structure remains unchanged
-            assert!(src_dir.exists(), "Source directory should still exist");
-            assert!(
-                src_dir.join("file1.txt").exists(),
-                "File should still exist"
-            );
+        // Verify directory structure remains unchanged
+        assert!(src_dir.exists(), "Source directory should still exist");
+        assert!(
+            src_dir.join("file1.txt").exists(),
+            "File should still exist"
+        );
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_nonexistent_source() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("nonexistent");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_nonexistent_source() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("nonexistent");
+        let dst_dir = temp_dir.path().join("dst");
 
-            let replace_options = ReplaceOptions::default();
-            let result = move_elements_across_dir(&src_dir, &dst_dir, replace_options).await;
-            assert!(
-                result.is_ok(),
-                "Moving non-existent directory should succeed (no operation)"
-            );
+        let replace_options = ReplaceOptions::default();
+        let result = move_elements_across_dir(&src_dir, &dst_dir, replace_options).await;
+        assert!(
+            result.is_ok(),
+            "Moving non-existent directory should succeed (no operation)"
+        );
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_nonexistent_target() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("nonexistent_dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_nonexistent_target() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("nonexistent_dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            create_test_structure(&src_dir)
-                .await
-                .expect("Failed to create test structure");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        create_test_structure(&src_dir)
+            .await
+            .expect("Failed to create test structure");
 
-            let replace_options = ReplaceOptions::default();
-            let result = move_elements_across_dir(&src_dir, &dst_dir, replace_options).await;
-            assert!(
-                result.is_ok(),
-                "Moving to non-existent target should succeed"
-            );
+        let replace_options = ReplaceOptions::default();
+        let result = move_elements_across_dir(&src_dir, &dst_dir, replace_options).await;
+        assert!(
+            result.is_ok(),
+            "Moving to non-existent target should succeed"
+        );
 
-            // Verify the entire directory was moved (renamed)
-            assert!(!src_dir.exists(), "Source directory should not exist");
-            assert!(dst_dir.exists(), "Target directory should exist");
+        // Verify the entire directory was moved (renamed)
+        assert!(!src_dir.exists(), "Source directory should not exist");
+        assert!(dst_dir.exists(), "Target directory should exist");
 
-            // Verify all files were moved
-            let expected_files = [
-                ("file1.txt", "content1"),
-                ("file2.bms", "content2"),
-                ("subdir/file3.txt", "content3"),
-                ("subdir/nested/file4.txt", "content4"),
-            ];
-            verify_structure(&dst_dir, &expected_files)
-                .await
-                .expect("Failed to verify structure");
+        // Verify all files were moved
+        let expected_files = [
+            ("file1.txt", "content1"),
+            ("file2.bms", "content2"),
+            ("subdir/file3.txt", "content3"),
+            ("subdir/nested/file4.txt", "content4"),
+        ];
+        verify_structure(&dst_dir, &expected_files)
+            .await
+            .expect("Failed to verify structure");
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 
-    #[test]
-    fn test_move_elements_across_dir_with_ext_specific_rules() {
-        smol::block_on(async {
-            let temp_dir = tempdir().expect("Failed to create temp directory");
-            let src_dir = temp_dir.path().join("src");
-            let dst_dir = temp_dir.path().join("dst");
+    #[tokio::test]
+    async fn test_move_elements_across_dir_with_ext_specific_rules() {
+        let temp_dir = tempdir().expect("Failed to create temp directory");
+        let src_dir = temp_dir.path().join("src");
+        let dst_dir = temp_dir.path().join("dst");
 
-            // Create source directory structure
-            fs::create_dir_all(&src_dir)
-                .await
-                .expect("Failed to create source directory");
-            fs::write(src_dir.join("file1.txt"), "content1")
-                .await
-                .expect("Failed to create file");
-            fs::write(src_dir.join("file2.bms"), "content2")
-                .await
-                .expect("Failed to create file");
-            fs::write(src_dir.join("file3.other"), "content3")
-                .await
-                .expect("Failed to create file");
+        // Create source directory structure
+        fs::create_dir_all(&src_dir)
+            .await
+            .expect("Failed to create source directory");
+        fs::write(src_dir.join("file1.txt"), "content1")
+            .await
+            .expect("Failed to create file");
+        fs::write(src_dir.join("file2.bms"), "content2")
+            .await
+            .expect("Failed to create file");
+        fs::write(src_dir.join("file3.other"), "content3")
+            .await
+            .expect("Failed to create file");
 
-            // Create conflicting files in target directory
-            fs::create_dir_all(&dst_dir)
-                .await
-                .expect("Failed to create target directory");
-            fs::write(dst_dir.join("file1.txt"), "existing_txt")
-                .await
-                .expect("Failed to create file");
-            fs::write(dst_dir.join("file2.bms"), "existing_bms")
-                .await
-                .expect("Failed to create file");
-            fs::write(dst_dir.join("file3.other"), "existing_other")
-                .await
-                .expect("Failed to create file");
+        // Create conflicting files in target directory
+        fs::create_dir_all(&dst_dir)
+            .await
+            .expect("Failed to create target directory");
+        fs::write(dst_dir.join("file1.txt"), "existing_txt")
+            .await
+            .expect("Failed to create file");
+        fs::write(dst_dir.join("file2.bms"), "existing_bms")
+            .await
+            .expect("Failed to create file");
+        fs::write(dst_dir.join("file3.other"), "existing_other")
+            .await
+            .expect("Failed to create file");
 
-            // Use specific extension rules
-            let mut replace_options = ReplaceOptions::default();
-            replace_options
-                .ext
-                .insert("txt".to_string(), ReplaceAction::Skip);
-            replace_options
-                .ext
-                .insert("bms".to_string(), ReplaceAction::Rename);
-            replace_options.default = ReplaceAction::Replace;
+        // Use specific extension rules
+        let mut replace_options = ReplaceOptions::default();
+        replace_options
+            .ext
+            .insert("txt".to_string(), ReplaceAction::Skip);
+        replace_options
+            .ext
+            .insert("bms".to_string(), ReplaceAction::Rename);
+        replace_options.default = ReplaceAction::Replace;
 
-            move_elements_across_dir(&src_dir, &dst_dir, replace_options)
-                .await
-                .expect("Move operation failed");
+        move_elements_across_dir(&src_dir, &dst_dir, replace_options)
+            .await
+            .expect("Move operation failed");
 
-            // Verify txt file was skipped
-            let content = fs::read_to_string(dst_dir.join("file1.txt"))
-                .await
-                .expect("Failed to read file");
-            assert_eq!(content, "existing_txt", "txt file should be skipped");
+        // Verify txt file was skipped
+        let content = fs::read_to_string(dst_dir.join("file1.txt"))
+            .await
+            .expect("Failed to read file");
+        assert_eq!(content, "existing_txt", "txt file should be skipped");
 
-            // Verify bms file was renamed
-            assert!(
-                dst_dir.join("file2.1.bms").exists(),
-                "bms file should be renamed"
-            );
+        // Verify bms file was renamed
+        assert!(
+            dst_dir.join("file2.1.bms").exists(),
+            "bms file should be renamed"
+        );
 
-            // Verify other file was replaced
-            let other_content = fs::read_to_string(dst_dir.join("file3.other"))
-                .await
-                .expect("Failed to read file");
-            assert_eq!(other_content, "content3", "other file should be replaced");
+        // Verify other file was replaced
+        let other_content = fs::read_to_string(dst_dir.join("file3.other"))
+            .await
+            .expect("Failed to read file");
+        assert_eq!(other_content, "content3", "other file should be replaced");
 
-            cleanup_test_dir(&temp_dir).await;
-        });
+        cleanup_test_dir(&temp_dir).await;
     }
 }
