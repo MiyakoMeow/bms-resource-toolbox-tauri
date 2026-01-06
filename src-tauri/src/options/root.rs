@@ -1,9 +1,8 @@
 use std::path::Path;
 
-use futures::StreamExt;
 use log::info;
-use smol::{fs, io};
 use strsim::jaro_winkler;
+use tokio::{fs, io};
 
 use super::work::BmsFolderSetNameType;
 use crate::fs::moving::ReplacePreset;
@@ -21,8 +20,7 @@ pub async fn set_name_by_bms(
     skip_already_formatted: bool,
 ) -> io::Result<()> {
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if path.is_dir() {
             super::work::set_name_by_bms(
@@ -50,8 +48,7 @@ pub async fn undo_set_name_by_bms(
     dry_run: bool,
 ) -> io::Result<()> {
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if path.is_dir() {
             super::work::undo_set_name_by_bms(&path, set_type, dry_run).await?;
@@ -79,8 +76,7 @@ pub async fn copy_numbered_workdir_names(
     // Collect all directory names under root_from
     let mut src_names = Vec::new();
     let mut entries = fs::read_dir(root_from).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if path.is_dir()
             && let Some(name) = path.file_name()
@@ -91,8 +87,7 @@ pub async fn copy_numbered_workdir_names(
 
     // Process directories under root_to
     let mut dst_entries = fs::read_dir(root_to).await?;
-    while let Some(entry) = dst_entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = dst_entries.next_entry().await {
         let path = entry.path();
         if !path.is_dir() {
             continue;
@@ -153,8 +148,7 @@ pub async fn scan_folder_similar_folders(
     let mut entries = fs::read_dir(root_dir.as_ref()).await?;
     let mut dir_names = Vec::new();
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let file_type = entry.file_type().await?;
         if file_type.is_dir() {
             dir_names.push(entry.file_name().to_string_lossy().into_owned());

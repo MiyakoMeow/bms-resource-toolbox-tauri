@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use log::info;
-use smol::{fs, io, stream::StreamExt};
+use tokio::{fs, io};
 
 use crate::fs::moving::ReplacePreset;
 use crate::{
@@ -22,8 +22,7 @@ use crate::{
 async fn remove_empty_folder(parent_dir: &Path) -> io::Result<()> {
     let mut entries = fs::read_dir(parent_dir).await?;
 
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
 
         if path.is_dir() {
@@ -32,7 +31,7 @@ async fn remove_empty_folder(parent_dir: &Path) -> io::Result<()> {
 
             // Check if current directory is empty
             let mut check_entries = fs::read_dir(&path).await?;
-            if check_entries.next().await.is_none() {
+            if check_entries.next_entry().await.ok().flatten().is_none() {
                 fs::remove_dir(&path).await?;
                 info!("Removed empty folder: {}", path.display());
             }
@@ -178,7 +177,7 @@ pub async fn pack_setup_rawpack_to_hq(
     // Check if cache directory is empty, delete if empty
     if cache_dir.exists() {
         let mut cache_entries = fs::read_dir(&cache_dir).await?;
-        if cache_entries.next().await.is_none() {
+        if cache_entries.next_entry().await.ok().flatten().is_none() {
             fs::remove_dir(&cache_dir).await?;
         }
     }
@@ -186,8 +185,7 @@ pub async fn pack_setup_rawpack_to_hq(
     // Syncing folder name
     info!(" > 2. Setting dir names from BMS Files");
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if path.is_dir() {
             set_name_by_bms(
@@ -342,91 +340,87 @@ pub async fn pack_update_rawpack_to_hq(
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_remove_empty_folder() {
-        smol::block_on(async {
-            let temp_dir = tempfile::tempdir().expect("Failed to create temp dir");
-            let test_dir = temp_dir.path().join("test");
-            fs::create_dir_all(&test_dir)
-                .await
-                .expect("Failed to create test dir");
+    #[tokio::test]
+    async fn test_remove_empty_folder() {
+        let temp_dir = tempfile::tempdir().expect("Failed to create temp dir");
+        let test_dir = temp_dir.path().join("test");
+        fs::create_dir_all(&test_dir)
+            .await
+            .expect("Failed to create test dir");
 
-            // Create some empty folders
-            let empty_dir1 = test_dir.join("empty1");
-            let empty_dir2 = test_dir.join("empty2");
-            let non_empty_dir = test_dir.join("non_empty");
+        // Create some empty folders
+        let empty_dir1 = test_dir.join("empty1");
+        let empty_dir2 = test_dir.join("empty2");
+        let non_empty_dir = test_dir.join("non_empty");
 
-            fs::create_dir_all(&empty_dir1)
-                .await
-                .expect("Failed to create empty dir1");
-            fs::create_dir_all(&empty_dir2)
-                .await
-                .expect("Failed to create empty dir2");
-            fs::create_dir_all(&non_empty_dir)
-                .await
-                .expect("Failed to create non_empty dir");
+        fs::create_dir_all(&empty_dir1)
+            .await
+            .expect("Failed to create empty dir1");
+        fs::create_dir_all(&empty_dir2)
+            .await
+            .expect("Failed to create empty dir2");
+        fs::create_dir_all(&non_empty_dir)
+            .await
+            .expect("Failed to create non_empty dir");
 
-            // Create a file in non_empty_dir
-            fs::write(non_empty_dir.join("test.txt"), "test")
-                .await
-                .expect("Failed to write test file");
+        // Create a file in non_empty_dir
+        fs::write(non_empty_dir.join("test.txt"), "test")
+            .await
+            .expect("Failed to write test file");
 
-            // Execute remove empty folders operation
-            remove_empty_folder(&test_dir)
-                .await
-                .expect("Failed to remove empty folders");
+        // Execute remove empty folders operation
+        remove_empty_folder(&test_dir)
+            .await
+            .expect("Failed to remove empty folders");
 
-            // Verify results
-            assert!(!empty_dir1.exists(), "empty_dir1 should be removed");
-            assert!(!empty_dir2.exists(), "empty_dir2 should be removed");
-            assert!(non_empty_dir.exists(), "non_empty_dir should still exist");
-            assert!(
-                non_empty_dir.join("test.txt").exists(),
-                "test file should still exist"
-            );
-        });
+        // Verify results
+        assert!(!empty_dir1.exists(), "empty_dir1 should be removed");
+        assert!(!empty_dir2.exists(), "empty_dir2 should be removed");
+        assert!(non_empty_dir.exists(), "non_empty_dir should still exist");
+        assert!(
+            non_empty_dir.join("test.txt").exists(),
+            "test file should still exist"
+        );
     }
 
-    #[test]
-    fn test_unzip_numeric_to_bms_folder() {
-        smol::block_on(async {
-            let temp_dir = tempfile::tempdir().expect("Failed to create temp dir");
-            let pack_dir = temp_dir.path().join("packs");
-            let root_dir = temp_dir.path().join("root");
-            let cache_dir = temp_dir.path().join("cache");
+    #[tokio::test]
+    async fn test_unzip_numeric_to_bms_folder() {
+        let temp_dir = tempfile::tempdir().expect("Failed to create temp dir");
+        let pack_dir = temp_dir.path().join("packs");
+        let root_dir = temp_dir.path().join("root");
+        let cache_dir = temp_dir.path().join("cache");
 
-            fs::create_dir_all(&pack_dir)
-                .await
-                .expect("Failed to create pack dir");
-            fs::create_dir_all(&root_dir)
-                .await
-                .expect("Failed to create root dir");
-            fs::create_dir_all(&cache_dir)
-                .await
-                .expect("Failed to create cache dir");
+        fs::create_dir_all(&pack_dir)
+            .await
+            .expect("Failed to create pack dir");
+        fs::create_dir_all(&root_dir)
+            .await
+            .expect("Failed to create root dir");
+        fs::create_dir_all(&cache_dir)
+            .await
+            .expect("Failed to create cache dir");
 
-            // Create a mock numerically named file (not actual compressed file)
-            let test_file = pack_dir.join("001 Test Song.txt");
-            fs::write(&test_file, "test content")
-                .await
-                .expect("Failed to create test file");
+        // Create a mock numerically named file (not actual compressed file)
+        let test_file = pack_dir.join("001 Test Song.txt");
+        fs::write(&test_file, "test content")
+            .await
+            .expect("Failed to create test file");
 
-            // This test mainly verifies if the function structure is correct, actual extraction requires real compressed files
-            // Since we don't have real compressed files, we only verify it doesn't panic
-            let result = rawpack_unzip_numeric_to_bms_folder(
-                &pack_dir,
-                &cache_dir,
-                &root_dir,
-                false,
-                ReplacePreset::UpdatePack,
-            )
-            .await;
+        // This test mainly verifies if the function structure is correct, actual extraction requires real compressed files
+        // Since we don't have real compressed files, we only verify it doesn't panic
+        let result = rawpack_unzip_numeric_to_bms_folder(
+            &pack_dir,
+            &cache_dir,
+            &root_dir,
+            false,
+            ReplacePreset::UpdatePack,
+        )
+        .await;
 
-            // Verify function execution completes (should not panic even if it fails)
-            assert!(
-                result.is_ok() || result.is_err(),
-                "Function should complete without panicking"
-            );
-        });
+        // Verify function execution completes (should not panic even if it fails)
+        assert!(
+            result.is_ok() || result.is_err(),
+            "Function should complete without panicking"
+        );
     }
 }

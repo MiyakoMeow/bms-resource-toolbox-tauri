@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use bms_rs::bms::prelude::*;
 use futures::future::try_join_all;
-use smol::{fs, io, stream::StreamExt};
+use tokio::{fs, io};
 use xlsxwriter::{Workbook, XlsxError};
 
 use crate::bms::get_dir_bms_info;
@@ -32,7 +32,7 @@ pub async fn create_num_folders(root: &Path, count: usize) -> io::Result<()> {
     let mut futs = Vec::new();
     for id in 1..=count {
         let path = root.join(id.to_string());
-        futs.push(smol::spawn(async move { fs::create_dir_all(&path).await }));
+        futs.push(tokio::spawn(async move { fs::create_dir_all(&path).await }));
     }
     try_join_all(futs).await?;
     Ok(())
@@ -47,8 +47,7 @@ pub async fn generate_work_info_table(root: &Path) -> io::Result<()> {
     // First collect all numeric folders
     let mut dir_ids = Vec::new();
     let mut entries = fs::read_dir(root).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         if entry.file_type().await?.is_dir()
             && let Ok(id) = entry.file_name().to_string_lossy().parse::<u32>()
         {
@@ -63,13 +62,15 @@ pub async fn generate_work_info_table(root: &Path) -> io::Result<()> {
         .map(|(id, path)| {
             let id = *id;
             let path = path.clone();
-            smol::spawn(async move {
+            tokio::spawn(async move {
                 let info = get_dir_bms_info(&path).await?;
                 Ok::<(u32, Option<Bms>), io::Error>((id, info))
             })
         })
         .collect();
-    let infos: Vec<_> = try_join_all(info_futs).await?;
+    let tasks_results = try_join_all(info_futs).await?;
+    let infos: Vec<(u32, Option<Bms>)> =
+        tasks_results.into_iter().collect::<io::Result<Vec<_>>>()?;
 
     // Write Excel
     async {

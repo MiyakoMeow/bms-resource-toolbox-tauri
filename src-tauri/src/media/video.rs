@@ -11,7 +11,7 @@ use std::{
 
 use futures::stream::{self, StreamExt as FuturesStreamExt, TryStreamExt};
 use serde::Deserialize;
-use smol::{
+use tokio::{
     fs::{self, remove_file},
     io::{self},
     process::Command,
@@ -335,8 +335,7 @@ async fn process_videos_in_directory(
     // Collect tasks
     let mut entries = fs::read_dir(dir_path).await?;
     let mut tasks: Vec<PathBuf> = Vec::new();
-    while let Some(entry) = smol::stream::StreamExt::next(&mut entries).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let file_path = entry.path();
         if !file_path.is_file() {
             continue;
@@ -463,8 +462,7 @@ pub async fn process_bms_video_folders(
     }
 
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = smol::stream::StreamExt::next(&mut entries).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let dir_path = entry.path();
         if !dir_path.is_dir() {
             continue;

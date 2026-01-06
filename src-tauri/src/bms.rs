@@ -2,10 +2,10 @@ pub mod work;
 
 use std::{cell::LazyCell, collections::HashMap, fs::FileType, path::Path};
 
-use blocking::unblock;
 use bms_rs::{bms::prelude::*, bmson::bmson_to_bms::BmsonToBmsOutput};
 use futures::stream::{self, StreamExt as FuturesStreamExt};
-use smol::{fs, io};
+use tokio::task::spawn_blocking;
+use tokio::{fs, io};
 
 use self::work::extract_work_name;
 
@@ -110,8 +110,7 @@ pub async fn get_dir_bms_list(dir: &Path) -> io::Result<Vec<BmsOutput>> {
     // 收集候选文件
     let mut bms_files = Vec::new();
     let mut dir_entry = fs::read_dir(dir).await?;
-    while let Some(entry) = smol::stream::StreamExt::next(&mut dir_entry).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = dir_entry.next_entry().await {
         let file_type: FileType = entry.file_type().await?;
         if file_type.is_dir() {
             continue;
@@ -150,21 +149,22 @@ pub async fn get_dir_bms_list(dir: &Path) -> io::Result<Vec<BmsOutput>> {
         .filter_map(|res| async move { res.ok().flatten() })
         // Stage 2: 解析（CPU 密集，受限并发）
         .map(|pending| async move {
-            let parsed: io::Result<BmsOutput> = match pending {
-                PendingParse::Bms(bytes) => unblock(move || parse_bms_bytes(&bytes)).await,
-                PendingParse::Bmson(bytes) => unblock(move || parse_bmson_bytes(&bytes)).await,
+            let result = match pending {
+                PendingParse::Bms(bytes) => spawn_blocking(move || parse_bms_bytes(&bytes)).await,
+                PendingParse::Bmson(bytes) => {
+                    spawn_blocking(move || parse_bmson_bytes(&bytes)).await
+                }
             };
-            if let Ok(out) = parsed {
-                (!out.warnings.iter().any(|warning| {
+            match result {
+                Ok(Ok(out)) => (!out.warnings.iter().any(|warning| {
                     matches!(
                         warning,
                         BmsWarning::PlayingError(_)
                             | BmsWarning::PlayingWarning(PlayingWarning::NoPlayableNotes)
                     )
                 }))
-                .then_some(out)
-            } else {
-                None
+                .then_some(out),
+                _ => None,
             }
         })
         .buffer_unordered(parse_concurrency)
@@ -238,8 +238,7 @@ pub async fn is_work_dir(dir: &Path) -> io::Result<bool> {
     // Collect all files first
     let mut files = Vec::new();
     let mut read_dir = fs::read_dir(dir).await?;
-    while let Some(entry) = smol::stream::StreamExt::next(&mut read_dir).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = read_dir.next_entry().await {
         let file_type: FileType = entry.file_type().await?;
         if file_type.is_file() {
             files.push(entry.path());
@@ -282,8 +281,7 @@ pub async fn is_root_dir(dir: &Path) -> io::Result<bool> {
     // Collect all directories first
     let mut dirs = Vec::new();
     let mut read_dir = fs::read_dir(dir).await?;
-    while let Some(entry) = smol::stream::StreamExt::next(&mut read_dir).await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = read_dir.next_entry().await {
         let file_type: FileType = entry.file_type().await?;
         if file_type.is_dir() {
             dirs.push(entry.path());

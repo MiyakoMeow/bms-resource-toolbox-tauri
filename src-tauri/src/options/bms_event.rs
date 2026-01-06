@@ -3,7 +3,7 @@ use std::io;
 use std::str::FromStr;
 
 // No direct imports from lang_core needed here
-use smol::process::Command;
+use tokio::process::Command;
 
 #[derive(Debug, Clone, Copy, clap::ValueEnum)]
 #[repr(u32)]

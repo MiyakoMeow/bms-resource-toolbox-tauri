@@ -8,12 +8,12 @@ use std::{
 
 use futures::stream::StreamExt as _;
 use futures::stream::{self, TryStreamExt};
-use smol::{
+use std::sync::atomic::{AtomicBool, Ordering};
+use tokio::{
     fs::{self, remove_file},
     io,
     process::Command,
 };
-use std::sync::atomic::{AtomicBool, Ordering};
 use which::which;
 
 /// Audio processing preset configuration
@@ -152,8 +152,7 @@ async fn transfer_audio_in_directory(
 
     // Collect files to process
     let mut entries = fs::read_dir(dir_path).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let path = entry.path();
         if !path.is_file() {
             continue;
@@ -345,8 +344,7 @@ pub async fn process_bms_folders(
 
     // Iterate through all subdirectories under root directory
     let mut entries = fs::read_dir(root_dir).await?;
-    while let Some(entry) = entries.next().await {
-        let entry = entry?;
+    while let Ok(Some(entry)) = entries.next_entry().await {
         let dir_path = entry.path();
         if !dir_path.is_dir() {
             continue;
