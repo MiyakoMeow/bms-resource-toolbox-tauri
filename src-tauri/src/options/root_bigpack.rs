@@ -679,7 +679,7 @@ pub fn get_remove_media_file_rules() -> Vec<Vec<RemoveMediaRule>> {
     ]
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub enum RemoveMediaPreset {
     /// Comprehensive preset: removes avi/wmv/mpg/mpeg when mp4 exists, removes wmv/mpg/mpeg when avi exists, removes ogg when flac/wav exists, removes wav when flac exists, removes wmv when mpg exists
     Oraja = 0,

@@ -5,7 +5,7 @@ use std::str::FromStr;
 // No direct imports from lang_core needed here
 use tokio::process::Command;
 
-#[derive(Debug, Clone, Copy, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum, serde::Serialize, serde::Deserialize)]
 #[repr(u32)]
 pub enum BMSEvent {
     BOFNT = 19,

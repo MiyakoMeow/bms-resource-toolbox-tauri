@@ -14,7 +14,7 @@ use crate::{
 pub const DEFAULT_TITLE: &str = "!!! UnknownTitle !!!";
 pub const DEFAULT_ARTIST: &str = "!!! UnknownArtist !!!";
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub enum BmsFolderSetNameType {
     /// Suitable for cases where you want to directly replace directory name with "Title [Artist]"
     ReplaceTitleArtist = 0,

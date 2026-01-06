@@ -48,7 +48,7 @@ impl ReplaceOptions {
 }
 
 /// 预设的替换策略
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub enum ReplacePreset {
     /// 与 `ReplaceOptions::default()` 等价
     Default = 0,
