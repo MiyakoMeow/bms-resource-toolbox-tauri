@@ -4,6 +4,16 @@ import '../main.css';
 
 const { children }: { children: Snippet } = $props();
 
+// 流星类型定义
+interface Meteor {
+  id: number;
+  startX: number;
+  startY: number;
+  angle: number;
+  speed: number;
+  length: number;
+}
+
 // 生成随机星星位置
 const stars = Array.from({ length: 100 }, (_, i) => {
   const size = Math.random();
@@ -37,7 +47,7 @@ const stars = Array.from({ length: 100 }, (_, i) => {
 });
 
 // 流星状态
-let meteors = $state([]);
+let meteors = $state<Meteor[]>([]);
 
 // 生成流星函数
 function createMeteor() {
