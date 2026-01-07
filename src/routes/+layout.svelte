@@ -98,7 +98,6 @@ scheduleMeteor();
 				--angle: {meteor.angle}deg;
 				--speed: {meteor.speed}s;
 				--length: {meteor.length}px;
-				animation: meteor-fly var(--speed) linear forwards;
 			"
 			aria-hidden="true"
 		></div>

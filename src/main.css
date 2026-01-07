@@ -111,7 +111,12 @@ body {
   overflow: hidden;
 }
 
-/* ========== 流星拖尾样式 ========== */
+/* ========== 流星样式 ========== */
+
+/* 流星容器 */
+.meteor {
+  animation: meteor-fly var(--speed) linear forwards;
+}
 
 /* 流星拖尾 - 使用伪元素 */
 .meteor::before {
