@@ -43,7 +43,7 @@ function createMeteor() {
 		startX: Math.random() * 100, // 0-100%
 		startY: Math.random() * 30, // 0-30%（从屏幕上半部分开始）
 		angle: Math.random() * 30 + 30, // 30-60度（对角线）
-		speed: 1 + Math.random() * 1.5, // 1-2.5秒
+		speed: 3 + Math.random() * 4, // 3-7秒（更慢的速度）
 		length: 100 + Math.random() * 150 // 拖尾长度 100-250px
 	};
 	meteors = [...meteors, meteor];
