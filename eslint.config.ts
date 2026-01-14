@@ -58,7 +58,7 @@ const config: Linter.Config[] = [
       'better-tailwindcss/no-deprecated-classes': 'error',
       'better-tailwindcss/no-duplicate-classes': 'warn',
       'better-tailwindcss/no-unnecessary-whitespace': 'warn',
-      'better-tailwindcss/no-unregistered-classes': 'warn',
+      'better-tailwindcss/no-unregistered-classes': 'off',
       'tailwind-canonical-classes/tailwind-canonical-classes': [
         'warn',
         { cssPath: tailwindCssPath },
@@ -103,7 +103,7 @@ const config: Linter.Config[] = [
       'better-tailwindcss': betterTailwind,
     },
     rules: {
-      'better-tailwindcss/no-unregistered-classes': 'warn',
+      'better-tailwindcss/no-unregistered-classes': 'off',
       // 避免与Prettier冲突
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
       'better-tailwindcss/enforce-consistent-class-order': 'off',

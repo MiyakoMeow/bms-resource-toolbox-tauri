@@ -19,6 +19,7 @@ pub fn run() -> Result<(), tauri::Error> {
     {
         tauri::Builder::default()
             .plugin(tauri_plugin_opener::init())
+            .plugin(tauri_plugin_dialog::init())
             .invoke_handler(tauri::generate_handler![
                 // BMS commands
                 options::bms::parse_bms_file,
