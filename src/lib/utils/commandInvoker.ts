@@ -6,6 +6,7 @@
 
 import { invoke } from '@tauri-apps/api/core';
 import type { CommandResult } from '$lib/types/api.js';
+import { isFrontendCommand, executeFrontendCommand } from './bmsEventHelper.js';
 
 /**
  * 调用 Tauri 命令
@@ -20,6 +21,20 @@ export async function invokeCommand<T = unknown>(
 ): Promise<CommandResult<T>> {
   const startTime = performance.now();
 
+  // 前端命令特殊处理
+  if (isFrontendCommand(commandName)) {
+    const result = await executeFrontendCommand(commandName, params || {});
+    const executionTime = performance.now() - startTime;
+
+    return {
+      success: result.success,
+      data: undefined as T,
+      executionTime: Math.round(executionTime),
+      error: result.error,
+    };
+  }
+
+  // Tauri 后端命令
   try {
     const data = await invoke<T>(commandName, params || {});
     const executionTime = performance.now() - startTime;

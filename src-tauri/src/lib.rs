@@ -61,9 +61,6 @@ pub fn run() -> Result<(), tauri::Error> {
                 options::root_event::root_event_check_num_folder,
                 options::root_event::root_event_create_num_folders,
                 options::root_event::root_event_generate_work_info_table,
-                // BMS event commands
-                options::bms_event::bms_event_open_list,
-                options::bms_event::bms_event_open_event_works,
             ])
             .setup(|_app| {
                 #[cfg(debug_assertions)]

@@ -443,6 +443,7 @@ export const COMMAND_REGISTRY: CommandDefinition[] = [
     ],
     returnType: 'void',
     dangerous: false,
+    isFrontendCommand: true,
   },
 
   {
@@ -492,6 +493,7 @@ export const COMMAND_REGISTRY: CommandDefinition[] = [
     ],
     returnType: 'void',
     dangerous: false,
+    isFrontendCommand: true,
   },
 ];
 

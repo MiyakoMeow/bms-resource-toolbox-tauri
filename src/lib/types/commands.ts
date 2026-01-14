@@ -50,6 +50,8 @@ export interface CommandDefinition {
   dangerous: boolean;
   /** 使用示例（可选） */
   example?: string;
+  /** 是否为前端命令（不需要调用 Tauri 后端） */
+  isFrontendCommand?: boolean;
 }
 
 /**

@@ -70,10 +70,6 @@ export const SAFE_COMMANDS = new Set([
 
   // Root Event 组
   'root_event_check_num_folder',
-
-  // BMS Event 组
-  'bms_event_open_list',
-  'bms_event_open_event_works',
 ]);
 
 /**

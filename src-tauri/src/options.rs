@@ -1,5 +1,4 @@
 pub mod bms;
-pub mod bms_event;
 pub mod fs;
 pub mod pack;
 pub mod rawpack;
