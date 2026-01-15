@@ -8,10 +8,7 @@ import { getDirBmsInfo } from '$lib/utils/bms/scanner.js';
 /**
  * 检查数字文件夹（1 到 max）哪些不存在
  */
-export async function checkNumFolder(
-  dir: string,
-  max: number
-): Promise<string[]> {
+export async function checkNumFolder(dir: string, max: number): Promise<string[]> {
   const missing: string[] = [];
 
   for (let i = 1; i <= max; i++) {
@@ -27,10 +24,7 @@ export async function checkNumFolder(
 /**
  * 创建数字文件夹
  */
-export async function createNumFolders(
-  dir: string,
-  max: number
-): Promise<void> {
+export async function createNumFolders(dir: string, max: number): Promise<void> {
   for (let i = 1; i <= max; i++) {
     const folderPath = `${dir}/${i}`;
 
@@ -55,9 +49,7 @@ export interface WorkInfoRow {
 /**
  * 生成工作信息表
  */
-export async function generateWorkInfoTable(
-  rootDir: string
-): Promise<WorkInfoRow[]> {
+export async function generateWorkInfoTable(rootDir: string): Promise<WorkInfoRow[]> {
   const entries = await readDir(rootDir);
   const workInfoList: WorkInfoRow[] = [];
 

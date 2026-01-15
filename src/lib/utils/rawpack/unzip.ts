@@ -4,7 +4,11 @@
 
 import { readDir, exists, mkdir, rename } from '@tauri-apps/plugin-fs';
 import { ArchiveExtractor } from '$lib/utils/fs/archive.js';
-import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '$lib/utils/fs/moving.js';
+import {
+  moveElementsAcrossDir,
+  replaceOptionsFromPreset,
+  ReplacePreset,
+} from '$lib/utils/fs/moving.js';
 
 /**
  * 解压数字编号压缩包到 BMS 文件夹
@@ -51,7 +55,7 @@ export async function unzipNumericToBmsFolder(
     // 构建目标目录名
     let targetDirName: string;
     const entries = await readDir(workCacheDir);
-    const subdirs = entries.filter((e) => e.children !== undefined);
+    const subdirs = entries.filter((e) => e.isDirectory);
 
     if (subdirs.length === 1 && subdirs[0].name) {
       // 如果只有一个子目录，使用该目录名
@@ -88,7 +92,7 @@ export async function unzipWithNameToBmsFolder(
 
   // 获取所有压缩包文件
   const entries = await readDir(packDir);
-  const packFiles = entries.filter((e) => e.children === undefined);
+  const packFiles = entries.filter((e) => !e.isDirectory);
 
   for (const entry of packFiles) {
     if (!entry.name) {
@@ -96,9 +100,7 @@ export async function unzipWithNameToBmsFolder(
     }
 
     const ext = entry.name.split('.').pop()?.toLowerCase();
-    if (
-!['zip', '7z', 'rar'].includes(ext || '')
-) {
+    if (!['zip', '7z', 'rar'].includes(ext || '')) {
       continue;
     }
 
@@ -157,7 +159,7 @@ async function moveOutFilesInFolderInCacheDir(
         continue;
       }
 
-      if (entry.children !== undefined) {
+      if (entry.isDirectory) {
         // 跳过 __MACOSX 目录
         if (entry.name === '__MACOSX') {
           const { remove } = await import('@tauri-apps/plugin-fs');
@@ -181,9 +183,7 @@ async function moveOutFilesInFolderInCacheDir(
     }
 
     if (cacheFolderCount > 1) {
-      console.log(
-        ` !_! ${cacheDirPath}: has more than 1 folders, please do it manually.`
-      );
+      console.log(` !_! ${cacheDirPath}: has more than 1 folders, please do it manually.`);
       error = true;
     }
 
@@ -201,14 +201,8 @@ async function moveOutFilesInFolderInCacheDir(
         await rename(innerInnerPath, `${innerInnerPath}-rep`);
       }
 
-      console.log(
-        ` - Moving inner files in ${innerPath} to ${cacheDirPath}`
-      );
-      await moveElementsAcrossDir(
-        innerPath,
-        cacheDirPath,
-        replaceOptionsFromPreset(replacePreset)
-      );
+      console.log(` - Moving inner files in ${innerPath} to ${cacheDirPath}`);
+      await moveElementsAcrossDir(innerPath, cacheDirPath, replaceOptionsFromPreset(replacePreset));
 
       // 删除内部目录
       const { remove } = await import('@tauri-apps/plugin-fs');
@@ -238,7 +232,7 @@ async function getNumSetFileNames(packDir: string): Promise<string[]> {
   const entries = await readDir(packDir);
 
   for (const entry of entries) {
-    if (entry.children !== undefined || !entry.name) {
+    if (entry.isDirectory || !entry.name) {
       continue;
     }
 

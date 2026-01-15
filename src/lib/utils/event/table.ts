@@ -17,9 +17,7 @@ export async function generateWorkInfoExcel(
   const XLSX = await import('xlsx');
 
   // 准备数据
-  const data = [
-    ['编号', '文件夹名', '标题', '艺术家', '流派'],
-  ];
+  const data = [['编号', '文件夹名', '标题', '艺术家', '流派']];
 
   for (const workInfo of workInfoList) {
     data.push([

@@ -2,13 +2,7 @@
  * 跨目录文件移动工具（含冲突处理）
  */
 
-import {
-  readDir,
-  rename,
-  metadata,
-  exists,
-  remove,
-} from '@tauri-apps/plugin-fs';
+import { readDir, rename, stat, exists, remove } from '@tauri-apps/plugin-fs';
 import { isFileSameContent, isDirHavingFile } from './compare.js';
 import { getValidFileName } from './path.js';
 
@@ -72,7 +66,7 @@ function replaceOptionsUpdatePack(): ReplaceOptions {
 /**
  * 获取特定文件的替换策略
  */
-function getActionForPath(options: ReplaceOptions, filePath: string): ReplaceAction {
+async function getActionForPath(options: ReplaceOptions, filePath: string): Promise<ReplaceAction> {
   const { getFileExtension } = await import('./path.js');
   const ext = getFileExtension(filePath);
   return options.ext[ext] ?? options.default;
@@ -89,7 +83,7 @@ export async function moveElementsAcrossDir(
   // 检查源目录元数据
   let fromMeta;
   try {
-    fromMeta = await metadata(fromDir);
+    fromMeta = await stat(fromDir);
   } catch {
     // 源目录不存在，直接返回
     return;
@@ -115,7 +109,7 @@ export async function moveElementsAcrossDir(
   }
 
   // 目标存在但不是目录
-  const toMeta = await metadata(toDir);
+  const toMeta = await stat(toDir);
   if (!toMeta.isDirectory) {
     throw new Error('目标路径存在且不是目录');
   }
@@ -127,11 +121,7 @@ export async function moveElementsAcrossDir(
     const [currentFrom, currentTo] = queue.shift()!;
 
     // 处理当前目录
-    const subdirs = await processDirectory(
-      currentFrom,
-      currentTo,
-      replaceOptions
-    );
+    const subdirs = await processDirectory(currentFrom, currentTo, replaceOptions);
 
     // 将发现的子目录加入队列
     queue.push(...subdirs);
@@ -178,10 +168,10 @@ async function processDirectory(
   const metas = await Promise.all(
     pairs.map(async (pair) => {
       try {
-        const srcMeta = await metadata(pair.src);
+        const srcMeta = await stat(pair.src);
         let dstMeta;
         try {
-          dstMeta = await metadata(pair.dst);
+          dstMeta = await stat(pair.dst);
         } catch {
           dstMeta = null;
         }
@@ -210,7 +200,7 @@ async function processDirectory(
         dirDirectMoves.push([src, dst]);
       }
     } else if (srcMeta.isFile) {
-      const action = getActionForPath(replaceOptions, src);
+      const action = await getActionForPath(replaceOptions, src);
 
       switch (action) {
         case ReplaceAction.Skip:
@@ -271,12 +261,8 @@ async function processDirectory(
 /**
  * 移动单个文件，根据策略处理冲突
  */
-async function moveFile(
-  src: string,
-  dst: string,
-  options: ReplaceOptions
-): Promise<void> {
-  const action = getActionForPath(options, src);
+async function moveFile(src: string, dst: string, options: ReplaceOptions): Promise<void> {
+  const action = await getActionForPath(options, src);
 
   switch (action) {
     case ReplaceAction.Replace:

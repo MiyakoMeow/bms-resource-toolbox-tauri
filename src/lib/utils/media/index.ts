@@ -7,16 +7,15 @@
 
 // 类型定义
 export type {
-	AudioPreset,
-	VideoPreset,
-	ProcessResult,
-	AudioProcessParams,
-	VideoProcessParams,
-	MediaCleanupParams,
-	RemoveMediaRule,
-	VideoInfo
+  ProcessResult,
+  AudioProcessParams,
+  VideoProcessParams,
+  MediaCleanupParams,
+  RemoveMediaRule,
+  VideoInfo,
 } from './types.js';
 
+// 枚举（既是类型也是值）
 export { AudioPreset, VideoPreset } from './types.js';
 
 // 预设配置

@@ -22,7 +22,11 @@
       "csp": null
     }
   },
-  "plugins": {},
+  "plugins": {
+    "fs": {
+      "scope": ["**"]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

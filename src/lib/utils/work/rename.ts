@@ -5,7 +5,11 @@
 import { readDir, rename, exists } from '@tauri-apps/plugin-fs';
 import { getDirBmsInfo } from '$lib/utils/bms/scanner.js';
 import { getValidFileName } from '$lib/utils/fs/path.js';
-import { moveElementsAcrossDir, ReplacePreset } from '$lib/utils/fs/moving.js';
+import {
+  moveElementsAcrossDir,
+  replaceOptionsFromPreset,
+  type ReplacePreset,
+} from '$lib/utils/fs/moving.js';
 
 /**
  * 默认标题
@@ -105,7 +109,8 @@ export async function setNameByBms(
   console.log(`Rename work dir by moving content: ${workDir} -> ${targetWorkDir}`);
 
   if (!dryRun) {
-    await moveElementsAcrossDir(workDir, targetWorkDir, replacePreset);
+    const replaceOptions = replaceOptionsFromPreset(replacePreset);
+    await moveElementsAcrossDir(workDir, targetWorkDir, replaceOptions);
   }
 
   if (dryRun) {

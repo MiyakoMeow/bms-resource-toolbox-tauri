@@ -3,11 +3,7 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import {
-  setNameByBms,
-  undoSetNameByBms,
-  BmsFolderSetNameType,
-} from '$lib/utils/work/rename.js';
+import { setNameByBms, undoSetNameByBms, BmsFolderSetNameType } from '$lib/utils/work/rename.js';
 import { ReplacePreset } from '$lib/utils/fs/moving.js';
 
 /**
@@ -23,7 +19,7 @@ export async function rootSetNameByBms(
 
   for (const entry of entries) {
     // 只处理目录
-    if (entry.children === undefined) {
+    if (!entry.isDirectory) {
       continue;
     }
 
@@ -48,7 +44,7 @@ export async function rootUndoSetNameByBms(
 
   for (const entry of entries) {
     // 只处理目录
-    if (entry.children === undefined) {
+    if (!entry.isDirectory) {
       continue;
     }
 
@@ -76,7 +72,7 @@ export async function copyNumberedWorkdirNames(
 
   // 构建编号到名称的映射
   for (const entry of entries) {
-    if (entry.children === undefined) {
+    if (!entry.isDirectory) {
       continue;
     }
 
@@ -95,7 +91,7 @@ export async function copyNumberedWorkdirNames(
   const toEntries = await readDir(toDir);
 
   for (const entry of toEntries) {
-    if (entry.children === undefined) {
+    if (!entry.isDirectory) {
       continue;
     }
 

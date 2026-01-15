@@ -45,7 +45,7 @@ async function fetchDirElements(dir: string): Promise<DirElements> {
     const entries = await readDir(dir);
 
     for (const entry of entries) {
-      if (entry.children !== undefined) {
+      if (entry.isDirectory) {
         continue; // 跳过目录
       }
 

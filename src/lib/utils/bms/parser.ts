@@ -3,20 +3,8 @@
  * 支持 BMS (.bms, .bme, .bml, .pms) 和 BMSON (.bmson) 格式
  */
 
-import type {
-  Bms,
-  BmsOutput,
-  BmsWarning,
-  BmsMusicInfo,
-  BmsWav,
-  BmsBmp,
-  Bmson,
-} from './types.js';
-import {
-  BmsWarningType,
-  PlayingError,
-  PlayingWarning,
-} from './types.js';
+import type { Bms, BmsOutput, BmsWarning, BmsMusicInfo, BmsWav, BmsBmp, Bmson } from './types.js';
+import { BmsWarningType, PlayingError, PlayingWarning } from './types.js';
 
 /**
  * BMS 解析器类

@@ -14,7 +14,7 @@ export async function isDirHavingFile(dirPath: string): Promise<boolean> {
 
     for (const entry of entries) {
       // 检查是否为文件
-      if (entry.children === undefined) {
+      if (!entry.isDirectory) {
         return true;
       }
     }
@@ -63,17 +63,17 @@ export async function compareDirectories(
 
     // 构建 A 的文件映射
     for (const entry of entriesA) {
-      if (entry.children !== undefined) continue;
+      if (entry.isDirectory) continue;
       if (!entry.name) continue;
 
-      const { metadata } = await import('@tauri-apps/plugin-fs');
-      const meta = await metadata(`${dirA}/${entry.name}`);
-      mapA.set(entry.name, { size: meta.size, modified: meta.modified?.getTime() });
+      const { stat } = await import('@tauri-apps/plugin-fs');
+      const meta = await stat(`${dirA}/${entry.name}`);
+      mapA.set(entry.name, { size: meta.size, modified: meta.mtime?.getTime() });
     }
 
     // 构建 B 的文件映射
     for (const entry of entriesB) {
-      if (entry.children !== undefined) continue;
+      if (entry.isDirectory) continue;
       if (!entry.name) continue;
 
       mapB.set(entry.name, `${dirB}/${entry.name}`);
@@ -99,8 +99,8 @@ export async function compareDirectories(
         }
       } else {
         // 只比较大小
-        const { metadata } = await import('@tauri-apps/plugin-fs');
-        const metaB = await metadata(pathB);
+        const { stat } = await import('@tauri-apps/plugin-fs');
+        const metaB = await stat(pathB);
         if (metaB.size === fileA.size) {
           diff.same.push(name);
         } else {

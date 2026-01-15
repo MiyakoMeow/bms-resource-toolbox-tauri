@@ -2,14 +2,7 @@
  * 文件夹同步工具
  */
 
-import {
-  readDir,
-  copyFile,
-  rename,
-  metadata,
-  exists,
-  remove,
-} from '@tauri-apps/plugin-fs';
+import { readDir, copyFile, rename, stat, exists, remove } from '@tauri-apps/plugin-fs';
 import { getFileExtension } from './path.js';
 import { isFileSameContent } from './compare.js';
 
@@ -184,13 +177,10 @@ export async function syncFolder(
   const dstRemoveDirs: string[] = [];
 
   // 收集目录条目
-  const [srcEntries, dstEntries] = await Promise.all([
-    readDir(srcDir),
-    readDir(dstDir),
-  ]);
+  const [srcEntries, dstEntries] = await Promise.all([readDir(srcDir), readDir(dstDir)]);
 
-  const srcMap = new Map<string, { entry: typeof srcEntries[0] }>();
-  const dstMap = new Map<string, typeof dstEntries[0]>();
+  const srcMap = new Map<string, { entry: (typeof srcEntries)[0] }>();
+  const dstMap = new Map<string, (typeof dstEntries)[0]>();
 
   for (const entry of srcEntries) {
     if (entry.name) srcMap.set(entry.name, { entry });
@@ -206,7 +196,7 @@ export async function syncFolder(
     const dstPath = `${dstDir}/${name}`;
 
     // 检查是否为目录
-    if (entry.children !== undefined) {
+    if (entry.isDirectory) {
       if (!(await exists(dstPath))) {
         await createDirectory(dstPath);
       }
@@ -256,18 +246,15 @@ export async function syncFolder(
 
     if (dstFileExists) {
       // 读取元数据
-      const [srcMd, dstMd] = await Promise.all([
-        metadata(srcPath),
-        metadata(dstPath),
-      ]);
+      const [srcMd, dstMd] = await Promise.all([stat(srcPath), stat(dstPath)]);
 
       if (preset.fileCompare.checkSize && same) {
         same = srcMd.size === dstMd.size;
       }
 
       if (preset.fileCompare.checkMtime && same) {
-        const srcMtime = srcMd.modified?.getTime() || 0;
-        const dstMtime = dstMd.modified?.getTime() || 0;
+        const srcMtime = srcMd.mtime?.getTime() || 0;
+        const dstMtime = dstMd.mtime?.getTime() || 0;
         same = srcMtime === dstMtime;
       }
 
@@ -306,7 +293,7 @@ export async function syncFolder(
       const dstPath = `${dstDir}/${name}`;
 
       if (!(await exists(srcPath))) {
-        if (entry.children !== undefined) {
+        if (entry.isDirectory) {
           await remove(dstPath, { recursive: true });
           dstRemoveDirs.push(name);
         } else {

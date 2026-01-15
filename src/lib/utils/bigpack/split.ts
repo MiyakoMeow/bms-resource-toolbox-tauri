@@ -3,21 +3,22 @@
  */
 
 import { readDir, mkdir, rename, exists, remove } from '@tauri-apps/plugin-fs';
-import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '$lib/utils/fs/moving.js';
+import {
+  moveElementsAcrossDir,
+  replaceOptionsFromPreset,
+  ReplacePreset,
+} from '$lib/utils/fs/moving.js';
 
 /**
  * 按首字符拆分文件夹
  */
-export async function splitFoldersWithFirstChar(
-  rootDir: string,
-  dryRun: boolean
-): Promise<void> {
+export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
   const charMap = new Map<string, string[]>();
 
   // 按首字符分组
   for (const entry of entries) {
-    if (entry.children === undefined || !entry.name) {
+    if (!entry.isDirectory || !entry.name) {
       continue;
     }
 
@@ -61,7 +62,7 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
   const entries = await readDir(rootDir);
 
   for (const entry of entries) {
-    if (entry.children === undefined || !entry.name) {
+    if (!entry.isDirectory || !entry.name) {
       continue;
     }
 
@@ -76,7 +77,7 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
     const subEntries = await readDir(charDir);
 
     for (const subEntry of subEntries) {
-      if (subEntry.children === undefined || !subEntry.name) {
+      if (!subEntry.isDirectory || !subEntry.name) {
         continue;
       }
 
@@ -100,10 +101,7 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
 /**
  * 合并拆分的文件夹
  */
-export async function mergeSplitFolders(
-  rootDir: string,
-  dryRun: boolean
-): Promise<void> {
+export async function mergeSplitFolders(rootDir: string, dryRun: boolean): Promise<void> {
   // 类似于撤销拆分
   await undoSplitPack(rootDir, dryRun);
 }
@@ -125,7 +123,7 @@ export async function moveWorksInPack(
   const entries = await readDir(rootDir);
 
   for (const entry of entries) {
-    if (entry.children === undefined || !entry.name) {
+    if (!entry.isDirectory || !entry.name) {
       continue;
     }
 
@@ -158,7 +156,7 @@ export async function moveOutWorks(
   const entries = await readDir(sourceDir);
 
   for (const entry of entries) {
-    if (entry.children === undefined || !entry.name) {
+    if (!entry.isDirectory || !entry.name) {
       continue;
     }
 
@@ -184,16 +182,13 @@ export async function moveOutWorks(
 /**
  * 合并同名作品
  */
-export async function moveWorksWithSameName(
-  rootDir: string,
-  dryRun: boolean
-): Promise<void> {
+export async function moveWorksWithSameName(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
   const nameMap = new Map<string, string[]>();
 
   // 按名称分组（忽略编号）
   for (const entry of entries) {
-    if (entry.children === undefined || !entry.name) {
+    if (!entry.isDirectory || !entry.name) {
       continue;
     }
 

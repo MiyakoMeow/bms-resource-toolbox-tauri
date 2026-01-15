@@ -12,7 +12,9 @@
     "npm:@tauri-apps/api@2": "2.9.1",
     "npm:@tauri-apps/cli@2": "2.9.6",
     "npm:@tauri-apps/plugin-dialog@2": "2.5.0",
+    "npm:@tauri-apps/plugin-fs@^2.4.5": "2.4.5",
     "npm:@tauri-apps/plugin-opener@2": "2.5.2",
+    "npm:@tauri-apps/plugin-shell@^2.3.4": "2.3.4",
     "npm:@types/eslint-config-prettier@^6.11.3": "6.11.3",
     "npm:@types/node@^25.0.3": "25.0.3",
     "npm:@typescript-eslint/parser@^7.18.0": "7.18.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3",
@@ -33,7 +35,8 @@
     "npm:tailwindcss@4": "4.1.18",
     "npm:typescript-eslint@^8.52.0": "8.52.0_eslint@9.39.2__jiti@2.6.1_typescript@5.6.3_@typescript-eslint+parser@8.52.0__eslint@9.39.2___jiti@2.6.1__typescript@5.6.3",
     "npm:typescript@~5.6.2": "5.6.3",
-    "npm:vite@^6.0.3": "6.4.1_@types+node@25.0.3_picomatch@4.0.3"
+    "npm:vite@^6.0.3": "6.4.1_@types+node@25.0.3_picomatch@4.0.3",
+    "npm:xlsx@~0.18.5": "0.18.5"
   },
   "npm": {
     "@esbuild/aix-ppc64@0.25.12": {
@@ -780,12 +783,26 @@
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@tauri-apps/plugin-dialog/-/plugin-dialog-2.5.0.tgz"
     },
+    "@tauri-apps/plugin-fs@2.4.5": {
+      "integrity": "sha512-dVxWWGE6VrOxC7/jlhyE+ON/Cc2REJlM35R3PJX3UvFw2XwYhLGQVAIyrehenDdKjotipjYEVc4YjOl3qq90fA==",
+      "dependencies": [
+        "@tauri-apps/api"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@tauri-apps/plugin-fs/-/plugin-fs-2.4.5.tgz"
+    },
     "@tauri-apps/plugin-opener@2.5.2": {
       "integrity": "sha512-ei/yRRoCklWHImwpCcDK3VhNXx+QXM9793aQ64YxpqVF0BDuuIlXhZgiAkc15wnPVav+IbkYhmDJIv5R326Mew==",
       "dependencies": [
         "@tauri-apps/api"
       ],
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/@tauri-apps/plugin-opener/-/plugin-opener-2.5.2.tgz"
+    },
+    "@tauri-apps/plugin-shell@2.3.4": {
+      "integrity": "sha512-ktsRWf8wHLD17aZEyqE8c5x98eNAuTizR1FSX475zQ4TxaiJnhwksLygQz+AGwckJL5bfEP13nWrlTNQJUpKpA==",
+      "dependencies": [
+        "@tauri-apps/api"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/@tauri-apps/plugin-shell/-/plugin-shell-2.3.4.tgz"
     },
     "@types/cookie@0.6.0": {
       "integrity": "sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==",
@@ -976,6 +993,10 @@
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/acorn/-/acorn-8.15.0.tgz"
     },
+    "adler-32@1.3.1": {
+      "integrity": "sha512-ynZ4w/nUUv5rrsR8UUGoe1VC9hZj6V5hU9Qw1HlMDJGEJw5S7TfTErWTjMys6M7vr0YWcPqs3qAr4ss0nDfP+A==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/adler-32/-/adler-32-1.3.1.tgz"
+    },
     "ajv@6.12.6": {
       "integrity": "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==",
       "dependencies": [
@@ -1073,6 +1094,14 @@
       "integrity": "sha512-PxZwGNvH7Ak8WX5iXzoK1KPZttBXNPuaOvI2ZYU7NrlM+d9Ov+TUvlLOBNGzVXAntMSMMlJPd+jY6ovrVjSmUw==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/caniuse-lite/-/caniuse-lite-1.0.30001762.tgz"
     },
+    "cfb@1.2.2": {
+      "integrity": "sha512-KfdUZsSOw19/ObEWasvBP/Ac4reZvAGauZhs6S/gqNhXhI7cKwvlH7ulj+dOEYnca4bm4SGo8C1bTAQvnTjgQA==",
+      "dependencies": [
+        "adler-32",
+        "crc-32"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/cfb/-/cfb-1.2.2.tgz"
+    },
     "chalk@4.1.2": {
       "integrity": "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==",
       "dependencies": [
@@ -1092,6 +1121,10 @@
       "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/clsx/-/clsx-2.1.1.tgz"
     },
+    "codepage@1.15.0": {
+      "integrity": "sha512-3g6NUTPd/YtuuGrhMnOMRjFc+LJw/bnMp3+0r/Wcz3IXUuCosKRJvMphm5+Q+bvTVGcJJuRvVLuYba+WojaFaA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/codepage/-/codepage-1.15.0.tgz"
+    },
     "color-convert@2.0.1": {
       "integrity": "sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==",
       "dependencies": [
@@ -1110,6 +1143,11 @@
     "cookie@0.6.0": {
       "integrity": "sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/cookie/-/cookie-0.6.0.tgz"
+    },
+    "crc-32@1.2.2": {
+      "integrity": "sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==",
+      "bin": true,
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/crc-32/-/crc-32-1.2.2.tgz"
     },
     "cross-spawn@7.0.6": {
       "integrity": "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==",
@@ -1465,6 +1503,10 @@
     "flatted@3.3.3": {
       "integrity": "sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/flatted/-/flatted-3.3.3.tgz"
+    },
+    "frac@1.1.2": {
+      "integrity": "sha512-w/XBfkibaTl3YDqASwfDUqkna4Z2p9cFSr1aHDt0WoMTECnRfBOv2WArlZILlqgWlmdIlALXGpM2AOhEk5W3IA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/frac/-/frac-1.1.2.tgz"
     },
     "fraction.js@5.3.4": {
       "integrity": "sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==",
@@ -2077,6 +2119,13 @@
       "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/source-map-js/-/source-map-js-1.2.1.tgz"
     },
+    "ssf@0.11.2": {
+      "integrity": "sha512-+idbmIXoYET47hH+d7dfm2epdOMUDjqcB4648sTZ+t2JwoyBFL/insLfB/racrDmsKB3diwsDA696pZMieAC5g==",
+      "dependencies": [
+        "frac"
+      ],
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/ssf/-/ssf-0.11.2.tgz"
+    },
     "strip-bom@3.0.0": {
       "integrity": "sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/strip-bom/-/strip-bom-3.0.0.tgz"
@@ -2316,9 +2365,31 @@
       "bin": true,
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/which/-/which-2.0.2.tgz"
     },
+    "wmf@1.0.2": {
+      "integrity": "sha512-/p9K7bEh0Dj6WbXg4JG0xvLQmIadrner1bi45VMJTfnbVHsc7yIajZyoSoK60/dtVBs12Fm6WkUI5/3WAVsNMw==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/wmf/-/wmf-1.0.2.tgz"
+    },
     "word-wrap@1.2.5": {
       "integrity": "sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==",
       "tarball": "https://mirrors.huaweicloud.com/repository/npm/word-wrap/-/word-wrap-1.2.5.tgz"
+    },
+    "word@0.3.0": {
+      "integrity": "sha512-OELeY0Q61OXpdUfTp+oweA/vtLVg5VDOXh+3he3PNzLGG/y0oylSOC1xRVj0+l4vQ3tj/bB1HVHv1ocXkQceFA==",
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/word/-/word-0.3.0.tgz"
+    },
+    "xlsx@0.18.5": {
+      "integrity": "sha512-dmg3LCjBPHZnQp5/F/+nnTa+miPJxUXB6vtk42YjBBKayDNagxGEeIdWApkYPOf3Z3pm3k62Knjzp7lMeTEtFQ==",
+      "dependencies": [
+        "adler-32",
+        "cfb",
+        "codepage",
+        "crc-32",
+        "ssf",
+        "wmf",
+        "word"
+      ],
+      "bin": true,
+      "tarball": "https://mirrors.huaweicloud.com/repository/npm/xlsx/-/xlsx-0.18.5.tgz"
     },
     "yaml@1.10.2": {
       "integrity": "sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==",
@@ -2347,7 +2418,9 @@
         "npm:@tauri-apps/api@2",
         "npm:@tauri-apps/cli@2",
         "npm:@tauri-apps/plugin-dialog@2",
+        "npm:@tauri-apps/plugin-fs@^2.4.5",
         "npm:@tauri-apps/plugin-opener@2",
+        "npm:@tauri-apps/plugin-shell@^2.3.4",
         "npm:@types/eslint-config-prettier@^6.11.3",
         "npm:@types/node@^25.0.3",
         "npm:@typescript-eslint/parser@^7.18.0",
@@ -2368,7 +2441,8 @@
         "npm:tailwindcss@4",
         "npm:typescript-eslint@^8.52.0",
         "npm:typescript@~5.6.2",
-        "npm:vite@^6.0.3"
+        "npm:vite@^6.0.3",
+        "npm:xlsx@~0.18.5"
       ]
     }
   }

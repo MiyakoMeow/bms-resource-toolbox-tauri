@@ -5,6 +5,8 @@
  */
 
 import { BMSEvent, RemoveMediaPreset } from '$lib/types/enums.js';
+import { type ReplacePreset } from '$lib/utils/fs/moving.js';
+import { type BmsFolderSetNameType } from '$lib/utils/work/rename.js';
 
 /**
  * 获取 BMS 活动列表页面 URL
@@ -179,10 +181,7 @@ export async function executeFrontendCommand(
     // ========== FS 命令 ==========
     if (commandId === 'is_file_same_content') {
       const { isFileSameContent } = await import('$lib/utils/fs/compare.js');
-      const result = await isFileSameContent(
-        params.file1 as string,
-        params.file2 as string
-      );
+      const result = await isFileSameContent(params.file1 as string, params.file2 as string);
       return { success: true, data: result };
     }
 
@@ -200,16 +199,13 @@ export async function executeFrontendCommand(
 
     if (commandId === 'bms_dir_similarity') {
       const { bmsDirSimilarity } = await import('$lib/utils/fs/similarity.js');
-      const result = await bmsDirSimilarity(
-        params.dir1 as string,
-        params.dir2 as string
-      );
+      const result = await bmsDirSimilarity(params.dir1 as string, params.dir2 as string);
       return { success: true, data: result };
     }
 
     // ========== Work 命令 ==========
     if (commandId === 'work_set_name_by_bms') {
-      const { setNameByBms, BmsFolderSetNameType } = await import('$lib/utils/work/rename.js');
+      const { setNameByBms } = await import('$lib/utils/work/rename.js');
       await setNameByBms(
         params.dir as string,
         params.set_type as BmsFolderSetNameType,
@@ -221,7 +217,7 @@ export async function executeFrontendCommand(
     }
 
     if (commandId === 'work_undo_set_name_by_bms') {
-      const { undoSetNameByBms, BmsFolderSetNameType } = await import('$lib/utils/work/rename.js');
+      const { undoSetNameByBms } = await import('$lib/utils/work/rename.js');
       await undoSetNameByBms(
         params.dir as string,
         params.set_type as BmsFolderSetNameType,
@@ -232,7 +228,7 @@ export async function executeFrontendCommand(
 
     // ========== Root 命令 ==========
     if (commandId === 'root_set_name_by_bms') {
-      const { rootSetNameByBms, BmsFolderSetNameType } = await import('$lib/utils/root/batch.js');
+      const { rootSetNameByBms } = await import('$lib/utils/root/batch.js');
       await rootSetNameByBms(
         params.dir as string,
         params.set_type as BmsFolderSetNameType,
@@ -243,7 +239,7 @@ export async function executeFrontendCommand(
     }
 
     if (commandId === 'root_undo_set_name_by_bms') {
-      const { rootUndoSetNameByBms, BmsFolderSetNameType } = await import('$lib/utils/root/batch.js');
+      const { rootUndoSetNameByBms } = await import('$lib/utils/root/batch.js');
       await rootUndoSetNameByBms(
         params.dir as string,
         params.set_type as BmsFolderSetNameType,
@@ -299,10 +295,7 @@ export async function executeFrontendCommand(
     // ========== Pack 命令 ==========
     if (commandId === 'pack_setup_rawpack_to_hq') {
       const { setupRawpackToHq } = await import('$lib/utils/pack/pack.js');
-      await setupRawpackToHq(
-        params.pack_dir as string,
-        params.root_dir as string
-      );
+      await setupRawpackToHq(params.pack_dir as string, params.root_dir as string);
       return { success: true };
     }
 
@@ -319,28 +312,19 @@ export async function executeFrontendCommand(
     // ========== Bigpack 命令 ==========
     if (commandId === 'root_split_folders_with_first_char') {
       const { splitFoldersWithFirstChar } = await import('$lib/utils/bigpack/split.js');
-      await splitFoldersWithFirstChar(
-        params.dir as string,
-        params.dry_run as boolean
-      );
+      await splitFoldersWithFirstChar(params.dir as string, params.dry_run as boolean);
       return { success: true };
     }
 
     if (commandId === 'root_undo_split_pack') {
       const { undoSplitPack } = await import('$lib/utils/bigpack/split.js');
-      await undoSplitPack(
-        params.dir as string,
-        params.dry_run as boolean
-      );
+      await undoSplitPack(params.dir as string, params.dry_run as boolean);
       return { success: true };
     }
 
     if (commandId === 'root_merge_split_folders') {
       const { mergeSplitFolders } = await import('$lib/utils/bigpack/split.js');
-      await mergeSplitFolders(
-        params.dir as string,
-        params.dry_run as boolean
-      );
+      await mergeSplitFolders(params.dir as string, params.dry_run as boolean);
       return { success: true };
     }
 
@@ -366,29 +350,20 @@ export async function executeFrontendCommand(
 
     if (commandId === 'root_move_works_with_same_name') {
       const { moveWorksWithSameName } = await import('$lib/utils/bigpack/split.js');
-      await moveWorksWithSameName(
-        params.dir as string,
-        params.dry_run as boolean
-      );
+      await moveWorksWithSameName(params.dir as string, params.dry_run as boolean);
       return { success: true };
     }
 
     // ========== RootEvent 命令 ==========
     if (commandId === 'root_event_check_num_folder') {
       const { checkNumFolder } = await import('$lib/utils/event/folder.js');
-      const result = await checkNumFolder(
-        params.dir as string,
-        params.max as number
-      );
+      const result = await checkNumFolder(params.dir as string, params.max as number);
       return { success: true, data: result };
     }
 
     if (commandId === 'root_event_create_num_folders') {
       const { createNumFolders } = await import('$lib/utils/event/folder.js');
-      await createNumFolders(
-        params.dir as string,
-        params.max as number
-      );
+      await createNumFolders(params.dir as string, params.max as number);
       return { success: true };
     }
 
@@ -415,10 +390,7 @@ export async function executeFrontendCommand(
     // ========== Media 命令 ==========
     if (commandId === 'work_remove_zero_sized_media_files') {
       const { MediaCleaner } = await import('$lib/utils/media/cleanup.js');
-      await MediaCleaner.removeZeroSizedMediaFiles(
-        params.dir as string,
-        params.dry_run as boolean
-      );
+      await MediaCleaner.removeZeroSizedMediaFiles(params.dir as string, params.dry_run as boolean);
       return { success: true };
     }
 
@@ -443,7 +415,7 @@ export async function executeFrontendCommand(
         presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
         removeOnSuccess: true,
         removeOnFail: true,
-        skipOnFail: false
+        skipOnFail: false,
       });
 
       await MediaCleaner.removeUnneedMediaFiles(params.dir as string, RemoveMediaPreset.Oraja);
@@ -464,17 +436,21 @@ export async function executeFrontendCommand(
         presetNames: [AudioPreset.OGG_Q10],
         removeOnSuccess: true,
         removeOnFail: false,
-        skipOnFail: false
+        skipOnFail: false,
       });
 
       // 视频转换: MP4 → AVI/WMV/MPG
       await VideoConverter.processBmsFolders({
         rootDir: params.dir as string,
         inputExtensions: ['mp4'],
-        presetNames: [VideoPreset.MPEG1VIDEO_512X512, VideoPreset.WMV2_512X512, VideoPreset.AVI_512X512],
+        presetNames: [
+          VideoPreset.MPEG1VIDEO_512X512,
+          VideoPreset.WMV2_512X512,
+          VideoPreset.AVI_512X512,
+        ],
         removeOriginal: true,
         removeExisting: false,
-        usePreferred: false
+        usePreferred: false,
       });
 
       return { success: true };
@@ -484,7 +460,7 @@ export async function executeFrontendCommand(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

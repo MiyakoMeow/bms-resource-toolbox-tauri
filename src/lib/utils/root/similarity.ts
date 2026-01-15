@@ -26,7 +26,7 @@ export async function scanFolderSimilarFolders(
 
   // 收集所有子目录
   for (const entry of entries) {
-    if (entry.children !== undefined && entry.name) {
+    if (entry.isDirectory && entry.name) {
       dirs.push(`${rootDir}/${entry.name}`);
     }
   }

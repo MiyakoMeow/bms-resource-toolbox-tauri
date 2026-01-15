@@ -7,7 +7,12 @@
 
 import type { CommandDefinition, CategoryMetadata } from '$lib/types/commands.js';
 import { CommandCategory, ParameterType } from '$lib/types/enums.js';
-import { BmsFolderSetNameType, ReplacePreset, BMSEvent, RemoveMediaPreset } from '$lib/types/enums.js';
+import {
+  BmsFolderSetNameType,
+  ReplacePreset,
+  BMSEvent,
+  RemoveMediaPreset,
+} from '$lib/types/enums.js';
 
 /**
  * 分类元数据

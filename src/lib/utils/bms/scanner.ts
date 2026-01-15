@@ -105,7 +105,7 @@ export async function getDirBmsList(dirPath: string): Promise<BmsOutput[]> {
 
     for (const entry of entries) {
       // 跳过目录
-      if (entry.children !== undefined) {
+      if (entry.isDirectory) {
         continue;
       }
 
@@ -123,8 +123,7 @@ export async function getDirBmsList(dirPath: string): Promise<BmsOutput[]> {
           const hasCriticalError = output.warnings.some(
             (warning) =>
               warning.type === 'PlayingError' ||
-              (warning.type === 'PlayingWarning' &&
-                warning.warning === 'NoPlayableNotes')
+              (warning.type === 'PlayingWarning' && warning.warning === 'NoPlayableNotes')
           );
 
           if (!hasCriticalError) {
@@ -203,10 +202,7 @@ export async function getDirBmsInfo(dirPath: string): Promise<BmsOutput | null> 
 /**
  * 从多个名称中提取作品名称
  */
-function extractWorkName(
-  names: (string | undefined)[],
-  removeSubstrings?: string[]
-): string {
+function extractWorkName(names: (string | undefined)[], removeSubstrings?: string[]): string {
   if (names.length === 0) {
     return '';
   }
@@ -236,7 +232,7 @@ export async function isWorkDir(dirPath: string): Promise<boolean> {
 
     for (const entry of entries) {
       // 只检查文件
-      if (entry.children !== undefined) {
+      if (entry.isDirectory) {
         continue;
       }
 
@@ -261,7 +257,7 @@ export async function isRootDir(dirPath: string): Promise<boolean> {
 
     for (const entry of entries) {
       // 只检查子目录
-      if (entry.children === undefined) {
+      if (!entry.isDirectory) {
         continue;
       }
 

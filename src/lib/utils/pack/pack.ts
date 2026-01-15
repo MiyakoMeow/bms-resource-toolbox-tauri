@@ -6,11 +6,9 @@
 import { mkdir, remove } from '@tauri-apps/plugin-fs';
 import { AudioConverter } from '$lib/utils/media/audio.js';
 import { MediaCleaner } from '$lib/utils/media/cleanup.js';
-import { AudioPreset, RemoveMediaPreset } from '$lib/utils/media/types.js';
-import {
-  setNameByBms,
-  BmsFolderSetNameType,
-} from '$lib/utils/work/rename.js';
+import { RemoveMediaPreset } from '$lib/types/enums.js';
+import { AudioPreset, type RemoveMediaRule } from '$lib/utils/media/types.js';
+import { setNameByBms, BmsFolderSetNameType } from '$lib/utils/work/rename.js';
 import { ReplacePreset } from '$lib/utils/fs/moving.js';
 import { copyNumberedWorkdirNames } from '$lib/utils/root/batch.js';
 import { syncFolder, presetForAppend } from '$lib/utils/fs/sync.js';
@@ -19,10 +17,7 @@ import { removeEmptyFolders } from '$lib/utils/fs/cleanup.js';
 /**
  * Pack 生成脚本：Raw pack -> HQ pack
  */
-export async function setupRawpackToHq(
-  packDir: string,
-  rootDir: string
-): Promise<void> {
+export async function setupRawpackToHq(packDir: string, rootDir: string): Promise<void> {
   // Setup
   await mkdir(rootDir, { recursive: true });
 
@@ -32,13 +27,7 @@ export async function setupRawpackToHq(
   await mkdir(cacheDir, { recursive: true });
 
   const { unzipNumericToBmsFolder } = await import('$lib/utils/rawpack/unzip.js');
-  await unzipNumericToBmsFolder(
-    packDir,
-    cacheDir,
-    rootDir,
-    false,
-    ReplacePreset.UpdatePack
-  );
+  await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
 
   // 检查缓存目录是否为空，删除如果为空
   const { readDir } = await import('@tauri-apps/plugin-fs');
@@ -51,7 +40,7 @@ export async function setupRawpackToHq(
   console.log(` > 2. Setting dir names from BMS Files`);
   const entries = await readDir(rootDir);
   for (const entry of entries) {
-    if (entry.children !== undefined && entry.name) {
+    if (entry.isDirectory && entry.name) {
       const path = `${rootDir}/${entry.name}`;
       await setNameByBms(
         path,
@@ -96,13 +85,7 @@ export async function updateRawpackToHq(
   await mkdir(cacheDir, { recursive: true });
 
   const { unzipNumericToBmsFolder } = await import('$lib/utils/rawpack/unzip.js');
-  await unzipNumericToBmsFolder(
-    packDir,
-    cacheDir,
-    rootDir,
-    false,
-    ReplacePreset.UpdatePack
-  );
+  await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
 
   // 2. 同步文件夹名称
   console.log(` > 2. Syncing dir name from ${syncDir} to ${rootDir}`);

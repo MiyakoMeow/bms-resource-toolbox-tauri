@@ -8,16 +8,13 @@ import { isDirHavingFile } from './compare.js';
 /**
  * 递归删除指定目录下的所有空文件夹
  */
-export async function removeEmptyFolders(
-  parentDir: string,
-  dryRun: boolean
-): Promise<void> {
+export async function removeEmptyFolders(parentDir: string, dryRun: boolean): Promise<void> {
   try {
     const entries = await readDir(parentDir);
 
     for (const entry of entries) {
       // 只处理目录
-      if (entry.children === undefined) {
+      if (!entry.isDirectory) {
         continue;
       }
 
