@@ -9,11 +9,9 @@ use crate::{
         rawpack::get_num_set_file_names,
         sync::{preset_for_append, sync_folder},
     },
-    media::{audio::process_bms_folders, video::process_bms_video_folders},
     options::{
         rawpack::unzip_numeric_to_bms_folder as rawpack_unzip_numeric_to_bms_folder,
         root::copy_numbered_workdir_names,
-        root_bigpack::{get_remove_media_rule_oraja, remove_unneed_media_files},
         work::{BmsFolderSetNameType, set_name_by_bms},
     },
 };
@@ -48,23 +46,11 @@ async fn remove_empty_folder(parent_dir: &Path) -> io::Result<()> {
 ///
 /// Returns an error if audio processing or file operations fail
 pub async fn pack_raw_to_hq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
-    let root_dir = root_dir.as_ref();
+    let _root_dir = root_dir.as_ref();
 
-    // Parse Audio
-    info!("Parsing Audio... Phase 1: WAV -> FLAC");
-    process_bms_folders(
-        root_dir,
-        &["wav"],
-        &["FLAC", "FLAC_FFMPEG"],
-        true,  // remove_origin_file_when_success
-        true,  // remove_origin_file_when_failed
-        false, // skip_on_fail
-    )
-    .await?;
-
-    // Remove Unneed Media File
-    info!("Removing Unneed Files");
-    remove_unneed_media_files(root_dir, get_remove_media_rule_oraja()).await?;
+    // Media processing has been migrated to frontend
+    info!("Media processing (WAV -> FLAC) has been migrated to frontend implementation");
+    info!("Please use the frontend command 'pack_raw_to_hq' instead");
 
     Ok(())
 }
@@ -76,31 +62,13 @@ pub async fn pack_raw_to_hq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
 ///
 /// Returns an error if audio/video processing or file operations fail
 pub async fn pack_hq_to_lq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
-    let root_dir = root_dir.as_ref();
+    let _root_dir = root_dir.as_ref();
 
-    // Parse Audio
-    info!("Parsing Audio... Phase 1: FLAC -> OGG");
-    process_bms_folders(
-        root_dir,
-        &["flac"],
-        &["OGG_Q10"],
-        true,  // remove_origin_file_when_success
-        false, // remove_origin_file_when_failed
-        false, // skip_on_fail
-    )
-    .await?;
-
-    // Parse Video
-    info!("Parsing Video...");
-    process_bms_video_folders(
-        root_dir,
-        &["mp4"],
-        &["MPEG1VIDEO_512X512", "WMV2_512X512", "AVI_512X512"],
-        true,  // remove_origin_file
-        false, // remove_existing
-        false, // use_prefered
-    )
-    .await?;
+    // Media processing has been migrated to frontend
+    info!(
+        "Media processing (FLAC -> OGG, MP4 -> AVI) has been migrated to frontend implementation"
+    );
+    info!("Please use the frontend command 'pack_hq_to_lq' instead");
 
     Ok(())
 }
@@ -199,21 +167,9 @@ pub async fn pack_setup_rawpack_to_hq_impl(
         }
     }
 
-    // Parse Audio
-    info!(" > 3. Parsing Audio... Phase 1: WAV -> FLAC");
-    process_bms_folders(
-        root_dir,
-        &["wav"],
-        &["FLAC", "FLAC_FFMPEG"],
-        true,  // remove_origin_file_when_success
-        false, // remove_origin_file_when_failed
-        false, // skip_on_fail
-    )
-    .await?;
-
-    // Remove Unneed Media File
-    info!(" > 4. Removing Unneed Files");
-    remove_unneed_media_files(root_dir, get_remove_media_rule_oraja()).await?;
+    // Parse Audio - 已迁移到前端
+    info!(" > 3. Media processing (WAV -> FLAC) has been migrated to frontend");
+    info!(" > 4. Please use the frontend command 'pack_setup_rawpack_to_hq' instead");
 
     Ok(())
 }
@@ -305,21 +261,9 @@ pub async fn pack_update_rawpack_to_hq_impl(
     );
     copy_numbered_workdir_names(sync_dir, root_dir, false).await?;
 
-    // Parse Audio
-    info!(" > 3. Parsing Audio... Phase 1: WAV -> FLAC");
-    process_bms_folders(
-        root_dir,
-        &["wav"],
-        &["FLAC", "FLAC_FFMPEG"],
-        true,  // remove_origin_file_when_success
-        false, // remove_origin_file_when_failed
-        false, // skip_on_fail
-    )
-    .await?;
-
-    // Remove Unneed Media File
-    info!(" > 4. Removing Unneed Files");
-    remove_unneed_media_files(root_dir, get_remove_media_rule_oraja()).await?;
+    // Parse Audio - 已迁移到前端
+    info!(" > 3. Media processing (WAV -> FLAC) has been migrated to frontend");
+    info!(" > 4. Please use the frontend command 'pack_update_rawpack_to_hq' instead");
 
     // Soft syncing
     info!(

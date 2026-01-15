@@ -4,7 +4,7 @@
  * 提供浏览器打开 BMS 活动相关页面的功能
  */
 
-import { BMSEvent } from '$lib/types/enums.js';
+import { BMSEvent, RemoveMediaPreset } from '$lib/types/enums.js';
 
 /**
  * 获取 BMS 活动列表页面 URL
@@ -79,7 +79,15 @@ export function openBMSEventWorks(event: BMSEvent, workIds: number[]): void {
  * @returns 是否为前端命令
  */
 export function isFrontendCommand(commandId: string): boolean {
-  return commandId === 'bms_event_open_list' || commandId === 'bms_event_open_event_works';
+  return [
+    'bms_event_open_list',
+    'bms_event_open_event_works',
+    // Media 命令
+    'work_remove_zero_sized_media_files',
+    'root_remove_unneed_media_files',
+    'pack_raw_to_hq',
+    'pack_hq_to_lq'
+  ].includes(commandId);
 }
 
 /**
@@ -94,6 +102,7 @@ export async function executeFrontendCommand(
   params: Record<string, unknown>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // BMS Event 命令
     if (commandId === 'bms_event_open_list') {
       const event = params.event as BMSEvent;
       openBMSEventList(event);
@@ -104,11 +113,80 @@ export async function executeFrontendCommand(
       openBMSEventWorks(event, workIds);
       return { success: true };
     }
+
+    // Media 命令
+    if (commandId === 'work_remove_zero_sized_media_files') {
+      const { MediaCleaner } = await import('$lib/utils/media/cleanup.js');
+      await MediaCleaner.removeZeroSizedMediaFiles(
+        params.dir as string,
+        params.dry_run as boolean
+      );
+      return { success: true };
+    }
+
+    if (commandId === 'root_remove_unneed_media_files') {
+      const { MediaCleaner } = await import('$lib/utils/media/cleanup.js');
+      await MediaCleaner.removeUnneedMediaFiles(
+        params.dir as string,
+        params.rule as RemoveMediaPreset
+      );
+      return { success: true };
+    }
+
+    if (commandId === 'pack_raw_to_hq') {
+      // 组合音频转换和清理功能
+      const { AudioConverter } = await import('$lib/utils/media/audio.js');
+      const { MediaCleaner } = await import('$lib/utils/media/cleanup.js');
+      const { AudioPreset } = await import('$lib/utils/media/types.js');
+
+      await AudioConverter.processBmsFolders({
+        rootDir: params.dir as string,
+        inputExtensions: ['wav'],
+        presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
+        removeOnSuccess: true,
+        removeOnFail: true,
+        skipOnFail: false
+      });
+
+      await MediaCleaner.removeUnneedMediaFiles(params.dir as string, RemoveMediaPreset.Oraja);
+
+      return { success: true };
+    }
+
+    if (commandId === 'pack_hq_to_lq') {
+      // FLAC → OGG, MP4 → AVI/WMV/MPG
+      const { AudioConverter } = await import('$lib/utils/media/audio.js');
+      const { VideoConverter } = await import('$lib/utils/media/video.js');
+      const { AudioPreset, VideoPreset } = await import('$lib/utils/media/types.js');
+
+      // 音频转换: FLAC → OGG
+      await AudioConverter.processBmsFolders({
+        rootDir: params.dir as string,
+        inputExtensions: ['flac'],
+        presetNames: [AudioPreset.OGG_Q10],
+        removeOnSuccess: true,
+        removeOnFail: false,
+        skipOnFail: false
+      });
+
+      // 视频转换: MP4 → AVI/WMV/MPG
+      await VideoConverter.processBmsFolders({
+        rootDir: params.dir as string,
+        inputExtensions: ['mp4'],
+        presetNames: [VideoPreset.MPEG1VIDEO_512X512, VideoPreset.WMV2_512X512, VideoPreset.AVI_512X512],
+        removeOriginal: true,
+        removeExisting: false,
+        usePreferred: false
+      });
+
+      return { success: true };
+    }
+
     return { success: false, error: '未知的前端命令' };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error.message : String(error)
     };
   }
 }

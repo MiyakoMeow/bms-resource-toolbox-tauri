@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, path::Path, path::PathBuf, str::FromStr};
+use std::{path::Path, path::PathBuf, str::FromStr};
 
 use clap::ValueEnum;
 use tokio::{fs, io};
@@ -261,56 +261,6 @@ pub async fn undo_set_name_by_bms(
 /// # Errors
 ///
 /// Returns an error if directory operations fail
-pub async fn remove_zero_sized_media_files(
-    work_dir: impl AsRef<Path>,
-    dry_run: bool,
-) -> io::Result<()> {
-    if dry_run {
-        log::info!("[dry-run] Start: work::remove_zero_sized_media_files");
-    }
-    let mut stack = VecDeque::new();
-    stack.push_back(work_dir.as_ref().to_path_buf());
-
-    // Store async deletion tasks
-    let mut tasks = Vec::new();
-
-    while let Some(dir) = stack.pop_back() {
-        let mut entries = fs::read_dir(&dir).await?;
-        while let Ok(Some(entry)) = entries.next_entry().await {
-            let path = entry.path();
-            let meta = entry.metadata().await?;
-
-            if meta.is_file() && meta.len() == 0 {
-                // Async deletion, task handle goes into Vec
-                if dry_run {
-                    log::info!("Would remove empty file: {}", path.display());
-                } else {
-                    tasks.push(tokio::spawn(async move {
-                        fs::remove_file(&path).await?;
-                        Ok::<(), io::Error>(())
-                    }));
-                }
-            } else if meta.is_dir() {
-                // Continue pushing to stack
-                stack.push_back(path);
-            }
-        }
-    }
-
-    if !dry_run {
-        // Wait for all deletion tasks to complete
-        for task in tasks {
-            task.await??;
-        }
-    }
-
-    if dry_run {
-        log::info!("[dry-run] End: work::remove_zero_sized_media_files");
-    }
-
-    Ok(())
-}
-
 // Tauri commands
 
 /// Set directory name based on BMS file
@@ -345,19 +295,6 @@ pub async fn work_undo_set_name_by_bms(
 ) -> Result<(), String> {
     let path = PathBuf::from(dir);
     undo_set_name_by_bms(&path, set_type, dry_run)
-        .await
-        .map_err(|e| e.to_string())
-}
-
-/// Remove zero-byte media files
-///
-/// # Errors
-///
-/// Returns an error if directory operations fail
-#[tauri::command]
-pub async fn work_remove_zero_sized_media_files(dir: String, dry_run: bool) -> Result<(), String> {
-    let path = PathBuf::from(dir);
-    remove_zero_sized_media_files(&path, dry_run)
         .await
         .map_err(|e| e.to_string())
 }

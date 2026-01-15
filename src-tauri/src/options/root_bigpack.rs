@@ -1,12 +1,7 @@
-use std::{
-    collections::{HashMap, HashSet},
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
-use clap::ValueEnum;
 use log::info;
 use regex::Regex;
-use std::str::FromStr;
 use tokio::{fs, io};
 
 use crate::fs::moving::{ReplacePreset, move_elements_across_dir, replace_options_from_preset};
@@ -536,226 +531,6 @@ pub async fn move_out_works(
     Ok(())
 }
 
-pub type RemoveMediaRule = (Vec<String>, Vec<String>);
-
-/// Remove unnecessary media files
-async fn workdir_remove_unneed_media_files(
-    work_dir: &Path,
-    rule: &[RemoveMediaRule],
-) -> io::Result<()> {
-    let mut remove_pairs = Vec::new();
-    let mut removed_files = HashSet::new();
-
-    let mut entries = fs::read_dir(work_dir).await?;
-    while let Ok(Some(entry)) = entries.next_entry().await {
-        let file_path = entry.path();
-        if !file_path.is_file() {
-            continue;
-        }
-
-        let file_name = file_path.file_name().and_then(|n| n.to_str()).unwrap_or("");
-        let file_ext = file_name.rsplit('.').next().unwrap_or("").to_lowercase();
-
-        for (upper_exts, lower_exts) in rule {
-            if !upper_exts.contains(&file_ext) {
-                continue;
-            }
-
-            // File is empty?
-            let metadata = fs::metadata(&file_path).await?;
-            if metadata.len() == 0 {
-                info!(" - !x!: File {} is Empty! Skipping...", file_path.display());
-                continue;
-            }
-
-            // File is in upper_exts, search for file in lower_exts.
-            for lower_ext in lower_exts {
-                let replacing_file_path = file_path.with_extension(lower_ext);
-
-                // File not exist?
-                if !replacing_file_path.exists() {
-                    continue;
-                }
-                if removed_files.contains(&replacing_file_path) {
-                    continue;
-                }
-                remove_pairs.push((file_path.clone(), replacing_file_path.clone()));
-                removed_files.insert(replacing_file_path);
-            }
-        }
-    }
-
-    if !remove_pairs.is_empty() {
-        info!("Entering: {}", work_dir.display());
-    }
-
-    // Remove file
-    for (file_path, replacing_file_path) in remove_pairs {
-        info!(
-            "- Remove file {}, because {} exists.",
-            replacing_file_path
-                .file_name()
-                .unwrap_or_default()
-                .to_string_lossy(),
-            file_path.file_name().unwrap_or_default().to_string_lossy()
-        );
-        fs::remove_file(&replacing_file_path).await?;
-    }
-
-    // Finished: Count Ext
-    let mut ext_count: HashMap<String, Vec<String>> = HashMap::new();
-    let mut count_entries = fs::read_dir(work_dir).await?;
-    while let Ok(Some(entry)) = count_entries.next_entry().await {
-        let file_path = entry.path();
-        if !file_path.is_file() {
-            continue;
-        }
-
-        // Count ext
-        let file_name = file_path.file_name().and_then(|n| n.to_str()).unwrap_or("");
-        let file_ext = file_name.rsplit('.').next().unwrap_or("").to_lowercase();
-
-        ext_count
-            .entry(file_ext)
-            .or_default()
-            .push(file_name.to_string());
-    }
-
-    // Do With Ext Count
-    if let Some(mp4_count) = ext_count.get("mp4")
-        && mp4_count.len() > 1
-    {
-        info!(
-            " - Tips: {} has more than 1 mp4 files! {:?}",
-            work_dir.display(),
-            mp4_count
-        );
-    }
-
-    Ok(())
-}
-
-#[must_use]
-pub fn get_remove_media_rule_oraja() -> Vec<RemoveMediaRule> {
-    vec![
-        (
-            vec!["mp4".to_string()],
-            vec![
-                "avi".to_string(),
-                "wmv".to_string(),
-                "mpg".to_string(),
-                "mpeg".to_string(),
-            ],
-        ),
-        (
-            vec!["avi".to_string()],
-            vec!["wmv".to_string(), "mpg".to_string(), "mpeg".to_string()],
-        ),
-        (
-            vec!["flac".to_string(), "wav".to_string()],
-            vec!["ogg".to_string()],
-        ),
-        (vec!["flac".to_string()], vec!["wav".to_string()]),
-        (vec!["mpg".to_string()], vec!["wmv".to_string()]),
-    ]
-}
-
-#[must_use]
-pub fn get_remove_media_rule_wav_fill_flac() -> Vec<RemoveMediaRule> {
-    vec![(vec!["wav".to_string()], vec!["flac".to_string()])]
-}
-
-#[must_use]
-pub fn get_remove_media_rule_mpg_fill_wmv() -> Vec<RemoveMediaRule> {
-    vec![(vec!["mpg".to_string()], vec!["wmv".to_string()])]
-}
-
-#[must_use]
-pub fn get_remove_media_file_rules() -> Vec<Vec<RemoveMediaRule>> {
-    vec![
-        get_remove_media_rule_oraja(),
-        get_remove_media_rule_wav_fill_flac(),
-        get_remove_media_rule_mpg_fill_wmv(),
-    ]
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-pub enum RemoveMediaPreset {
-    /// Comprehensive preset: removes avi/wmv/mpg/mpeg when mp4 exists, removes wmv/mpg/mpeg when avi exists, removes ogg when flac/wav exists, removes wav when flac exists, removes wmv when mpg exists
-    Oraja = 0,
-    /// Simple preset: removes wav files when flac files exist
-    WavFillFlac = 1,
-    /// Simple preset: removes mpg files when wmv files exist
-    MpgFillWmv = 2,
-}
-
-impl FromStr for RemoveMediaPreset {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "oraja" => Ok(RemoveMediaPreset::Oraja),
-            "wav_fill_flac" => Ok(RemoveMediaPreset::WavFillFlac),
-            "mpg_fill_wmv" => Ok(RemoveMediaPreset::MpgFillWmv),
-            _ => Err(format!(
-                "Unknown preset: {}. Valid values are: oraja, wav_fill_flac, mpg_fill_wmv",
-                s
-            )),
-        }
-    }
-}
-
-impl ValueEnum for RemoveMediaPreset {
-    fn value_variants<'a>() -> &'a [Self] {
-        &[Self::Oraja, Self::WavFillFlac, Self::MpgFillWmv]
-    }
-
-    fn to_possible_value(&self) -> Option<clap::builder::PossibleValue> {
-        let name = match self {
-            RemoveMediaPreset::Oraja => "oraja",
-            RemoveMediaPreset::WavFillFlac => "wav_fill_flac",
-            RemoveMediaPreset::MpgFillWmv => "mpg_fill_wmv",
-        };
-        Some(clap::builder::PossibleValue::new(name))
-    }
-}
-
-#[must_use]
-pub fn get_remove_media_rule_by_preset(preset: RemoveMediaPreset) -> Vec<RemoveMediaRule> {
-    match preset {
-        RemoveMediaPreset::Oraja => get_remove_media_rule_oraja(),
-        RemoveMediaPreset::WavFillFlac => get_remove_media_rule_wav_fill_flac(),
-        RemoveMediaPreset::MpgFillWmv => get_remove_media_rule_mpg_fill_wmv(),
-    }
-}
-
-/// Remove unnecessary media files
-///
-/// # Errors
-///
-/// Returns an error if directory operations fail
-pub async fn remove_unneed_media_files(
-    root_dir: impl AsRef<Path>,
-    rule: Vec<RemoveMediaRule>,
-) -> io::Result<()> {
-    let root_dir = root_dir.as_ref();
-
-    info!("Selected: {:?}", rule);
-
-    // Do
-    let mut entries = fs::read_dir(root_dir).await?;
-    while let Ok(Some(entry)) = entries.next_entry().await {
-        let bms_dir_path = entry.path();
-        if !bms_dir_path.is_dir() {
-            continue;
-        }
-
-        workdir_remove_unneed_media_files(&bms_dir_path, &rule).await?;
-    }
-
-    Ok(())
-}
-
 /// Merge subfolders with similar names from source folder (`dir_from`) to corresponding subfolders in target folder (`dir_to`)
 ///
 /// # Errors
@@ -882,21 +657,6 @@ mod tests {
         assert_eq!(first_char_rules_find("中文"), "字");
         assert_eq!(first_char_rules_find(""), "Uncategorized");
     }
-
-    #[test]
-    fn test_get_remove_media_rules() {
-        let oraja = get_remove_media_rule_oraja();
-        assert_eq!(oraja.len(), 5);
-
-        let wav_fill_flac = get_remove_media_rule_wav_fill_flac();
-        assert_eq!(wav_fill_flac.len(), 1);
-
-        let mpg_fill_wmv = get_remove_media_rule_mpg_fill_wmv();
-        assert_eq!(mpg_fill_wmv.len(), 1);
-
-        let all_rules = get_remove_media_file_rules();
-        assert_eq!(all_rules.len(), 3);
-    }
 }
 
 // Tauri commands
@@ -999,23 +759,6 @@ pub async fn root_move_works_with_same_name(
     let from_path = PathBuf::from(from);
     let to_path = PathBuf::from(to);
     move_works_with_same_name(&from_path, &to_path, dry_run, replace)
-        .await
-        .map_err(|e| e.to_string())
-}
-
-/// Remove unnecessary media files
-///
-/// # Errors
-///
-/// Returns an error if directory operations fail
-#[tauri::command]
-pub async fn root_remove_unneed_media_files(
-    dir: String,
-    rule: RemoveMediaPreset,
-) -> Result<(), String> {
-    let path = PathBuf::from(dir);
-    let rule_config = get_remove_media_rule_by_preset(rule);
-    remove_unneed_media_files(&path, rule_config)
         .await
         .map_err(|e| e.to_string())
 }

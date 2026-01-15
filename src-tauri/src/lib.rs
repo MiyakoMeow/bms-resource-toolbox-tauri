@@ -2,7 +2,6 @@
 
 pub mod bms;
 pub mod fs;
-pub mod media;
 pub mod options;
 
 /// Run the Tauri application
@@ -36,7 +35,6 @@ pub fn run() -> Result<(), tauri::Error> {
                 // Work commands
                 options::work::work_set_name_by_bms,
                 options::work::work_undo_set_name_by_bms,
-                options::work::work_remove_zero_sized_media_files,
                 // Root commands
                 options::root::root_set_name_by_bms,
                 options::root::root_undo_set_name_by_bms,
@@ -48,7 +46,6 @@ pub fn run() -> Result<(), tauri::Error> {
                 options::root_bigpack::root_move_works_in_pack,
                 options::root_bigpack::root_move_out_works,
                 options::root_bigpack::root_move_works_with_same_name,
-                options::root_bigpack::root_remove_unneed_media_files,
                 // Pack commands
                 options::pack::pack_raw_to_hq,
                 options::pack::pack_hq_to_lq,

@@ -7,7 +7,7 @@
 
 import type { CommandDefinition, CategoryMetadata } from '$lib/types/commands.js';
 import { CommandCategory, ParameterType } from '$lib/types/enums.js';
-import { BmsFolderSetNameType, ReplacePreset, BMSEvent } from '$lib/types/enums.js';
+import { BmsFolderSetNameType, ReplacePreset, BMSEvent, RemoveMediaPreset } from '$lib/types/enums.js';
 
 /**
  * 分类元数据
@@ -254,6 +254,30 @@ export const COMMAND_REGISTRY: CommandDefinition[] = [
     returnType: 'void',
     dangerous: true,
   },
+  {
+    id: 'work_remove_zero_sized_media_files',
+    name: '删除零字节媒体文件',
+    category: CommandCategory.Work,
+    description: '递归删除工作目录中所有零字节媒体文件',
+    parameters: [
+      {
+        name: 'dir',
+        type: ParameterType.Directory,
+        required: true,
+        description: '工作目录路径',
+      },
+      {
+        name: 'dry_run',
+        type: ParameterType.Boolean,
+        required: false,
+        description: '模拟运行（不实际删除）',
+        defaultValue: true,
+      },
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true,
+  },
 
   // ========== Root 组（示例：1个）==========
   {
@@ -278,6 +302,44 @@ export const COMMAND_REGISTRY: CommandDefinition[] = [
     ],
     returnType: 'Vec<(String, String, f64)>',
     dangerous: false,
+  },
+  {
+    id: 'root_remove_unneed_media_files',
+    name: '清理冗余媒体文件',
+    category: CommandCategory.Root,
+    description: '根据预设规则删除重复格式的媒体文件（保留高质量格式）',
+    parameters: [
+      {
+        name: 'dir',
+        type: ParameterType.Directory,
+        required: true,
+        description: '根目录路径',
+      },
+      {
+        name: 'rule',
+        type: ParameterType.Enum,
+        required: true,
+        description: '清理规则预设',
+        defaultValue: RemoveMediaPreset.Oraja,
+        enumOptions: [
+          {
+            value: RemoveMediaPreset.Oraja,
+            label: '完整预设（推荐用于 beatoraja/Qwilight）',
+          },
+          {
+            value: RemoveMediaPreset.WavFillFlac,
+            label: '简单预设：wav -> flac',
+          },
+          {
+            value: RemoveMediaPreset.MpgFillWmv,
+            label: '简单预设：mpg -> wmv',
+          },
+        ],
+      },
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true,
   },
 
   // ========== Big Pack 组（示例：1个）==========
@@ -321,6 +383,24 @@ export const COMMAND_REGISTRY: CommandDefinition[] = [
     ],
     returnType: 'void',
     dangerous: true,
+    isFrontendCommand: true,
+  },
+  {
+    id: 'pack_hq_to_lq',
+    name: 'HQ 包转 LQ 包',
+    category: CommandCategory.Pack,
+    description: '将高质量格式（FLAC/MP4）转换为低质量格式（OGG/AVI），适用于 LR2',
+    parameters: [
+      {
+        name: 'dir',
+        type: ParameterType.Directory,
+        required: true,
+        description: '根目录路径',
+      },
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true,
   },
 
   // ========== Rawpack 组（示例：1个）==========
