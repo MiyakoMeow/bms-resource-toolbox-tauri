@@ -45,7 +45,7 @@ async fn remove_empty_folder(parent_dir: &Path) -> io::Result<()> {
 /// # Errors
 ///
 /// Returns an error if audio processing or file operations fail
-pub async fn pack_raw_to_hq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
+pub fn pack_raw_to_hq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
     let _root_dir = root_dir.as_ref();
 
     // Media processing has been migrated to frontend
@@ -61,7 +61,7 @@ pub async fn pack_raw_to_hq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
 /// # Errors
 ///
 /// Returns an error if audio/video processing or file operations fail
-pub async fn pack_hq_to_lq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
+pub fn pack_hq_to_lq_impl(root_dir: impl AsRef<Path>) -> io::Result<()> {
     let _root_dir = root_dir.as_ref();
 
     // Media processing has been migrated to frontend
@@ -381,7 +381,7 @@ use std::path::PathBuf;
 #[tauri::command]
 pub async fn pack_raw_to_hq(dir: String) -> Result<(), String> {
     let path = PathBuf::from(dir);
-    pack_raw_to_hq_impl(&path).await.map_err(|e| e.to_string())
+    pack_raw_to_hq_impl(&path).map_err(|e| e.to_string())
 }
 
 /// HQ pack -> LQ pack
@@ -392,7 +392,7 @@ pub async fn pack_raw_to_hq(dir: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn pack_hq_to_lq(dir: String) -> Result<(), String> {
     let path = PathBuf::from(dir);
-    pack_hq_to_lq_impl(&path).await.map_err(|e| e.to_string())
+    pack_hq_to_lq_impl(&path).map_err(|e| e.to_string())
 }
 
 /// Pack generation script: Raw pack -> HQ pack

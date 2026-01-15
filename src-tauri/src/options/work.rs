@@ -256,11 +256,6 @@ pub async fn undo_set_name_by_bms(
     Ok(())
 }
 
-/// Remove all 0-byte files in `work_dir` and its subdirectories (loop version, smol 2).
-///
-/// # Errors
-///
-/// Returns an error if directory operations fail
 // Tauri commands
 
 /// Set directory name based on BMS file
