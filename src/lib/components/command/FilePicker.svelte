@@ -36,9 +36,9 @@ function clear() {
   />
 
   <div class="file-actions">
-    <button class="btn-browse" onclick={browse} {disabled}> 浏览 </button>
+    <button class="btn-browse" onclick={browse} {disabled} title="选择文件或目录"> 浏览... </button>
     {#if value}
-      <button class="btn-clear" onclick={clear} {disabled}> 清除 </button>
+      <button class="btn-clear" onclick={clear} {disabled} title="清除当前路径"> ✕ </button>
     {/if}
   </div>
 </div>

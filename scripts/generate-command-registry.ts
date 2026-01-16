@@ -33,6 +33,7 @@ interface ParameterMetadata {
   typeString: string;
   required: boolean;
   description: string;
+  defaultValue?: unknown;
 }
 
 /**
@@ -251,14 +252,118 @@ class CommandGenerator {
       const paramJsDocs = ts.getJSDocTags(param);
       const description = this.extractParamDescription(paramJsDocs);
       const type = this.checker.getTypeAtLocation(param);
-      const typeString = this.checker.typeToString(type);
+      const fullTypeString = this.checker.typeToString(type);
+      const paramName = param.name.getText();
+
+      // 检查是否是枚举类型
+      let enumName: string | undefined;
+
+      // 尝试从类型符号获取枚举名称
+      const symbol = type.getSymbol();
+      if (symbol) {
+        // 检查符号的声明
+        if (symbol.declarations) {
+          for (const decl of symbol.declarations) {
+            if (ts.isEnumDeclaration(decl)) {
+              enumName = decl.name.getText();
+              break;
+            }
+          }
+        }
+
+        // 如果没找到，尝试从符号名称获取
+        if (!enumName && symbol.escapedName) {
+          const escapedName = symbol.escapedName.toString();
+          // 检查是否是枚举类型（首字母大写，不是基本类型）
+          if (
+            /^[A-Z]/.test(escapedName) &&
+            ![
+              'string',
+              'number',
+              'boolean',
+              'undefined',
+              'null',
+              'void',
+              'Promise',
+              'Array',
+            ].includes(escapedName)
+          ) {
+            enumName = escapedName;
+          }
+        }
+      }
+
+      // 对于联合类型（枚举值），尝试从父类型获取枚举名称
+      if (!enumName && type.isUnion()) {
+        // 检查是否是数字联合类型（枚举的典型特征）
+        const isNumberUnion = type.types.every(
+          (t) => t.flags === ts.TypeFlags.NumberLiteral || t.flags === ts.TypeFlags.Number
+        );
+
+        if (isNumberUnion && type.types.length > 1) {
+          // 尝试从联合类型的符号获取枚举名称
+          const unionSymbol = (type as any).symbol;
+          if (unionSymbol) {
+            // TypeScript 将枚举类型存储为联合类型时，符号名可能包含枚举名
+            const escapedName = unionSymbol.escapedName?.toString();
+            if (escapedName && /^[A-Z]/.test(escapedName)) {
+              enumName = escapedName;
+            }
+          }
+        }
+      }
+
+      // 使用枚举名称或简化后的类型字符串
+      const finalTypeString = enumName || this.simplifyType(fullTypeString);
+
+      // 提取默认值
+      let defaultValue: unknown;
+      const defaultTag = paramJsDocs.find((t) => t.tagName.text === 'default');
+
+      if (defaultTag && ts.isJSDocUnknownTag(defaultTag) && defaultTag.comment) {
+        const defaultStr = defaultTag.comment.toString().trim();
+
+        // 解析默认值
+        if (defaultStr.startsWith('RemoveMediaPreset.')) {
+          const enumValue = defaultStr.split('.')[1];
+          defaultValue = `RemoveMediaPreset.${enumValue}`;
+        } else if (defaultStr.startsWith('ReplacePreset.')) {
+          const enumValue = defaultStr.split('.')[1];
+          defaultValue = `ReplacePreset.${enumValue}`;
+        } else if (defaultStr.startsWith('BmsFolderSetNameType.')) {
+          const enumValue = defaultStr.split('.')[1];
+          defaultValue = `BmsFolderSetNameType.${enumValue}`;
+        } else if (!isNaN(Number(defaultStr))) {
+          defaultValue = Number(defaultStr);
+        } else if (defaultStr === 'true') {
+          defaultValue = true;
+        } else if (defaultStr === 'false') {
+          defaultValue = false;
+        } else {
+          defaultValue = defaultStr;
+        }
+      } else {
+        // 自动推断：dryRun/dry_run 默认为 true
+        if ((paramName === 'dryRun' || paramName === 'dry_run') && finalTypeString === 'boolean') {
+          defaultValue = true;
+        }
+        // 自动推断：preset 参数使用推荐的默认值
+        if (paramName === 'preset' && finalTypeString === 'RemoveMediaPreset') {
+          defaultValue = 'RemoveMediaPreset.Oraja';
+        }
+        // 自动推断：replacePreset 默认为 Default
+        if (paramName === 'replacePreset' && finalTypeString === 'ReplacePreset') {
+          defaultValue = 'ReplacePreset.Default';
+        }
+      }
 
       return {
-        name: param.name.getText(),
-        type: typeString,
-        typeString: this.simplifyType(typeString),
+        name: paramName,
+        type: fullTypeString,
+        typeString: finalTypeString,
         required: !param.questionToken && !param.initializer,
         description,
+        defaultValue,
       };
     });
   }
@@ -410,8 +515,14 @@ ${parameters}
         (param) => `      {
         name: '${param.name}',
         type: ${this.mapTypeToParameterType(param.typeString)},
+        typeString: '${param.typeString}',
         required: ${param.required},
-        description: \`${param.description.replace(/`/g, '\\`')}\`
+        description: \`${param.description.replace(/`/g, '\\`')}\`${
+          param.defaultValue !== undefined
+            ? `,
+        defaultValue: ${JSON.stringify(param.defaultValue)}`
+            : ''
+        }
       }`
       )
       .join(',\n');
@@ -421,8 +532,17 @@ ${parameters}
    * 映射 TypeScript 类型到 ParameterType 枚举
    */
   private mapTypeToParameterType(typeString: string): string {
-    // 移除空格和换行
-    const cleanType = typeString.replace(/\s+/g, '').toLowerCase();
+    // 移除空格和换行，但保持大小写
+    const cleanType = typeString.replace(/\s+/g, '');
+
+    // 首先检查是否是枚举类型（以大写字母开头的类型）
+    // 必须在小写转换之前检查
+    if (/^[A-Z]/.test(cleanType)) {
+      return 'ParameterType.Enum';
+    }
+
+    // 转换为小写用于基本类型匹配
+    const lowerType = cleanType.toLowerCase();
 
     // 基本类型映射
     const typeMap: Record<string, string> = {
@@ -433,13 +553,8 @@ ${parameters}
     };
 
     // 检查是否匹配基本类型
-    if (typeMap[cleanType]) {
-      return typeMap[cleanType];
-    }
-
-    // 检查是否是枚举类型（以大写字母开头的类型）
-    if (/^[A-Z]/.test(cleanType)) {
-      return 'ParameterType.Enum';
+    if (typeMap[lowerType]) {
+      return typeMap[lowerType];
     }
 
     // 默认为字符串
