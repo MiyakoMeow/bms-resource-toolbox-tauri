@@ -8,6 +8,7 @@
 import { type Plugin } from 'vite';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
+import path from 'node:path';
 
 const execAsync = promisify(exec);
 

@@ -11,6 +11,7 @@ import { isDirHavingFile } from './compare.js';
  * @command
  * @category fs
  * @dangerous true
+ * @name 删除空文件夹
  * @description 递归删除指定目录下的所有空文件夹
  * @frontend true
  *

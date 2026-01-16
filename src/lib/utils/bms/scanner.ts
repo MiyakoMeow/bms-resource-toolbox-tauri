@@ -74,6 +74,7 @@ export function isChartFile(filePath: string): boolean {
  * @command
  * @category bms
  * @dangerous false
+ * @name 解析 BMS 文件
  * @description 解析单个 BMS 文件，提取元数据信息（标题、艺术家等）
  * @frontend true
  *
@@ -110,6 +111,7 @@ export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput |
  * @command
  * @category bms
  * @dangerous false
+ * @name 扫描目录 BMS 文件
  * @description 扫描目录，解析所有 BMS 文件
  * @frontend true
  *
@@ -165,6 +167,7 @@ export async function getDirBmsList(dirPath: string): Promise<BmsOutput[]> {
  * @command
  * @category bms
  * @dangerous false
+ * @name 读取目录 BMS 信息
  * @description 从目录的 info.toml 文件读取 BMS 摘要信息
  * @frontend true
  *
@@ -259,6 +262,7 @@ function extractWorkName(names: (string | undefined)[], removeSubstrings?: strin
  * @command
  * @category bms
  * @dangerous false
+ * @name 检查工作目录
  * @description 检查指定目录是否为有效的 BMS 工作目录
  * @frontend true
  *
@@ -294,6 +298,7 @@ export async function isWorkDir(dirPath: string): Promise<boolean> {
  * @command
  * @category bms
  * @dangerous false
+ * @name 检查根目录
  * @description 检查指定目录是否为根目录（包含工作目录的目录）
  * @frontend true
  *

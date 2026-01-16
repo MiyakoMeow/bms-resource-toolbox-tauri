@@ -171,6 +171,7 @@ class CommandGenerator {
     const functionName = node.name?.getText() || 'unknown';
     const category = this.extractTag(jsDocs, 'category') || 'misc';
     const dangerous = this.extractTag(jsDocs, 'dangerous') === 'true';
+    const name = this.extractTag(jsDocs, 'name') || functionName;
     const description = this.extractTag(jsDocs, 'description') || this.extractDescription(node);
     const isFrontendCommand = this.extractTag(jsDocs, 'frontend') === 'true';
 
@@ -185,7 +186,7 @@ class CommandGenerator {
 
     return {
       id,
-      name: description.split('\n')[0], // 使用第一行作为名称
+      name,
       category,
       description,
       parameters,

@@ -12,6 +12,7 @@ import { ReplacePreset } from '$lib/utils/fs/moving.js';
  * @command
  * @category root
  * @dangerous true
+ * @name 批量重命名工作目录
  * @description 递归为根目录下的所有工作目录设置名称
  * @frontend true
  *
@@ -51,6 +52,7 @@ export async function rootSetNameByBms(
  * @command
  * @category root
  * @dangerous true
+ * @name 批量撤销重命名
  * @description 递归撤销根目录下所有工作目录的名称设置
  * @frontend true
  *
@@ -88,6 +90,7 @@ export async function rootUndoSetNameByBms(
  * @command
  * @category root
  * @dangerous true
+ * @name 复制编号目录名称
  * @description 复制编号目录的名称到目标目录
  * @frontend true
  *

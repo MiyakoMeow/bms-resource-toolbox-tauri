@@ -14,7 +14,7 @@ import { CommandCategory, ParameterType } from '$lib/types/enums.js';
 export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'is_dir_having_file',
-    name: '检查目录是否包含文件',
+    name: '检查目录文件',
     category: CommandCategory.FS,
     description: `检查目录是否包含文件`,
     parameters: [
@@ -31,7 +31,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'read_and_parse_bms_file',
-    name: '解析单个 BMS 文件，提取元数据信息（标题、艺术家等）',
+    name: '解析 BMS 文件',
     category: CommandCategory.BMS,
     description: `解析单个 BMS 文件，提取元数据信息（标题、艺术家等）`,
     parameters: [
@@ -48,7 +48,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'get_dir_bms_list',
-    name: '扫描目录，解析所有 BMS 文件',
+    name: '扫描目录 BMS 文件',
     category: CommandCategory.BMS,
     description: `扫描目录，解析所有 BMS 文件`,
     parameters: [
@@ -65,7 +65,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'get_dir_bms_info',
-    name: '从目录的 info.toml 文件读取 BMS 摘要信息',
+    name: '读取目录 BMS 信息',
     category: CommandCategory.BMS,
     description: `从目录的 info.toml 文件读取 BMS 摘要信息`,
     parameters: [
@@ -82,7 +82,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'is_work_dir',
-    name: '检查指定目录是否为有效的 BMS 工作目录',
+    name: '检查工作目录',
     category: CommandCategory.BMS,
     description: `检查指定目录是否为有效的 BMS 工作目录`,
     parameters: [
@@ -99,7 +99,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'is_root_dir',
-    name: '检查指定目录是否为根目录（包含工作目录的目录）',
+    name: '检查根目录',
     category: CommandCategory.BMS,
     description: `检查指定目录是否为根目录（包含工作目录的目录）`,
     parameters: [
@@ -116,7 +116,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'remove_empty_folders',
-    name: '递归删除指定目录下的所有空文件夹',
+    name: '删除空文件夹',
     category: CommandCategory.FS,
     description: `递归删除指定目录下的所有空文件夹`,
     parameters: [
@@ -139,7 +139,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'work_remove_zero_sized_media_files',
-    name: '递归删除工作目录中所有零字节媒体文件',
+    name: '删除零字节媒体文件',
     category: CommandCategory.Work,
     description: `递归删除工作目录中所有零字节媒体文件`,
     parameters: [
@@ -162,7 +162,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'work_remove_unneed_media_files',
-    name: '根据预设规则删除重复格式的媒体文件（保留高质量格式）',
+    name: '删除重复格式媒体文件',
     category: CommandCategory.Root,
     description: `根据预设规则删除重复格式的媒体文件（保留高质量格式）`,
     parameters: [
@@ -185,9 +185,9 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'work_set_name_by_bms',
-    name: '根据 BMS 文件信息重命名工作目录',
+    name: '根据 BMS 重命名工作目录',
     category: CommandCategory.Work,
-    description: `根据 BMS 文件信息重命名工作目录`,
+    description: `根据 BMS 文件信息重命名工作目录，支持多种命名策略`,
     parameters: [
       {
         name: 'workDir',
@@ -226,9 +226,9 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'work_undo_set_name_by_bms',
-    name: '撤销之前的目录重命名操作',
+    name: '撤销工作目录重命名',
     category: CommandCategory.Work,
-    description: `撤销之前的目录重命名操作`,
+    description: `撤销之前的目录重命名操作，恢复原始目录名`,
     parameters: [
       {
         name: 'workDir',
@@ -255,7 +255,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'root_root_set_name_by_bms',
-    name: '递归为根目录下的所有工作目录设置名称',
+    name: '批量重命名工作目录',
     category: CommandCategory.Root,
     description: `递归为根目录下的所有工作目录设置名称`,
     parameters: [
@@ -290,7 +290,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'root_root_undo_set_name_by_bms',
-    name: '递归撤销根目录下所有工作目录的名称设置',
+    name: '批量撤销重命名',
     category: CommandCategory.Root,
     description: `递归撤销根目录下所有工作目录的名称设置`,
     parameters: [
@@ -319,7 +319,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   },
   {
     id: 'root_copy_numbered_workdir_names',
-    name: '复制编号目录的名称到目标目录',
+    name: '复制编号目录名称',
     category: CommandCategory.Root,
     description: `复制编号目录的名称到目标目录`,
     parameters: [

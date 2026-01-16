@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import autoprefixer from 'autoprefixer';
 import type { UserConfig } from 'vite';
 import process from 'node:process';
-import generateCommandsPlugin from './vite-plugin-generate-commands.ts';
+import generateCommandsPlugin from './vite-plugin-generate-commands.js';
 
 const host = process.env.TAURI_DEV_HOST ?? false;
 

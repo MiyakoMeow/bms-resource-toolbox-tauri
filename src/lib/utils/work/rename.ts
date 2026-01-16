@@ -52,7 +52,8 @@ function isAlreadyFormatted(dirName: string, setType: BmsFolderSetNameType): boo
  * @command
  * @category work
  * @dangerous true
- * @description 根据 BMS 文件信息重命名工作目录
+ * @name 根据 BMS 重命名工作目录
+ * @description 根据 BMS 文件信息重命名工作目录，支持多种命名策略
  * @frontend true
  *
  * @param {string} workDir - 工作目录路径
@@ -138,7 +139,8 @@ export async function setNameByBms(
  * @command
  * @category work
  * @dangerous true
- * @description 撤销之前的目录重命名操作
+ * @name 撤销工作目录重命名
+ * @description 撤销之前的目录重命名操作，恢复原始目录名
  * @frontend true
  *
  * @param {string} workDir - 工作目录路径

@@ -11,6 +11,7 @@ import { readDir } from '@tauri-apps/plugin-fs';
  * @command
  * @category fs
  * @dangerous false
+ * @name 检查目录文件
  * @description 检查目录是否包含文件
  * @frontend true
  *

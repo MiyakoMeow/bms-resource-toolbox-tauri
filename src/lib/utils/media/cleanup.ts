@@ -21,6 +21,7 @@ export class MediaCleaner {
    * @command
    * @category work
    * @dangerous true
+   * @name 删除零字节媒体文件
    * @description 递归删除工作目录中所有零字节媒体文件
    * @frontend true
    *
@@ -107,6 +108,7 @@ export class MediaCleaner {
    * @command
    * @category root
    * @dangerous true
+   * @name 删除重复格式媒体文件
    * @description 根据预设规则删除重复格式的媒体文件（保留高质量格式）
    * @frontend true
    *
