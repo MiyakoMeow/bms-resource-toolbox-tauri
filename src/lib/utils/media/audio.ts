@@ -7,7 +7,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { ProcessRunner } from './processRunner.js';
 import { ConcurrencyPool } from './concurrency.js';
 import { AUDIO_PRESETS } from './presets.js';
-import type { AudioProcessParams, AudioPreset } from './types.js';
+import type { AudioProcessParams } from './types.js';
 
 /**
  * 音频转换器类

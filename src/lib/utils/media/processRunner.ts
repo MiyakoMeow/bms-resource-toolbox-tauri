@@ -89,7 +89,7 @@ export class ProcessRunner {
     const args = versionArgs[program];
     if (args) {
       try {
-        const result = await Command.create(program, args).execute();
+        await Command.create(program, args).execute();
         // 只要能执行（即使返回非零），说明命令存在
         return true;
       } catch {

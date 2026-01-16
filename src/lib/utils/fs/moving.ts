@@ -4,7 +4,6 @@
 
 import { readDir, rename, stat, exists, remove } from '@tauri-apps/plugin-fs';
 import { isFileSameContent, isDirHavingFile } from './compare.js';
-import { getValidFileName } from './path.js';
 
 /**
  * 替换操作类型

@@ -98,8 +98,13 @@ export function getRelativePath(from: string, to: string): string {
  */
 export function getValidFileName(fileName: string): string {
   // 移除或替换非法字符（Windows 不允许的字符）
-  const invalidChars = /[<>:"/\\|?*\x00-\x1f]/g;
+  const invalidChars = /[<>:"/\\|?*]/g;
   let validName = fileName.replaceAll(invalidChars, '_');
+
+  // 移除控制字符
+  for (let i = 0; i <= 31; i++) {
+    validName = validName.replace(String.fromCharCode(i), '_');
+  }
 
   // 移除前后空格
   validName = validName.trim();

@@ -54,49 +54,49 @@ export async function executeGeneratedFrontendCommand(
 
     if (commandId === 'remove_empty_folders') {
       const { removeEmptyFolders } = await import('$lib/utils/fs/cleanup.js');
-      const result = await removeEmptyFolders(params.parentDir as string, params.dryRun as boolean);
+      await removeEmptyFolders(params.parentDir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_remove_zero_sized_media_files') {
       const { removeZeroSizedMediaFiles } = await import('$lib/utils/media/cleanup.js');
-      const result = await removeZeroSizedMediaFiles(params.dir as string, params.dryRun as boolean);
+      await removeZeroSizedMediaFiles(params.dir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_remove_unneed_media_files') {
       const { removeUnneedMediaFiles } = await import('$lib/utils/media/cleanup.js');
-      const result = await removeUnneedMediaFiles(params.rootDir as string, params.preset as RemoveMediaPreset);
+      await removeUnneedMediaFiles(params.rootDir as string, params.preset as RemoveMediaPreset);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_set_name_by_bms') {
       const { setNameByBms } = await import('$lib/utils/work/rename.js');
-      const result = await setNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset, params.skipAlreadyFormatted as boolean);
+      await setNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset, params.skipAlreadyFormatted as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_undo_set_name_by_bms') {
       const { undoSetNameByBms } = await import('$lib/utils/work/rename.js');
-      const result = await undoSetNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
+      await undoSetNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_root_set_name_by_bms') {
       const { rootSetNameByBms } = await import('$lib/utils/root/batch.js');
-      const result = await rootSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset);
+      await rootSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_root_undo_set_name_by_bms') {
       const { rootUndoSetNameByBms } = await import('$lib/utils/root/batch.js');
-      const result = await rootUndoSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
+      await rootUndoSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_copy_numbered_workdir_names') {
       const { copyNumberedWorkdirNames } = await import('$lib/utils/root/batch.js');
-      const result = await copyNumberedWorkdirNames(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
+      await copyNumberedWorkdirNames(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 

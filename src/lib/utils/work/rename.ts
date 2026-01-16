@@ -2,7 +2,7 @@
  * 工作目录重命名工具
  */
 
-import { readDir, rename, exists } from '@tauri-apps/plugin-fs';
+import { rename, exists } from '@tauri-apps/plugin-fs';
 import { getDirBmsInfo } from '$lib/utils/bms/scanner.js';
 import { getValidFileName } from '$lib/utils/fs/path.js';
 import {

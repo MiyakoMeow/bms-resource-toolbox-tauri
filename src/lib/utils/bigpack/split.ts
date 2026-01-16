@@ -2,7 +2,7 @@
  * 大包拆分和合并工具
  */
 
-import { readDir, mkdir, rename, exists, remove } from '@tauri-apps/plugin-fs';
+import { readDir, mkdir, rename, remove } from '@tauri-apps/plugin-fs';
 import {
   moveElementsAcrossDir,
   replaceOptionsFromPreset,

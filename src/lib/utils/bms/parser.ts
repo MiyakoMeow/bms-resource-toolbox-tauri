@@ -3,8 +3,8 @@
  * 支持 BMS (.bms, .bme, .bml, .pms) 和 BMSON (.bmson) 格式
  */
 
-import type { Bms, BmsOutput, BmsWarning, BmsMusicInfo, BmsWav, BmsBmp, Bmson } from './types.js';
-import { BmsWarningType, PlayingError, PlayingWarning } from './types.js';
+import type { Bms, BmsOutput, BmsWarning, Bmson } from './types.js';
+import { BmsWarningType, PlayingError } from './types.js';
 
 /**
  * BMS 解析器类
@@ -43,7 +43,7 @@ export class BmsParser {
       }
 
       // 解析各种命令
-      this.parseCommand(bms, command, args, warnings);
+      this.parseCommand(bms, command, args);
     }
 
     return { bms, warnings };
@@ -94,7 +94,7 @@ export class BmsParser {
       const warnings: BmsWarning[] = [];
 
       return { bms, warnings };
-    } catch (error) {
+    } catch {
       // JSON 解析失败
       const bms: Bms = this.createEmptyBms();
       const warnings: BmsWarning[] = [
@@ -122,12 +122,7 @@ export class BmsParser {
   /**
    * 解析单个 BMS 命令
    */
-  private static parseCommand(
-    bms: Bms,
-    command: string,
-    args: string[],
-    warnings: BmsWarning[]
-  ): void {
+  private static parseCommand(bms: Bms, command: string, args: string[]): void {
     const upperCommand = command.toUpperCase();
 
     switch (upperCommand) {

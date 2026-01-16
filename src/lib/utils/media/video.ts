@@ -7,7 +7,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { ProcessRunner } from './processRunner.js';
 import { ConcurrencyPool } from './concurrency.js';
 import { VIDEO_PRESETS } from './presets.js';
-import type { VideoProcessParams, VideoPreset, VideoInfo } from './types.js';
+import type { VideoProcessParams, VideoInfo } from './types.js';
 
 /**
  * 视频转换器类

@@ -7,7 +7,6 @@ import { mkdir, remove } from '@tauri-apps/plugin-fs';
 import { AudioConverter } from '$lib/utils/media/audio.js';
 import { MediaCleaner } from '$lib/utils/media/cleanup.js';
 import { RemoveMediaPreset } from '$lib/types/enums.js';
-import { AudioPreset, type RemoveMediaRule } from '$lib/utils/media/types.js';
 import { setNameByBms, BmsFolderSetNameType } from '$lib/utils/work/rename.js';
 import { ReplacePreset } from '$lib/utils/fs/moving.js';
 import { copyNumberedWorkdirNames } from '$lib/utils/root/batch.js';

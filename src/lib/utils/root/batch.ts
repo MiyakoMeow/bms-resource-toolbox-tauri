@@ -105,7 +105,8 @@ export async function copyNumberedWorkdirNames(
   toDir: string,
   dryRun: boolean
 ): Promise<void> {
-  const { exists, mkdir, writeFile } = await import('@tauri-apps/plugin-fs');
+  // Note: exists, mkdir, writeFile were removed as unused
+  await import('@tauri-apps/plugin-fs');
 
   const entries = await readDir(fromDir);
   const nameMap = new Map<string, string>();
@@ -141,7 +142,7 @@ export async function copyNumberedWorkdirNames(
 
     const match = entry.name.match(/^(\d+)\s+(.+)$/);
     if (match) {
-      const [, num, _currentName] = match;
+      const [, num] = match;
       const newName = nameMap.get(num);
 
       if (newName) {

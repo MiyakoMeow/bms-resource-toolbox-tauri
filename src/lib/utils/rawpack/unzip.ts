@@ -148,7 +148,7 @@ async function moveOutFilesInFolderInCacheDir(
   let cacheFolderCount = 0;
   let cacheFileCount = 0;
 
-  loop: while (true) {
+  while (true) {
     let innerDirName: string | null = null;
 
     // 重新扫描目录

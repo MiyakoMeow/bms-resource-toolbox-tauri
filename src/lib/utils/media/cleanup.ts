@@ -8,7 +8,7 @@
 import * as fs from '@tauri-apps/plugin-fs';
 import { REMOVE_MEDIA_RULES } from './presets.js';
 import { RemoveMediaPreset } from '$lib/types/enums.js';
-import type { MediaCleanupParams, RemoveMediaRule } from './types.js';
+import type { RemoveMediaRule } from './types.js';
 
 /**
  * 媒体文件清理器类
