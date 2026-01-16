@@ -4,11 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 import autoprefixer from 'autoprefixer';
 import type { UserConfig } from 'vite';
 import process from 'node:process';
+import generateCommandsPlugin from './vite-plugin-generate-commands.ts';
 
 const host = process.env.TAURI_DEV_HOST ?? false;
 
 const config: UserConfig = {
-  plugins: [tailwindcss(), sveltekit()],
+  plugins: [generateCommandsPlugin(), tailwindcss(), sveltekit()],
   css: {
     postcss: {
       plugins: [autoprefixer()],
