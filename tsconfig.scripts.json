@@ -1,0 +1,18 @@
+/**
+ * TypeScript 配置文件 - 用于脚本
+ *
+ * 专门为 scripts/ 目录下的代码生成器提供配置
+ */
+
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["scripts/**/*"],
+  "exclude": ["node_modules", "src"]
+}

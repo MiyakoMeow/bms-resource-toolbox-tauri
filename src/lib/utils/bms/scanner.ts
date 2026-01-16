@@ -70,6 +70,16 @@ export function isChartFile(filePath: string): boolean {
 
 /**
  * 读取并解析 BMS 文件
+ *
+ * @command
+ * @category bms
+ * @dangerous false
+ * @description 解析单个 BMS 文件，提取元数据信息（标题、艺术家等）
+ * @frontend true
+ *
+ * @param {string} filePath - BMS 文件路径
+ *
+ * @returns {Promise<BmsOutput | null>} 解析结果，失败时返回 null
  */
 export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput | null> {
   try {
@@ -96,6 +106,16 @@ export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput |
 
 /**
  * 获取目录中的所有 BMS 文件
+ *
+ * @command
+ * @category bms
+ * @dangerous false
+ * @description 扫描目录，解析所有 BMS 文件
+ * @frontend true
+ *
+ * @param {string} dirPath - 目录路径
+ *
+ * @returns {Promise<BmsOutput[]>} 所有解析出的 BMS 信息列表
  */
 export async function getDirBmsList(dirPath: string): Promise<BmsOutput[]> {
   const bmsOutputs: BmsOutput[] = [];
@@ -141,6 +161,16 @@ export async function getDirBmsList(dirPath: string): Promise<BmsOutput[]> {
 
 /**
  * 获取目录的 BMS 信息（整合版）
+ *
+ * @command
+ * @category bms
+ * @dangerous false
+ * @description 从目录的 info.toml 文件读取 BMS 摘要信息
+ * @frontend true
+ *
+ * @param {string} dirPath - BMS 工作目录路径
+ *
+ * @returns {Promise<BmsOutput | null>} 整合后的 BMS 信息
  */
 export async function getDirBmsInfo(dirPath: string): Promise<BmsOutput | null> {
   const bmsList = await getDirBmsList(dirPath);
@@ -225,6 +255,16 @@ function extractWorkName(names: (string | undefined)[], removeSubstrings?: strin
 
 /**
  * 检查是否为工作目录（包含 BMS 文件的目录）
+ *
+ * @command
+ * @category bms
+ * @dangerous false
+ * @description 检查指定目录是否为有效的 BMS 工作目录
+ * @frontend true
+ *
+ * @param {string} dirPath - 要检查的目录路径
+ *
+ * @returns {Promise<boolean>} 是否为工作目录
  */
 export async function isWorkDir(dirPath: string): Promise<boolean> {
   try {
@@ -250,6 +290,16 @@ export async function isWorkDir(dirPath: string): Promise<boolean> {
 
 /**
  * 检查是否为根目录（包含工作目录的目录）
+ *
+ * @command
+ * @category bms
+ * @dangerous false
+ * @description 检查指定目录是否为根目录（包含工作目录的目录）
+ * @frontend true
+ *
+ * @param {string} dirPath - 要检查的目录路径
+ *
+ * @returns {Promise<boolean>} 是否为根目录
  */
 export async function isRootDir(dirPath: string): Promise<boolean> {
   try {

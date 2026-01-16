@@ -13,6 +13,7 @@ import {
   BMSEvent,
   RemoveMediaPreset,
 } from '$lib/types/enums.js';
+import { GENERATED_COMMAND_REGISTRY } from './commandRegistry.generated.js';
 
 /**
  * 分类元数据
@@ -84,503 +85,67 @@ export const CATEGORY_METADATA: Record<CommandCategory, CategoryMetadata> = {
 };
 
 /**
- * 命令注册表
- *
- * 注意：这是一个包含示例命令的版本
- * 完整版本需要包含所有 33 个命令
+ * 枚举选项映射
+ * 为命令参数的枚举类型提供中文标签
  */
-export const COMMAND_REGISTRY: CommandDefinition[] = [
-  // ========== BMS 组（示例：3个）==========
-  {
-    id: 'parse_bms_file',
-    name: '解析 BMS 文件',
-    category: CommandCategory.BMS,
-    description: '解析单个 BMS 文件，提取元数据信息（标题、艺术家等）',
-    parameters: [
-      {
-        name: 'file',
-        type: ParameterType.File,
-        required: true,
-        description: 'BMS 文件路径（.bms/.bme/.bml 等）',
-      },
-    ],
-    returnType: 'BMSOutput',
-    dangerous: false,
-  },
+const ENUM_OPTIONS_MAP: Record<string, Array<{ value: unknown; label: string }>> = {
+  BmsFolderSetNameType: [
+    { value: BmsFolderSetNameType.ReplaceTitleArtist, label: '替换为 "Title [Artist]"' },
+    { value: BmsFolderSetNameType.AppendTitleArtist, label: '追加 " Title [Artist]"' },
+    { value: BmsFolderSetNameType.AppendArtist, label: '追加 " [Artist]"' },
+  ],
+  ReplacePreset: [
+    { value: ReplacePreset.Default, label: '默认' },
+    { value: ReplacePreset.UpdatePack, label: '更新包' },
+  ],
+  BMSEvent: [
+    { value: BMSEvent.BOFNT, label: 'BOFNT' },
+    { value: BMSEvent.BOFTT, label: 'BOFTT' },
+    { value: BMSEvent.LetsBMSEdit, label: 'LetsBMSEdit' },
+    { value: BMSEvent.LetsBMSEdit2, label: 'LetsBMSEdit2' },
+    { value: BMSEvent.LetsBMSEdit3, label: 'LetsBMSEdit3' },
+    { value: BMSEvent.LetsBMSEdit4, label: 'LetsBMSEdit4' },
+  ],
+  RemoveMediaPreset: [
+    { value: RemoveMediaPreset.Oraja, label: '完整预设（推荐用于 beatoraja/Qwilight）' },
+    { value: RemoveMediaPreset.WavFillFlac, label: '简单预设：wav -> flac' },
+    { value: RemoveMediaPreset.MpgFillWmv, label: '简单预设：mpg -> wmv' },
+  ],
+};
 
-  {
-    id: 'is_work_dir',
-    name: '检查工作目录',
-    category: CommandCategory.BMS,
-    description: '检查指定目录是否为有效的 BMS 工作目录',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '要检查的目录路径',
-      },
-    ],
-    returnType: 'boolean',
-    dangerous: false,
-  },
+/**
+ * 扩展自动生成的命令注册表，添加手动元数据
+ */
+const COMMAND_REGISTRY_WITH_EXTRAS: CommandDefinition[] = GENERATED_COMMAND_REGISTRY.map((cmd) => {
+  // 为枚举参数添加选项
+  const enhancedParameters = cmd.parameters.map((param) => {
+    // 检查参数类型是否为枚举
+    if (param.type === ParameterType.Enum) {
+      // 尝试从映射中获取选项
+      for (const [key, options] of Object.entries(ENUM_OPTIONS_MAP)) {
+        // 检查参数类型字符串是否包含枚举名称
+        if (param.typeString && param.typeString.includes(key)) {
+          return {
+            ...param,
+            enumOptions: options,
+          };
+        }
+      }
+    }
 
-  {
-    id: 'get_dir_bms_info',
-    name: '获取目录 BMS 信息',
-    category: CommandCategory.BMS,
-    description: '从目录的 info.toml 文件读取 BMS 摘要信息',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: 'BMS 工作目录路径',
-      },
-    ],
-    returnType: 'Option<Bms>',
-    dangerous: false,
-  },
+    return param;
+  });
 
-  // ========== FS 组（示例：2个）==========
-  {
-    id: 'is_file_same_content',
-    name: '比较文件内容',
-    category: CommandCategory.FS,
-    description: '检查两个文件的内容是否相同',
-    parameters: [
-      {
-        name: 'file1',
-        type: ParameterType.File,
-        required: true,
-        description: '第一个文件路径',
-      },
-      {
-        name: 'file2',
-        type: ParameterType.File,
-        required: true,
-        description: '第二个文件路径',
-      },
-    ],
-    returnType: 'boolean',
-    dangerous: false,
-  },
+  return {
+    ...cmd,
+    parameters: enhancedParameters,
+  };
+});
 
-  {
-    id: 'remove_empty_folders',
-    name: '删除空文件夹',
-    category: CommandCategory.FS,
-    description: '递归删除指定目录下的所有空文件夹',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '要清理的目录路径',
-      },
-      {
-        name: 'dry_run',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '模拟运行（不实际删除）',
-        defaultValue: true,
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-  },
-
-  // ========== Work 组（示例：1个）==========
-  {
-    id: 'work_set_name_by_bms',
-    name: '按 BMS 重命名工作目录',
-    category: CommandCategory.Work,
-    description: '根据 BMS 文件信息重命名工作目录',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '工作目录路径',
-      },
-      {
-        name: 'set_type',
-        type: ParameterType.Enum,
-        required: true,
-        description: '命名方式',
-        defaultValue: BmsFolderSetNameType.AppendTitleArtist,
-        enumOptions: [
-          {
-            value: BmsFolderSetNameType.ReplaceTitleArtist,
-            label: '替换为 "Title [Artist]"',
-          },
-          {
-            value: BmsFolderSetNameType.AppendTitleArtist,
-            label: '追加 " Title [Artist]"',
-          },
-          {
-            value: BmsFolderSetNameType.AppendArtist,
-            label: '追加 " [Artist]"',
-          },
-        ],
-      },
-      {
-        name: 'dry_run',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '模拟运行（不实际执行）',
-        defaultValue: true,
-      },
-      {
-        name: 'replace',
-        type: ParameterType.Enum,
-        required: true,
-        description: '文件替换策略',
-        defaultValue: ReplacePreset.Default,
-        enumOptions: [
-          {
-            value: ReplacePreset.Default,
-            label: '默认',
-          },
-          {
-            value: ReplacePreset.UpdatePack,
-            label: '更新包',
-          },
-        ],
-      },
-      {
-        name: 'skip_already_formatted',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '跳过已格式化的目录',
-        defaultValue: false,
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-  },
-  {
-    id: 'work_remove_zero_sized_media_files',
-    name: '删除零字节媒体文件',
-    category: CommandCategory.Work,
-    description: '递归删除工作目录中所有零字节媒体文件',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '工作目录路径',
-      },
-      {
-        name: 'dry_run',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '模拟运行（不实际删除）',
-        defaultValue: true,
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true,
-  },
-
-  // ========== Root 组（示例：1个）==========
-  {
-    id: 'root_scan_folder_similar_folders',
-    name: '扫描相似文件夹',
-    category: CommandCategory.Root,
-    description: '扫描目录，找出相似度超过阈值的文件夹对',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '要扫描的目录路径',
-      },
-      {
-        name: 'similarity',
-        type: ParameterType.Number,
-        required: true,
-        description: '相似度阈值（0.0-1.0）',
-        defaultValue: 0.85,
-      },
-    ],
-    returnType: 'Vec<(String, String, f64)>',
-    dangerous: false,
-  },
-  {
-    id: 'root_remove_unneed_media_files',
-    name: '清理冗余媒体文件',
-    category: CommandCategory.Root,
-    description: '根据预设规则删除重复格式的媒体文件（保留高质量格式）',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '根目录路径',
-      },
-      {
-        name: 'rule',
-        type: ParameterType.Enum,
-        required: true,
-        description: '清理规则预设',
-        defaultValue: RemoveMediaPreset.Oraja,
-        enumOptions: [
-          {
-            value: RemoveMediaPreset.Oraja,
-            label: '完整预设（推荐用于 beatoraja/Qwilight）',
-          },
-          {
-            value: RemoveMediaPreset.WavFillFlac,
-            label: '简单预设：wav -> flac',
-          },
-          {
-            value: RemoveMediaPreset.MpgFillWmv,
-            label: '简单预设：mpg -> wmv',
-          },
-        ],
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true,
-  },
-
-  // ========== Big Pack 组（示例：1个）==========
-  {
-    id: 'root_split_folders_with_first_char',
-    name: '按首字符拆分文件夹',
-    category: CommandCategory.BigPack,
-    description: '将根目录下的工作文件夹按首字符规则拆分到不同的分类文件夹',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '根目录路径',
-      },
-      {
-        name: 'dry_run',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '模拟运行（不实际执行）',
-        defaultValue: true,
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-  },
-
-  // ========== Pack 组（示例：1个）==========
-  {
-    id: 'pack_raw_to_hq',
-    name: 'Raw 包转 HQ 包',
-    category: CommandCategory.Pack,
-    description: '将原始音频（WAV）转换为高质量格式（FLAC），适用于 beatoraja/Qwilight',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '根目录路径',
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true,
-  },
-  {
-    id: 'pack_hq_to_lq',
-    name: 'HQ 包转 LQ 包',
-    category: CommandCategory.Pack,
-    description: '将高质量格式（FLAC/MP4）转换为低质量格式（OGG/AVI），适用于 LR2',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '根目录路径',
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true,
-  },
-
-  // ========== Rawpack 组（示例：1个）==========
-  {
-    id: 'rawpack_unzip_numeric_to_bms_folder',
-    name: '解压数字编号压缩包',
-    category: CommandCategory.Rawpack,
-    description: '解压数字编号的压缩包到对应的 BMS 文件夹',
-    parameters: [
-      {
-        name: 'pack_dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '压缩包目录路径',
-      },
-      {
-        name: 'cache_dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '缓存目录路径',
-      },
-      {
-        name: 'root_dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '输出目录路径',
-      },
-      {
-        name: 'confirm',
-        type: ParameterType.Boolean,
-        required: false,
-        description: '确认操作',
-        defaultValue: false,
-      },
-      {
-        name: 'replace',
-        type: ParameterType.Enum,
-        required: true,
-        description: '文件替换策略',
-        defaultValue: ReplacePreset.Default,
-        enumOptions: [
-          {
-            value: ReplacePreset.Default,
-            label: '默认',
-          },
-          {
-            value: ReplacePreset.UpdatePack,
-            label: '更新包',
-          },
-        ],
-      },
-    ],
-    returnType: 'void',
-    dangerous: true,
-  },
-
-  // ========== Root Event 组（示例：1个）==========
-  {
-    id: 'root_event_check_num_folder',
-    name: '检查数字文件夹',
-    category: CommandCategory.RootEvent,
-    description: '检查从 1 到 max 的数字编号文件夹哪些不存在',
-    parameters: [
-      {
-        name: 'dir',
-        type: ParameterType.Directory,
-        required: true,
-        description: '目录路径',
-      },
-      {
-        name: 'max',
-        type: ParameterType.Number,
-        required: true,
-        description: '最大编号',
-      },
-    ],
-    returnType: 'Vec<PathBuf>',
-    dangerous: false,
-  },
-
-  // ========== BMS Event 组（示例：2个）==========
-  {
-    id: 'bms_event_open_list',
-    name: '打开 BMS 活动列表',
-    category: CommandCategory.BMSEvent,
-    description: '在浏览器中打开 BMS 活动列表页面',
-    parameters: [
-      {
-        name: 'event',
-        type: ParameterType.Enum,
-        required: true,
-        description: 'BMS 活动',
-        enumOptions: [
-          {
-            value: BMSEvent.BOFNT,
-            label: 'BOFNT',
-          },
-          {
-            value: BMSEvent.BOFTT,
-            label: 'BOFTT',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit,
-            label: 'LetsBMSEdit',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit2,
-            label: 'LetsBMSEdit2',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit3,
-            label: 'LetsBMSEdit3',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit4,
-            label: 'LetsBMSEdit4',
-          },
-        ],
-      },
-    ],
-    returnType: 'void',
-    dangerous: false,
-    isFrontendCommand: true,
-  },
-
-  {
-    id: 'bms_event_open_event_works',
-    name: '打开 BMS 活动作品页面',
-    category: CommandCategory.BMSEvent,
-    description: '批量打开指定 BMS 活动中的多个作品详情页面',
-    parameters: [
-      {
-        name: 'event',
-        type: ParameterType.Enum,
-        required: true,
-        description: 'BMS 活动',
-        enumOptions: [
-          {
-            value: BMSEvent.BOFNT,
-            label: 'BOFNT',
-          },
-          {
-            value: BMSEvent.BOFTT,
-            label: 'BOFTT',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit,
-            label: 'LetsBMSEdit',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit2,
-            label: 'LetsBMSEdit2',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit3,
-            label: 'LetsBMSEdit3',
-          },
-          {
-            value: BMSEvent.LetsBMSEdit4,
-            label: 'LetsBMSEdit4',
-          },
-        ],
-      },
-      {
-        name: 'work_ids',
-        type: ParameterType.NumberArray,
-        required: true,
-        description: '作品 ID 列表',
-      },
-    ],
-    returnType: 'void',
-    dangerous: false,
-    isFrontendCommand: true,
-  },
-];
+/**
+ * 命令注册表
+ */
+export const COMMAND_REGISTRY: CommandDefinition[] = COMMAND_REGISTRY_WITH_EXTRAS;
 
 /**
  * 根据 ID 获取命令

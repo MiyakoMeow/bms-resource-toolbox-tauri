@@ -27,6 +27,8 @@ export interface CommandParameter {
   }>;
   /** 验证函数（可选） */
   validation?: (value: unknown) => boolean | string;
+  /** TypeScript 类型字符串（用于代码生成，运行时可选） */
+  typeString?: string;
 }
 
 /**

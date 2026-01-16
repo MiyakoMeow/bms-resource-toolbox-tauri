@@ -48,6 +48,20 @@ function isAlreadyFormatted(dirName: string, setType: BmsFolderSetNameType): boo
 
 /**
  * 根据 BMS 信息设置目录名
+ *
+ * @command
+ * @category work
+ * @dangerous true
+ * @description 根据 BMS 文件信息重命名工作目录
+ * @frontend true
+ *
+ * @param {string} workDir - 工作目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @param {ReplacePreset} replacePreset - 文件替换策略
+ * @param {boolean} skipAlreadyFormatted - 跳过已格式化的目录
+ *
+ * @returns {Promise<void>}
  */
 export async function setNameByBms(
   workDir: string,
@@ -120,6 +134,18 @@ export async function setNameByBms(
 
 /**
  * 撤销目录命名设置
+ *
+ * @command
+ * @category work
+ * @dangerous true
+ * @description 撤销之前的目录重命名操作
+ * @frontend true
+ *
+ * @param {string} workDir - 工作目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function undoSetNameByBms(
   workDir: string,

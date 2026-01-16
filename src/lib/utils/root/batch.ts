@@ -8,6 +8,19 @@ import { ReplacePreset } from '$lib/utils/fs/moving.js';
 
 /**
  * 递归设置目录名（根目录版本）
+ *
+ * @command
+ * @category root
+ * @dangerous true
+ * @description 递归为根目录下的所有工作目录设置名称
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @param {ReplacePreset} replacePreset - 文件替换策略
+ *
+ * @returns {Promise<void>}
  */
 export async function rootSetNameByBms(
   rootDir: string,
@@ -34,6 +47,18 @@ export async function rootSetNameByBms(
 
 /**
  * 递归撤销目录名设置（根目录版本）
+ *
+ * @command
+ * @category root
+ * @dangerous true
+ * @description 递归撤销根目录下所有工作目录的名称设置
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function rootUndoSetNameByBms(
   rootDir: string,
@@ -59,6 +84,18 @@ export async function rootUndoSetNameByBms(
 
 /**
  * 复制编号目录名
+ *
+ * @command
+ * @category root
+ * @dangerous true
+ * @description 复制编号目录的名称到目标目录
+ * @frontend true
+ *
+ * @param {string} fromDir - 源目录路径
+ * @param {string} toDir - 目标目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function copyNumberedWorkdirNames(
   fromDir: string,

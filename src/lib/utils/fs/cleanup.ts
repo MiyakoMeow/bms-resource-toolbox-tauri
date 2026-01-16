@@ -7,6 +7,17 @@ import { isDirHavingFile } from './compare.js';
 
 /**
  * 递归删除指定目录下的所有空文件夹
+ *
+ * @command
+ * @category fs
+ * @dangerous true
+ * @description 递归删除指定目录下的所有空文件夹
+ * @frontend true
+ *
+ * @param {string} parentDir - 要清理的目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际删除）
+ *
+ * @returns {Promise<void>}
  */
 export async function removeEmptyFolders(parentDir: string, dryRun: boolean): Promise<void> {
   try {

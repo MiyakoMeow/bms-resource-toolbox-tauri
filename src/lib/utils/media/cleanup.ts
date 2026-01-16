@@ -18,8 +18,16 @@ export class MediaCleaner {
    * 删除零字节媒体文件
    * 对应 Rust: remove_zero_sized_media_files (work.rs:264-312)
    *
-   * @param dir - 目录路径
-   * @param dryRun - 是否模拟运行（不实际删除）
+   * @command
+   * @category work
+   * @dangerous true
+   * @description 递归删除工作目录中所有零字节媒体文件
+   * @frontend true
+   *
+   * @param {string} dir - 工作目录路径
+   * @param {boolean} dryRun - 模拟运行（不实际删除）
+   *
+   * @returns {Promise<void>}
    * @throws 如果目录操作失败
    */
   static async removeZeroSizedMediaFiles(dir: string, dryRun: boolean): Promise<void> {
@@ -96,8 +104,16 @@ export class MediaCleaner {
    * 根据规则删除不需要的媒体文件
    * 对应 Rust: remove_unneed_media_files (root_bigpack.rs:737-757)
    *
-   * @param rootDir - 根目录路径
-   * @param preset - 删除规则预设
+   * @command
+   * @category root
+   * @dangerous true
+   * @description 根据预设规则删除重复格式的媒体文件（保留高质量格式）
+   * @frontend true
+   *
+   * @param {string} rootDir - 根目录路径
+   * @param {RemoveMediaPreset} preset - 清理规则预设
+   *
+   * @returns {Promise<void>}
    * @throws 如果目录操作失败
    */
   static async removeUnneedMediaFiles(rootDir: string, preset: RemoveMediaPreset): Promise<void> {
@@ -295,3 +311,9 @@ export class MediaCleaner {
     }
   }
 }
+
+/**
+ * 导出别名，方便代码生成器直接导入
+ */
+export const removeZeroSizedMediaFiles = MediaCleaner.removeZeroSizedMediaFiles.bind(MediaCleaner);
+export const removeUnneedMediaFiles = MediaCleaner.removeUnneedMediaFiles.bind(MediaCleaner);

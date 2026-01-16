@@ -13,7 +13,10 @@
     "lint:fix": "eslint . --fix --concurrency=auto",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "generate:commands": "deno run --allow-read --allow-write --allow-env --node-modules-dir scripts/generate-command-registry.ts",
+    "predev": "deno run --allow-read --allow-write --allow-env --node-modules-dir scripts/generate-command-registry.ts",
+    "prebuild": "deno run --allow-read --allow-write --allow-env --node-modules-dir scripts/generate-command-registry.ts"
   },
   "license": "MIT",
   "dependencies": {
