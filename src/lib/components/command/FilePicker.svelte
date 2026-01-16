@@ -10,6 +10,10 @@ interface Props {
 
 let { value = $bindable(), mode, disabled, inputId }: Props = $props();
 
+// 根据模式生成按钮文本和提示
+const buttonText = $derived(mode === 'directory' ? '选择目录...' : '选择文件...');
+const buttonTitle = $derived(mode === 'directory' ? '选择目录' : '选择文件');
+
 async function browse() {
   if (mode === 'directory') {
     const path = await selectDirectory();
@@ -36,7 +40,9 @@ function clear() {
   />
 
   <div class="file-actions">
-    <button class="btn-browse" onclick={browse} {disabled} title="选择文件或目录"> 浏览... </button>
+    <button class="btn-browse" onclick={browse} {disabled} title={buttonTitle}>
+      {buttonText}
+    </button>
     {#if value}
       <button class="btn-clear" onclick={clear} {disabled} title="清除当前路径"> ✕ </button>
     {/if}

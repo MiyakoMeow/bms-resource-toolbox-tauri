@@ -20,7 +20,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'dirPath',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目录路径`,
@@ -38,7 +38,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'filePath',
-        type: ParameterType.String,
+        type: ParameterType.File,
         typeString: 'string',
         required: true,
         description: `- BMS 文件路径`,
@@ -56,7 +56,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'dirPath',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目录路径`,
@@ -74,7 +74,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'dirPath',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- BMS 工作目录路径`,
@@ -92,7 +92,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'dirPath',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 要检查的目录路径`,
@@ -110,7 +110,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'dirPath',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 要检查的目录路径`,
@@ -128,7 +128,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'parentDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 要清理的目录路径`,
@@ -180,7 +180,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'rootDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`,
@@ -206,7 +206,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'workDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`,
@@ -254,7 +254,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'workDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`,
@@ -287,7 +287,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'rootDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`,
@@ -328,7 +328,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'rootDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`,
@@ -361,14 +361,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         name: 'fromDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 源目录路径`,
       },
       {
         name: 'toDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目标目录路径`,

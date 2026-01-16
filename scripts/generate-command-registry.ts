@@ -514,7 +514,7 @@ ${parameters}
       .map(
         (param) => `      {
         name: '${param.name}',
-        type: ${this.mapTypeToParameterType(param.typeString)},
+        type: ${this.mapTypeToParameterType(param.typeString, param.name)},
         typeString: '${param.typeString}',
         required: ${param.required},
         description: \`${param.description.replace(/`/g, '\\`')}\`${
@@ -531,7 +531,7 @@ ${parameters}
   /**
    * 映射 TypeScript 类型到 ParameterType 枚举
    */
-  private mapTypeToParameterType(typeString: string): string {
+  private mapTypeToParameterType(typeString: string, paramName: string): string {
     // 移除空格和换行，但保持大小写
     const cleanType = typeString.replace(/\s+/g, '');
 
@@ -554,7 +554,53 @@ ${parameters}
 
     // 检查是否匹配基本类型
     if (typeMap[lowerType]) {
-      return typeMap[lowerType];
+      const mappedType = typeMap[lowerType];
+
+      // 对于字符串类型，检查参数名称是否为路径类型
+      if (mappedType === 'ParameterType.String') {
+        return this.mapPathParameterType(paramName);
+      }
+
+      return mappedType;
+    }
+
+    // 对于未匹配的类型，也检查是否为路径类型
+    return this.mapPathParameterType(paramName);
+  }
+
+  /**
+   * 根据参数名称映射路径参数类型
+   */
+  private mapPathParameterType(paramName: string): string {
+    const lowerName = paramName.toLowerCase();
+
+    // 目录路径参数模式
+    const dirPatterns = [
+      'dirpath',
+      'directory',
+      'workdir',
+      'rootdir',
+      'parentdir',
+      'fromdir',
+      'todir',
+      'outputdir',
+    ];
+
+    // 文件路径参数模式
+    const filePatterns = ['filepath', 'filename', 'file', 'inputfile', 'outputfile'];
+
+    // 检查是否匹配目录路径模式
+    for (const pattern of dirPatterns) {
+      if (lowerName.includes(pattern)) {
+        return 'ParameterType.Directory';
+      }
+    }
+
+    // 检查是否匹配文件路径模式
+    for (const pattern of filePatterns) {
+      if (lowerName.includes(pattern)) {
+        return 'ParameterType.File';
+      }
     }
 
     // 默认为字符串
