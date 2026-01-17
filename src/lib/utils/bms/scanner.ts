@@ -50,7 +50,7 @@ export function getFileExtension(filePath: string): string {
  */
 export function isBmsFile(filePath: string): boolean {
   const ext = getFileExtension(filePath);
-  return BMS_FILE_EXTS.includes(ext);
+  return BMS_FILE_EXTS.includes(ext as any);
 }
 
 /**
@@ -58,7 +58,7 @@ export function isBmsFile(filePath: string): boolean {
  */
 export function isBmsonFile(filePath: string): boolean {
   const ext = getFileExtension(filePath);
-  return BMSON_FILE_EXTS.includes(ext);
+  return BMSON_FILE_EXTS.includes(ext as any);
 }
 
 /**

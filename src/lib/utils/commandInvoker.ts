@@ -28,7 +28,7 @@ export async function invokeCommand<T = unknown>(
 
     return {
       success: result.success,
-      data: undefined as T,
+      data: result.data as T,
       executionTime: Math.round(executionTime),
       error: result.error,
     };

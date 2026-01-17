@@ -12,6 +12,7 @@ import { ReplacePreset } from '$lib/utils/fs/moving.js';
 import { copyNumberedWorkdirNames } from '$lib/utils/root/batch.js';
 import { syncFolder, presetForAppend } from '$lib/utils/fs/sync.js';
 import { removeEmptyFolders } from '$lib/utils/fs/cleanup.js';
+import { AudioPreset } from '$lib/utils/media/types.js';
 
 /**
  * Pack 生成脚本：Raw pack -> HQ pack
