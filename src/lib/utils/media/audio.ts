@@ -8,6 +8,7 @@ import { ProcessRunner } from './processRunner.js';
 import { ConcurrencyPool } from './concurrency.js';
 import { AUDIO_PRESETS } from './presets.js';
 import type { AudioProcessParams } from './types.js';
+import type { IProgressManager } from '../progress.js';
 
 /**
  * 音频转换器类
@@ -21,61 +22,90 @@ export class AudioConverter {
    * @throws 如果目录操作或音频处理失败
    */
   static async processBmsFolders(params: AudioProcessParams): Promise<void> {
-    const { rootDir, inputExtensions, presetNames, removeOnSuccess, removeOnFail, skipOnFail } =
-      params;
+    const {
+      rootDir,
+      inputExtensions,
+      presetNames,
+      removeOnSuccess,
+      removeOnFail,
+      skipOnFail,
+      progressManager,
+    } = params;
 
-    // 解析预设名称为预设对象
-    const presets = presetNames
-      .map((name) => {
-        const presetName = typeof name === 'string' ? name : String(name);
-        return AUDIO_PRESETS[presetName];
-      })
-      .filter((preset) => preset !== undefined);
+    // 启动进度管理器
+    progressManager?.start();
 
-    if (presets.length === 0) {
-      throw new Error('No valid presets provided');
-    }
+    try {
+      // 解析预设名称为预设对象
+      const presets = presetNames
+        .map((name) => {
+          const presetName = typeof name === 'string' ? name : String(name);
+          return AUDIO_PRESETS[presetName];
+        })
+        .filter((preset) => preset !== undefined);
 
-    // 遍历根目录下的所有子目录
-    const entries = await fs.readDir(rootDir);
-    for (const entry of entries) {
-      // 检查是否是目录
-      if (!entry.isDirectory) {
-        continue;
+      if (presets.length === 0) {
+        throw new Error('No valid presets provided');
       }
 
-      if (!entry.name) {
-        continue;
-      }
+      // 遍历根目录下的所有子目录
+      const entries = await fs.readDir(rootDir);
+      const folders = entries.filter((e) => e.isDirectory && e.name);
 
-      const dirPath = `${rootDir}/${entry.name}`;
-      console.log(`Processing directory: ${dirPath}`);
+      // 更新总进度
+      progressManager?.update(0, folders.length, `找到 ${folders.length} 个文件夹`);
 
-      try {
-        const success = await this.convertInDirectory(
-          dirPath,
-          inputExtensions,
-          presets,
-          removeOnSuccess,
-          removeOnFail,
-          true // 总是覆盖已存在的文件
-        );
+      for (let i = 0; i < folders.length; i++) {
+        // 检查是否应该停止（暂停或取消）
+        if (progressManager?.shouldStop()) {
+          if (progressManager.getProgress().cancelled) {
+            console.log('任务已取消');
+            return;
+          }
+          // 等待恢复
+          await progressManager.waitForResume();
+        }
 
-        if (success) {
-          console.log(`Successfully processed ${dirPath}`);
-        } else {
-          console.error(`Errors occurred in ${dirPath}`);
+        const entry = folders[i];
+        const dirPath = `${rootDir}/${entry.name}`;
+
+        progressManager?.update(i, folders.length, `处理 ${entry.name}`);
+
+        try {
+          const success = await this.convertInDirectory(
+            dirPath,
+            inputExtensions,
+            presets,
+            removeOnSuccess,
+            removeOnFail,
+            true, // 总是覆盖已存在的文件
+            progressManager
+          );
+
+          if (success) {
+            console.log(`Successfully processed ${dirPath}`);
+          } else {
+            console.error(`Errors occurred in ${dirPath}`);
+            // 遇到错误时跳过，不抛出异常
+            if (skipOnFail) {
+              console.error('Skipping remaining folders due to error');
+              break;
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing ${dirPath}:`, error);
+          // 遇到错误时跳过，不抛出异常
           if (skipOnFail) {
-            console.error('Skipping remaining folders due to error');
             break;
           }
         }
-      } catch (error) {
-        console.error(`Error processing ${dirPath}:`, error);
-        if (skipOnFail) {
-          break;
-        }
       }
+
+      // 完成
+      progressManager?.update(folders.length, folders.length, '音频转换完成');
+    } catch (error) {
+      progressManager?.reportError(error instanceof Error ? error.message : String(error));
+      throw error;
     }
   }
 
@@ -89,6 +119,7 @@ export class AudioConverter {
    * @param removeOnSuccess - 成功时是否删除原文件
    * @param removeOnFail - 失败时是否删除原文件
    * @param removeExisting - 是否删除已存在的输出文件
+   * @param progressManager - 进度管理器（可选）
    * @returns 是否完全成功
    */
   static async convertInDirectory(
@@ -97,7 +128,8 @@ export class AudioConverter {
     presets: Array<{ executor: string; outputFormat: string; arguments?: string[] }>,
     removeOnSuccess: boolean,
     removeOnFail: boolean,
-    removeExisting: boolean
+    removeExisting: boolean,
+    progressManager?: IProgressManager
   ): Promise<boolean> {
     // 收集需要处理的文件
     const files = await this.collectFiles(dirPath, inputExtensions);
@@ -118,13 +150,24 @@ export class AudioConverter {
     const pool = new ConcurrencyPool(64);
 
     for (const filePath of files) {
+      // 检查是否应该停止（暂停或取消）
+      if (progressManager?.shouldStop()) {
+        if (progressManager.getProgress().cancelled) {
+          console.log('任务已取消');
+          break;
+        }
+        // 等待恢复
+        await progressManager.waitForResume();
+      }
+
       const success = await pool.add(async () => {
         return await this.convertFile(
           filePath,
           presets,
           removeOnSuccess,
           removeOnFail,
-          removeExisting
+          removeExisting,
+          progressManager
         );
       });
 
@@ -161,6 +204,7 @@ export class AudioConverter {
    * @param removeOnSuccess - 成功时是否删除原文件
    * @param removeOnFail - 失败时是否删除原文件
    * @param removeExisting - 是否删除已存在的输出文件
+   * @param progressManager - 进度管理器（可选）
    * @returns 是否成功
    */
   private static async convertFile(
@@ -168,14 +212,29 @@ export class AudioConverter {
     presets: Array<{ executor: string; outputFormat: string; arguments?: string[] }>,
     removeOnSuccess: boolean,
     removeOnFail: boolean,
-    removeExisting: boolean
+    removeExisting: boolean,
+    progressManager?: IProgressManager
   ): Promise<boolean> {
     let currentPresetIndex = 0;
     let success = false;
 
     while (currentPresetIndex < presets.length) {
+      // 检查是否应该停止（暂停或取消）
+      if (progressManager?.shouldStop()) {
+        if (progressManager.getProgress().cancelled) {
+          console.log('转换已取消');
+          return false;
+        }
+        // 等待恢复
+        await progressManager.waitForResume();
+      }
+
       const preset = presets[currentPresetIndex];
       const outputPath = this.replaceExtension(filePath, preset.outputFormat);
+
+      // 更新进度消息
+      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      progressManager?.setMessage(`转换 ${fileName} [${currentPresetIndex + 1}/${presets.length}]`);
 
       // 如果目标文件已存在
       const outputExists = await this.fileExists(outputPath);

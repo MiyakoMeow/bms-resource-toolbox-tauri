@@ -70,6 +70,8 @@ export interface AudioProcessParams {
   removeOnFail: boolean;
   /** 失败时是否跳过后续处理 */
   skipOnFail: boolean;
+  /** 进度管理器（可选） */
+  progressManager?: IProgressManager;
 }
 
 /**
@@ -88,6 +90,8 @@ export interface VideoProcessParams {
   removeExisting: boolean;
   /** 是否使用推荐预设（根据视频宽高比） */
   usePreferred: boolean;
+  /** 进度管理器（可选） */
+  progressManager?: IProgressManager;
 }
 
 /**
@@ -106,6 +110,11 @@ export interface MediaCleanupParams {
  * 例如：[['flac', 'wav'], ['ogg']] 表示如果有 flac 或 wav，就删除 ogg
  */
 export type RemoveMediaRule = [string[], string[]];
+
+/**
+ * 进度管理器接口（重复定义，导入自 progress.ts）
+ */
+export type IProgressManager = import('../progress.js').IProgressManager;
 
 /**
  * 视频信息

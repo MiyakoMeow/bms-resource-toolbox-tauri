@@ -8,6 +8,7 @@ import { ProcessRunner } from './processRunner.js';
 import { ConcurrencyPool } from './concurrency.js';
 import { VIDEO_PRESETS } from './presets.js';
 import type { VideoProcessParams, VideoInfo } from './types.js';
+import type { IProgressManager } from '../progress.js';
 
 /**
  * 视频转换器类
@@ -21,53 +22,99 @@ export class VideoConverter {
    * @throws 如果目录操作或视频处理失败
    */
   static async processBmsFolders(params: VideoProcessParams): Promise<void> {
-    const { rootDir, inputExtensions, presetNames, removeOriginal, removeExisting, usePreferred } =
-      params;
+    const {
+      rootDir,
+      inputExtensions,
+      presetNames,
+      removeOriginal,
+      removeExisting,
+      usePreferred,
+      progressManager,
+    } = params;
 
-    // 验证预设名称
-    for (const name of presetNames) {
-      const presetName = typeof name === 'string' ? name : String(name);
-      if (!VIDEO_PRESETS[presetName]) {
-        throw new Error(`Invalid preset name: ${presetName}`);
-      }
-    }
+    // 启动进度管理器
+    progressManager?.start();
 
-    // 遍历根目录下的所有子目录
-    const entries = await fs.readDir(rootDir);
-    for (const entry of entries) {
-      // 检查是否是目录
-      const entryPath = `${rootDir}/${entry.name}`;
-      let isDir = false;
-      try {
-        const metadata = await fs.stat(entryPath);
-        isDir = metadata.isDirectory ?? false;
-      } catch {
-        continue;
-      }
-
-      if (!isDir) continue;
-
-      const dirPath = entryPath;
-      console.log(`Processing BMS folder: ${dirPath}`);
-
-      try {
-        const success = await this.convertInDirectory(
-          dirPath,
-          inputExtensions,
-          presetNames.map((n) => (typeof n === 'string' ? n : String(n))),
-          removeOriginal,
-          removeExisting,
-          usePreferred
-        );
-
-        if (success) {
-          console.log(`Successfully processed ${dirPath}`);
-        } else {
-          console.error(`Errors occurred in ${dirPath}`);
+    try {
+      // 验证预设名称
+      for (const name of presetNames) {
+        const presetName = typeof name === 'string' ? name : String(name);
+        if (!VIDEO_PRESETS[presetName]) {
+          throw new Error(`Invalid preset name: ${presetName}`);
         }
-      } catch (error) {
-        console.error(`Error processing ${dirPath}:`, error);
       }
+
+      // 遍历根目录下的所有子目录
+      const entries = await fs.readDir(rootDir);
+      const folders = [];
+
+      for (const entry of entries) {
+        // 检查是否是目录
+        const entryPath = `${rootDir}/${entry.name}`;
+        let isDir = false;
+        try {
+          const metadata = await fs.stat(entryPath);
+          isDir = metadata.isDirectory ?? false;
+        } catch {
+          continue;
+        }
+
+        if (!isDir) continue;
+
+        folders.push({
+          name: entry.name,
+          path: entryPath,
+        });
+      }
+
+      // 更新总进度
+      progressManager?.update(0, folders.length, `找到 ${folders.length} 个文件夹`);
+
+      for (let i = 0; i < folders.length; i++) {
+        // 检查是否应该停止（暂停或取消）
+        if (progressManager?.shouldStop()) {
+          if (progressManager.getProgress().cancelled) {
+            console.log('任务已取消');
+            return;
+          }
+          // 等待恢复
+          await progressManager.waitForResume();
+        }
+
+        const folder = folders[i];
+        const dirPath = folder.path;
+
+        progressManager?.update(i, folders.length, `处理 ${folder.name}`);
+
+        console.log(`Processing BMS folder: ${dirPath}`);
+
+        try {
+          const success = await this.convertInDirectory(
+            dirPath,
+            inputExtensions,
+            presetNames.map((n) => (typeof n === 'string' ? n : String(n))),
+            removeOriginal,
+            removeExisting,
+            usePreferred,
+            progressManager
+          );
+
+          if (success) {
+            console.log(`Successfully processed ${dirPath}`);
+          } else {
+            console.error(`Errors occurred in ${dirPath}`);
+          }
+        } catch (error) {
+          console.error(`Error processing ${dirPath}:`, error);
+          // 遇到错误时跳过，不抛出异常
+        }
+      }
+
+      // 完成
+      progressManager?.update(folders.length, folders.length, '视频转换完成');
+    } catch (error) {
+      progressManager?.reportError(error instanceof Error ? error.message : String(error));
+      throw error;
     }
   }
 
@@ -81,6 +128,7 @@ export class VideoConverter {
    * @param removeOriginal - 成功时是否删除原文件
    * @param removeExisting - 是否删除已存在的输出文件
    * @param usePreferred - 是否使用推荐预设
+   * @param progressManager - 进度管理器（可选）
    * @returns 是否成功
    */
   static async convertInDirectory(
@@ -89,7 +137,8 @@ export class VideoConverter {
     presetNames: string[],
     removeOriginal: boolean,
     removeExisting: boolean,
-    usePreferred: boolean
+    usePreferred: boolean,
+    progressManager?: IProgressManager
   ): Promise<boolean> {
     // 预检查可执行文件是否存在
     await this.checkExecutables(presetNames);
@@ -103,6 +152,19 @@ export class VideoConverter {
     const pool = new ConcurrencyPool(64);
 
     for (const filePath of files) {
+      // 检查是否应该停止（暂停或取消）
+      if (progressManager?.shouldStop()) {
+        if (progressManager.getProgress().cancelled) {
+          console.log('转换已取消');
+          break;
+        }
+        // 等待恢复
+        await progressManager.waitForResume();
+      }
+
+      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      progressManager?.setMessage(`转换 ${fileName}`);
+
       await pool.add(async () => {
         console.log(`Processing video: ${filePath}`);
 

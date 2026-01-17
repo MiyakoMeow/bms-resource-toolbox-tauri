@@ -3,12 +3,23 @@
  * 使用 Web Crypto API 计算 SHA512 哈希值
  */
 
+import { readFile, stat } from '@tauri-apps/plugin-fs';
+
+/**
+ * 日期时间元组
+ */
+export interface DateTimeTuple {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
 /**
  * 计算文件的 SHA512 哈希值
  */
 export async function calculateFileHash(filePath: string): Promise<string> {
-  const { readFile } = await import('@tauri-apps/plugin-fs');
-
   try {
     const bytes = await readFile(filePath);
 
@@ -18,9 +29,10 @@ export async function calculateFileHash(filePath: string): Promise<string> {
 
     // 转换为十六进制字符串
     return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-  } catch (error) {
-    throw new Error(`Failed to calculate file hash: ${error}`);
+  } catch (err) {
+    console.error('Failed to set modification time for ${targetPath}:', err);
   }
+}
 }
 
 /**
@@ -28,8 +40,6 @@ export async function calculateFileHash(filePath: string): Promise<string> {
  * 通过文件大小和 SHA512 哈希值进行比较
  */
 export async function isFileSameContent(file1: string, file2: string): Promise<boolean> {
-  const { stat } = await import('@tauri-apps/plugin-fs');
-
   try {
     // 先比较文件大小
     const [meta1, meta2] = await Promise.all([stat(file1), stat(file2)]);
@@ -46,4 +56,72 @@ export async function isFileSameContent(file1: string, file2: string): Promise<b
     console.error('Failed to compare files:', error);
     return false;
   }
+}
+
+/**
+ * 设置文件的修改时间
+ *
+ * 注意：由于 Tauri FS 插件的限制，此功能在 Windows 和 Linux 上可能不可用
+ * 在 macOS 上可以使用 `touch` 命令来设置时间
+ *
+ * @param targetPath - 文件路径
+ * @param dateTimeTuple - 日期时间元组 (Y, M, D, H, M)
+ * @throws 如果设置失败
+ */
+export async function setFileModificationTime(
+  targetPath: string,
+  dateTimeTuple: DateTimeTuple
+): Promise<void> {
+  const { year, month, day, hour, minute } = dateTimeTuple;
+
+  // 格式化为时间戳字符串
+  const timeString = `${year}/${month}/${day} ${hour}:${minute}`;
+
+  // 转换为时间戳（毫秒）
+  const timestamp = new Date(timeString).getTime();
+
+  try {
+    // 尝试使用 Node.js fs 设置时间（在 Node.js 环境中）
+    const fs = await import('fs');
+    fs.utimesSync(targetPath, timestamp / 1000, timestamp / 1000);
+  } catch {
+    // 在 Tauri 环境中，使用 shell 命令设置时间
+    try {
+      const { Command } = await import('@tauri-apps/plugin-shell');
+
+      // Windows: 使用 PowerShell
+      if (navigator.platform?.toLowerCase().includes('win')) {
+        const ps1Script = `(Get-Item "${targetPath}").LastWriteTime = Get-Date "${timeString}"`;
+        await Command.create('powershell', ['-Command', ps1Script]).execute();
+      }
+      // macOS/Linux: 使用 touch 命令
+      else {
+        const touchDate = new Date(timestamp).toISOString();
+        await Command.create('touch', ['-d', touchDate, targetPath]).execute();
+      }
+    } catch (err) {
+      // 如果文件不存在，忽略错误
+      if (err instanceof Error && !err.message.includes('no such file')) {
+        console.error(`Failed to set modification time for ${targetPath}:`, err);
+      }
+    }
+  }
+}
+
+/**
+ * 从时间戳获取日期时间元组
+ *
+ * @param timestamp - 时间戳（毫秒）
+ * @returns 日期时间元组
+ */
+export function getDateTimeTupleFromTimestamp(timestamp: number): DateTimeTuple {
+  const date = new Date(timestamp);
+
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+    hour: date.getUTCHours(),
+    minute: date.getUTCMinutes(),
+  };
 }

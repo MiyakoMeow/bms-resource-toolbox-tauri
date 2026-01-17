@@ -11,3 +11,4 @@ export * from './cleanup.js';
 export * from './similarity.js';
 export * from './moving.js';
 export * from './sync.js';
+export * from './name.js';
