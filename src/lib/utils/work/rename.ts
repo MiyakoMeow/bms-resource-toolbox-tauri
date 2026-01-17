@@ -2,7 +2,7 @@
  * 工作目录重命名工具
  */
 
-import { rename, exists } from '@tauri-apps/plugin-fs';
+import { rename, exists, readDir } from '@tauri-apps/plugin-fs';
 import { getDirBmsInfo } from '$lib/utils/bms/scanner.js';
 import { getValidFileName } from '$lib/utils/fs/path.js';
 import {
@@ -205,4 +205,76 @@ export async function undoSetNameByBms(
   if (dryRun) {
     console.log(`[dry-run] End: work::undoSetNameByBms`);
   }
+}
+
+/**
+ * 追加艺术家名称（根目录版本）
+ * 该脚本适用于希望在作品文件夹名后添加" [艺术家]"的情况。
+ *
+ * @command
+ * @category root
+ * @dangerous true
+ * @name 追加艺术家名称
+ * @description 在作品文件夹名后追加艺术家名称
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ */
+export async function appendArtistNameByBms(rootDir: string, dryRun: boolean): Promise<void> {
+  const entries = await readDir(rootDir);
+  const pairs: Array<{ from: string; to: string }> = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory || !entry.name) {
+      continue;
+    }
+
+    const dirPath = `${rootDir}/${entry.name}`;
+
+    // 已设置过？
+    if (entry.name.endsWith(']')) {
+      continue;
+    }
+
+    const bmsInfo = await getDirBmsInfo(dirPath);
+    if (!bmsInfo) {
+      console.log(`Dir ${dirPath} has no bms files!`);
+      continue;
+    }
+
+    const artist = bmsInfo.bms.musicInfo.artist || DEFAULT_ARTIST;
+    const validArtist = getValidFileName(artist);
+    const newDirName = `${entry.name} [${validArtist}]`;
+
+    console.log(`- Ready to rename: ${entry.name} -> ${newDirName}`);
+
+    pairs.push({
+      from: dirPath,
+      to: `${rootDir}/${newDirName}`,
+    });
+  }
+
+  // 执行重命名
+  console.log(`There are ${pairs.length} rename actions.`);
+
+  if (dryRun) {
+    for (const { from, to } of pairs) {
+      console.log(`[dry-run] Would rename: ${from} -> ${to}`);
+    }
+    console.log('[dry-run] End: work::appendArtistNameByBms');
+    return;
+  }
+
+  for (const { from, to } of pairs) {
+    try {
+      await rename(from, to);
+    } catch (error) {
+      console.error(`Failed to rename ${from}:`, error);
+    }
+  }
+
+  console.log('Completed successfully');
 }

@@ -99,9 +99,9 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
 }
 
 /**
- * 合并拆分的文件夹
+ * 合并拆分的文件夹（撤销拆分）
  */
-export async function mergeSplitFolders(rootDir: string, dryRun: boolean): Promise<void> {
+export async function undoSplitAndMerge(rootDir: string, dryRun: boolean): Promise<void> {
   // 类似于撤销拆分
   await undoSplitPack(rootDir, dryRun);
 }

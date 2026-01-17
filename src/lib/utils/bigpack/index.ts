@@ -4,3 +4,5 @@
  */
 
 export * from './split.js';
+export * from './merge.js';
+export * from './similarity.js';

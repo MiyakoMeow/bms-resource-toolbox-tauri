@@ -20,19 +20,14 @@ export interface DateTimeTuple {
  * 计算文件的 SHA512 哈希值
  */
 export async function calculateFileHash(filePath: string): Promise<string> {
-  try {
-    const bytes = await readFile(filePath);
+  const bytes = await readFile(filePath);
 
-    // 使用 Web Crypto API 计算 SHA512
-    const hashBuffer = await crypto.subtle.digest('SHA-512', bytes);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
+  // 使用 Web Crypto API 计算 SHA512
+  const hashBuffer = await crypto.subtle.digest('SHA-512', bytes);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
 
-    // 转换为十六进制字符串
-    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-  } catch (err) {
-    console.error('Failed to set modification time for ${targetPath}:', err);
-  }
-}
+  // 转换为十六进制字符串
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
