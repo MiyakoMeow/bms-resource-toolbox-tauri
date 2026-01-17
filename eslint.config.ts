@@ -6,8 +6,6 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import betterTailwind from 'eslint-plugin-better-tailwindcss';
 import type { Linter } from 'eslint';
-import tailwindCanonicalClasses from 'eslint-plugin-tailwind-canonical-classes';
-import svelteTailwindCanonical from './eslint-plugin-svelte-tailwind-canonical.ts';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { includeIgnoreFile } from '@eslint/compat';
@@ -49,25 +47,27 @@ const config: Linter.Config[] = [
     },
     plugins: {
       'better-tailwindcss': betterTailwind,
-      'tailwind-canonical-classes': tailwindCanonicalClasses,
-      'svelte-tailwind-canonical': svelteTailwindCanonical,
     },
     rules: {
-      // Tailwind CSS 规则
+      // === 正确性规则 ===
+      'better-tailwindcss/no-unknown-classes': 'off',
       'better-tailwindcss/no-conflicting-classes': 'error',
       'better-tailwindcss/no-deprecated-classes': 'error',
+
+      // === 样式规则 ===
       'better-tailwindcss/no-duplicate-classes': 'warn',
       'better-tailwindcss/no-unnecessary-whitespace': 'warn',
-      'better-tailwindcss/no-unregistered-classes': 'off',
-      'tailwind-canonical-classes/tailwind-canonical-classes': [
+
+      // === Canonical 类名 ===
+      'better-tailwindcss/enforce-canonical-classes': [
         'warn',
-        { cssPath: tailwindCssPath },
+        {
+          collapse: true,
+          logical: true,
+        },
       ],
-      'svelte-tailwind-canonical/tailwind-canonical-classes-svelte': [
-        'warn',
-        { cssPath: tailwindCssPath },
-      ],
-      // 避免与Prettier冲突
+
+      // === Prettier 兼容（保持关闭）===
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
       'better-tailwindcss/enforce-consistent-class-order': 'off',
     },
@@ -103,7 +103,7 @@ const config: Linter.Config[] = [
       'better-tailwindcss': betterTailwind,
     },
     rules: {
-      'better-tailwindcss/no-unregistered-classes': 'off',
+      'better-tailwindcss/no-unknown-classes': 'off',
       // 避免与Prettier冲突
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
       'better-tailwindcss/enforce-consistent-class-order': 'off',

@@ -35,14 +35,33 @@ export const IMAGE_FILE_EXTS = ['webp', 'jpg', 'png', 'bmp', 'svg'] as const;
 export const MEDIA_FILE_EXTS = [...AUDIO_FILE_EXTS, ...VIDEO_FILE_EXTS, ...IMAGE_FILE_EXTS];
 
 /**
+ * 文件扩展名类型
+ */
+type FileExtension =
+  | (typeof CHART_FILE_EXTS)[number]
+  | (typeof AUDIO_FILE_EXTS)[number]
+  | (typeof VIDEO_FILE_EXTS)[number]
+  | (typeof IMAGE_FILE_EXTS)[number];
+
+/**
  * 从文件路径获取扩展名
  */
-export function getFileExtension(filePath: string): string {
+export function getFileExtension(filePath: string): FileExtension | '' {
   const parts = filePath.split('.');
   if (parts.length < 2) {
     return '';
   }
-  return parts[parts.length - 1].toLowerCase();
+  return parts[parts.length - 1].toLowerCase() as FileExtension;
+}
+
+/**
+ * 检查扩展名是否在指定的扩展名列表中
+ */
+function isExtensionInList(
+  ext: FileExtension | '',
+  extList: readonly string[]
+): ext is FileExtension {
+  return ext !== '' && extList.includes(ext);
 }
 
 /**
@@ -50,7 +69,7 @@ export function getFileExtension(filePath: string): string {
  */
 export function isBmsFile(filePath: string): boolean {
   const ext = getFileExtension(filePath);
-  return BMS_FILE_EXTS.includes(ext as any);
+  return isExtensionInList(ext, BMS_FILE_EXTS);
 }
 
 /**
@@ -58,7 +77,7 @@ export function isBmsFile(filePath: string): boolean {
  */
 export function isBmsonFile(filePath: string): boolean {
   const ext = getFileExtension(filePath);
-  return BMSON_FILE_EXTS.includes(ext as any);
+  return isExtensionInList(ext, BMSON_FILE_EXTS);
 }
 
 /**

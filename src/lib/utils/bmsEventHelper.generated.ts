@@ -72,42 +72,65 @@ export async function executeGeneratedFrontendCommand(
 
     if (commandId === 'work_set_name_by_bms') {
       const { setNameByBms } = await import('$lib/utils/work/rename.js');
-      await setNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset, params.skipAlreadyFormatted as boolean);
+      await setNameByBms(
+        params.workDir as string,
+        params.setType as BmsFolderSetNameType,
+        params.dryRun as boolean,
+        params.replacePreset as ReplacePreset,
+        params.skipAlreadyFormatted as boolean
+      );
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_undo_set_name_by_bms') {
       const { undoSetNameByBms } = await import('$lib/utils/work/rename.js');
-      await undoSetNameByBms(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
+      await undoSetNameByBms(
+        params.workDir as string,
+        params.setType as BmsFolderSetNameType,
+        params.dryRun as boolean
+      );
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_root_set_name_by_bms') {
       const { rootSetNameByBms } = await import('$lib/utils/root/batch.js');
-      await rootSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset);
+      await rootSetNameByBms(
+        params.rootDir as string,
+        params.setType as BmsFolderSetNameType,
+        params.dryRun as boolean,
+        params.replacePreset as ReplacePreset
+      );
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_root_undo_set_name_by_bms') {
       const { rootUndoSetNameByBms } = await import('$lib/utils/root/batch.js');
-      await rootUndoSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean);
+      await rootUndoSetNameByBms(
+        params.rootDir as string,
+        params.setType as BmsFolderSetNameType,
+        params.dryRun as boolean
+      );
       return { success: true, data: undefined };
     }
 
     if (commandId === 'root_copy_numbered_workdir_names') {
       const { copyNumberedWorkdirNames } = await import('$lib/utils/root/batch.js');
-      await copyNumberedWorkdirNames(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
+      await copyNumberedWorkdirNames(
+        params.fromDir as string,
+        params.toDir as string,
+        params.dryRun as boolean
+      );
       return { success: true, data: undefined };
     }
 
     return {
       success: false,
-      error: '未知的前端命令'
+      error: '未知的前端命令',
     };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -129,5 +152,5 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'work_undo_set_name_by_bms',
   'root_root_set_name_by_bms',
   'root_root_undo_set_name_by_bms',
-  'root_copy_numbered_workdir_names'
+  'root_copy_numbered_workdir_names',
 ];

@@ -23,12 +23,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 目录路径`
-      }
+        description: `- 目录路径`,
+      },
     ],
     returnType: 'boolean',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'read_and_parse_bms_file',
@@ -41,12 +41,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.File,
         typeString: 'string',
         required: true,
-        description: `- BMS 文件路径`
-      }
+        description: `- BMS 文件路径`,
+      },
     ],
     returnType: 'BmsOutput | null',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'get_dir_bms_list',
@@ -59,12 +59,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 目录路径`
-      }
+        description: `- 目录路径`,
+      },
     ],
     returnType: 'BmsOutput[]',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'get_dir_bms_info',
@@ -77,12 +77,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- BMS 工作目录路径`
-      }
+        description: `- BMS 工作目录路径`,
+      },
     ],
     returnType: 'BmsOutput | null',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'is_work_dir',
@@ -95,12 +95,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 要检查的目录路径`
-      }
+        description: `- 要检查的目录路径`,
+      },
     ],
     returnType: 'boolean',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'is_root_dir',
@@ -113,12 +113,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 要检查的目录路径`
-      }
+        description: `- 要检查的目录路径`,
+      },
     ],
     returnType: 'boolean',
     dangerous: false,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'remove_empty_folders',
@@ -131,7 +131,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 要清理的目录路径`
+        description: `- 要清理的目录路径`,
       },
       {
         name: 'dryRun',
@@ -139,12 +139,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际删除）`,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'work_remove_zero_sized_media_files',
@@ -157,7 +157,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.String,
         typeString: 'string',
         required: true,
-        description: `- 工作目录路径`
+        description: `- 工作目录路径`,
       },
       {
         name: 'dryRun',
@@ -165,12 +165,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际删除）`,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'work_remove_unneed_media_files',
@@ -183,7 +183,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 根目录路径`
+        description: `- 根目录路径`,
       },
       {
         name: 'preset',
@@ -191,12 +191,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'RemoveMediaPreset',
         required: true,
         description: `- 清理规则预设`,
-        defaultValue: "RemoveMediaPreset.Oraja"
-      }
+        defaultValue: 'RemoveMediaPreset.Oraja',
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'work_set_name_by_bms',
@@ -209,14 +209,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 工作目录路径`
+        description: `- 工作目录路径`,
       },
       {
         name: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
-        description: `- 命名方式`
+        description: `- 命名方式`,
       },
       {
         name: 'dryRun',
@@ -224,7 +224,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
+        defaultValue: true,
       },
       {
         name: 'replacePreset',
@@ -232,19 +232,19 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'ReplacePreset',
         required: true,
         description: `- 文件替换策略`,
-        defaultValue: "ReplacePreset.Default"
+        defaultValue: 'ReplacePreset.Default',
       },
       {
         name: 'skipAlreadyFormatted',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
-        description: `- 跳过已格式化的目录`
-      }
+        description: `- 跳过已格式化的目录`,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'work_undo_set_name_by_bms',
@@ -257,14 +257,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 工作目录路径`
+        description: `- 工作目录路径`,
       },
       {
         name: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
-        description: `- 命名方式`
+        description: `- 命名方式`,
       },
       {
         name: 'dryRun',
@@ -272,12 +272,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'root_root_set_name_by_bms',
@@ -290,14 +290,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 根目录路径`
+        description: `- 根目录路径`,
       },
       {
         name: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
-        description: `- 命名方式`
+        description: `- 命名方式`,
       },
       {
         name: 'dryRun',
@@ -305,7 +305,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
+        defaultValue: true,
       },
       {
         name: 'replacePreset',
@@ -313,12 +313,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'ReplacePreset',
         required: true,
         description: `- 文件替换策略`,
-        defaultValue: "ReplacePreset.Default"
-      }
+        defaultValue: 'ReplacePreset.Default',
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'root_root_undo_set_name_by_bms',
@@ -331,14 +331,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 根目录路径`
+        description: `- 根目录路径`,
       },
       {
         name: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
-        description: `- 命名方式`
+        description: `- 命名方式`,
       },
       {
         name: 'dryRun',
@@ -346,12 +346,12 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
+    isFrontendCommand: true,
   },
   {
     id: 'root_copy_numbered_workdir_names',
@@ -364,14 +364,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 源目录路径`
+        description: `- 源目录路径`,
       },
       {
         name: 'toDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
-        description: `- 目标目录路径`
+        description: `- 目标目录路径`,
       },
       {
         name: 'dryRun',
@@ -379,13 +379,13 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     ],
     returnType: 'void',
     dangerous: true,
-    isFrontendCommand: true
-  }
+    isFrontendCommand: true,
+  },
 ];
 
 /**
