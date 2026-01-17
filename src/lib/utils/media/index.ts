@@ -29,3 +29,4 @@ export { ConcurrencyPool } from './concurrency.js';
 export { AudioConverter } from './audio.js';
 export { VideoConverter } from './video.js';
 export { MediaCleaner } from './cleanup.js';
+export { MediaProbe } from './probe.js';

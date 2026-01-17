@@ -4,3 +4,4 @@
  */
 
 export * from './unzip.js';
+export * from './numbering.js';
