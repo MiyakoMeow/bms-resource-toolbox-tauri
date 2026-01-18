@@ -27,6 +27,8 @@ export interface CommandParameter {
   }>;
   /** 验证函数（可选） */
   validation?: (value: unknown) => boolean | string;
+  /** TypeScript 类型字符串（用于代码生成，运行时可选） */
+  typeString?: string;
 }
 
 /**
@@ -50,6 +52,8 @@ export interface CommandDefinition {
   dangerous: boolean;
   /** 使用示例（可选） */
   example?: string;
+  /** 是否为前端命令（不需要调用 Tauri 后端） */
+  isFrontendCommand?: boolean;
 }
 
 /**

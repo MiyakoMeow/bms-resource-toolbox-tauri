@@ -35,6 +35,7 @@ export enum ReplacePreset {
 export enum BMSEvent {
   BOFNT = 19,
   BOFTT = 20,
+  BOF21 = 21,
   LetsBMSEdit = 101,
   LetsBMSEdit2 = 102,
   LetsBMSEdit3 = 103,
@@ -103,4 +104,6 @@ export enum CommandCategory {
   RootEvent = 'root_event',
   /** BMS 活动 - BMS 活动相关操作 */
   BMSEvent = 'bms_event',
+  /** Wasted - 特殊工具集 */
+  Wasted = 'wasted',
 }

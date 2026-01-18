@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { CommandDefinition } from '$lib/types/commands.js';
 import CommandDialog from './CommandDialog.svelte';
+import { formatParameterTypes } from '$lib/utils/commandParameters.js';
 
 interface Props {
   command: CommandDefinition;
@@ -40,7 +41,9 @@ function handleKeydown(e: KeyboardEvent) {
   <p class="card-desc">{command.description}</p>
 
   <div class="card-footer">
-    <span class="param-count">{command.parameters.length} 个参数</span>
+    <span class="param-types" title={formatParameterTypes(command)}
+      >{formatParameterTypes(command)}</span
+    >
     <button class="execute-btn">执行</button>
   </div>
 </div>
@@ -104,9 +107,13 @@ function handleKeydown(e: KeyboardEvent) {
   margin-top: auto;
 }
 
-.param-count {
+.param-types {
   font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.4);
+  color: rgb(255 255 255 / 0.5);
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .execute-btn {
