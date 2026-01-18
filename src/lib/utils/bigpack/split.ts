@@ -323,3 +323,132 @@ export async function moveWorksWithSameName(rootDir: string, dryRun: boolean): P
     }
   }
 }
+
+/**
+ * 移动同名作品到平级目录
+ * 对应 Python: move_works_with_same_name_to_siblings (bms_folder_bigpack.py:360-419)
+ *
+ * 将目录中文件名相似的子文件夹合并到各平级目录中
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 移动同名作品到平级目录
+ * @description 将目录中文件名相似的子文件夹合并到各平级目录中
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ *
+ * @example
+ * ```typescript
+ * // 假设有以下目录结构：
+ * // BOFTT/
+ * //   001. Title1 [Artist1]/
+ * //   002. Title2 [Artist2]/
+ * // BOFTT_Update/
+ * //   001. Title1 [Artist1]/
+ * //   002. Title2 [Artist2]/
+ * //   003. Title3 [Artist3]/
+ *
+ * // 运行后将把 BOFTT_Update 中 001 和 002 的内容合并到 BOFTT 对应的目录中
+ * await moveWorksWithSameNameToSiblings('D:/Packs/BOFTT_Update', false);
+ * ```
+ */
+export async function moveWorksWithSameNameToSiblings(
+  rootDir: string,
+  dryRun: boolean
+): Promise<void> {
+  // 验证输入路径
+  try {
+    const metadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(rootDir));
+    if (!metadata.isDirectory) {
+      throw new Error(`路径不是目录: ${rootDir}`);
+    }
+  } catch {
+    throw new Error(`路径不存在或不是目录: ${rootDir}`);
+  }
+
+  // 获取父目录路径
+  const pathParts = rootDir.split(/[/\\]/);
+  const baseName = pathParts.pop() || '';
+  const parentDir = pathParts.join('/') || rootDir;
+
+  if (!baseName) {
+    console.error('无法提取目录名称');
+    return;
+  }
+
+  // 获取源目录中的所有直接子文件夹
+  const fromEntries = await readDir(rootDir);
+  const fromSubdirs = fromEntries.filter((e) => e.isDirectory && e.name).map((e) => e.name!);
+
+  console.log(`源目录 ${rootDir} 中有 ${fromSubdirs.length} 个子文件夹`);
+
+  // 获取同级目录列表（排除自身）
+  const parentEntries = await readDir(parentDir);
+  const siblingNames = parentEntries
+    .filter((e) => e.isDirectory && e.name && e.name !== baseName)
+    .map((e) => e.name!);
+
+  console.log(`父目录 ${parentDir} 中有 ${siblingNames.length} 个同级目录`);
+
+  // 收集合并对： (fromDirPath, targetPath)
+  const pairs: Array<{ from: string; target: string; sibling: string }> = [];
+
+  // 遍历同级目录
+  for (const siblingName of siblingNames) {
+    const siblingPath = `${parentDir}/${siblingName}`;
+
+    // 获取该同级目录中的直接子目录
+    const siblingEntries = await readDir(siblingPath);
+    const toSubdirs = siblingEntries.filter((e) => e.isDirectory && e.name).map((e) => e.name!);
+
+    // 查找匹配的子文件夹
+    for (const fromDirName of fromSubdirs) {
+      // 查找同级目录中是否包含源文件夹名的子文件夹
+      for (const toDirName of toSubdirs) {
+        if (fromDirName.includes(toDirName) || toDirName.includes(fromDirName)) {
+          const fromPath = `${rootDir}/${fromDirName}`;
+          const toPath = `${siblingPath}/${toDirName}`;
+          pairs.push({ from: fromPath, target: toPath, sibling: siblingName });
+          console.log(`  找到匹配: ${fromDirName} -> ${siblingName}/${toDirName}`);
+          break;
+        }
+      }
+    }
+  }
+
+  if (pairs.length === 0) {
+    console.log('未找到可合并的文件夹对');
+    return;
+  }
+
+  console.log(`\n找到 ${pairs.length} 个合并操作：`);
+  for (const { from, target, sibling } of pairs) {
+    const fromName = from.split(/[/\\]/).pop() || '';
+    const toName = target.split(/[/\\]/).pop() || '';
+    console.log(`  ${fromName} => ${sibling}/${toName}`);
+  }
+
+  if (dryRun) {
+    console.log('\n[dry-run] 跳过实际合并操作');
+    return;
+  }
+
+  console.log('\n开始合并...');
+
+  // 执行合并
+  for (const { from, target } of pairs) {
+    const fromName = from.split(/[/\\]/).pop() || '';
+    const targetName = target.split(/[/\\]/).pop() || '';
+
+    console.log(`  合并: '${fromName}' -> '${targetName}'`);
+
+    await moveElementsAcrossDir(from, target, replaceOptionsFromPreset(ReplacePreset.Default));
+  }
+
+  console.log(`\n合并完成，共 ${pairs.length} 个操作`);
+}

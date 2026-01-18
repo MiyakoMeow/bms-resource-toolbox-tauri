@@ -155,3 +155,38 @@ export function stringSimilarity(str1: string, str2: string): number {
 
   return (maxLen - distance) / maxLen;
 }
+
+/**
+ * 计算两个字符串的相似度（基于最长公共子序列）
+ *
+ * @param s1 - 第一个字符串
+ * @param s2 - 第二个字符串
+ * @returns 相似度（0-1）
+ */
+export function calculateSimilarity(s1: string, s2: string): number {
+  const len1 = s1.length;
+  const len2 = s2.length;
+
+  // 创建 DP 表
+  const dp: number[][] = Array(len1 + 1)
+    .fill(null)
+    .map(() => Array(len2 + 1).fill(0));
+
+  // 填充 DP 表
+  for (let i = 1; i <= len1; i++) {
+    for (let j = 1; j <= len2; j++) {
+      if (s1[i - 1] === s2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+  }
+
+  // 最长公共子序列长度
+  const lcsLength = dp[len1][len2];
+
+  // 相似度 = LCS 长度 / 最大长度
+  const maxLength = Math.max(len1, len2);
+  return maxLength === 0 ? 1 : lcsLength / maxLength;
+}

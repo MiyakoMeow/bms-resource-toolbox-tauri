@@ -416,6 +416,8 @@ export class CommandGenerator {
       prefix = 'pack_';
     } else if (filePath.includes('\\bigpack\\') || filePath.includes('/bigpack/')) {
       prefix = 'root_';
+    } else if (filePath.includes('\\wasted\\') || filePath.includes('/wasted/')) {
+      prefix = 'wasted_';
     }
 
     // 驼峰转下划线
@@ -713,6 +715,7 @@ ${commandIds}
       fs: 'FS',
       bmsevent: 'BMSEvent',
       rootevent: 'RootEvent',
+      wasted: 'Wasted',
     };
 
     const lowerCategory = category.toLowerCase();

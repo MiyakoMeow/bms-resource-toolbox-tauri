@@ -104,4 +104,6 @@ export enum CommandCategory {
   RootEvent = 'root_event',
   /** BMS 活动 - BMS 活动相关操作 */
   BMSEvent = 'bms_event',
+  /** Wasted - 特殊工具集 */
+  Wasted = 'wasted',
 }

@@ -6,7 +6,7 @@
  */
 
 import type { CommandResult } from '$lib/types/api.js';
-import type { BmsFolderSetNameType, IProgressManager, RemoveMediaPreset, ReplacePreset } from '$lib/types/enums.js';
+import type { AeryFixParams, BmsFolderSetNameType, IProgressManager, RemoveMediaPreset, ReplacePreset, SetFileNumParams } from '$lib/types/enums.js';
 
 /**
  * 自动生成的前端命令执行函数
@@ -88,6 +88,12 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'work_set_name_by_bms_optimized') {
+      const { setNameByBmsOptimized } = await import('$lib/utils/work/rename.js');
+      const result = await setNameByBmsOptimized(params.workDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset);
+      return { success: true, data: result };
+    }
+
     if (commandId === 'root_root_set_name_by_bms') {
       const { rootSetNameByBms } = await import('$lib/utils/root/batch.js');
       await rootSetNameByBms(params.rootDir as string, params.setType as BmsFolderSetNameType, params.dryRun as boolean, params.replacePreset as ReplacePreset);
@@ -130,6 +136,54 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'root_split_folders_with_first_char') {
+      const { splitFoldersWithFirstChar } = await import('$lib/utils/bigpack/split.js');
+      await splitFoldersWithFirstChar(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_works_with_same_name_to_siblings') {
+      const { moveWorksWithSameNameToSiblings } = await import('$lib/utils/bigpack/split.js');
+      await moveWorksWithSameNameToSiblings(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'work_get_media_info') {
+      const { getMediaInfo } = await import('$lib/utils/media/probe.js');
+      const result = await getMediaInfo(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_video_info') {
+      const { getVideoInfo } = await import('$lib/utils/media/probe.js');
+      const result = await getVideoInfo(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_video_size') {
+      const { getVideoSize } = await import('$lib/utils/media/probe.js');
+      const result = await getVideoSize(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_media_duration') {
+      const { getMediaDuration } = await import('$lib/utils/media/probe.js');
+      const result = await getMediaDuration(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'rawpack_batch_rename_with_num') {
+      const { batchRenameWithNum } = await import('$lib/utils/rawpack/numbering.js');
+      const result = await batchRenameWithNum(params.params as SetFileNumParams);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'wasted_fix') {
+      const { fix } = await import('$lib/utils/wasted/aery_fix.js');
+      await fix(params.params as AeryFixParams);
+      return { success: true, data: undefined };
+    }
+
     return {
       success: false,
       error: '未知的前端命令'
@@ -158,11 +212,20 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'work_set_name_by_bms',
   'work_undo_set_name_by_bms',
   'work_append_artist_name_by_bms',
+  'work_set_name_by_bms_optimized',
   'root_root_set_name_by_bms',
   'root_root_undo_set_name_by_bms',
   'root_copy_numbered_workdir_names',
   'root_merge_split_folders',
   'root_scan_similar_folders',
   'extract_work_name',
-  'pack_pack_hq_to_lq'
+  'pack_pack_hq_to_lq',
+  'root_split_folders_with_first_char',
+  'root_move_works_with_same_name_to_siblings',
+  'work_get_media_info',
+  'work_get_video_info',
+  'work_get_video_size',
+  'work_get_media_duration',
+  'rawpack_batch_rename_with_num',
+  'wasted_fix'
 ];

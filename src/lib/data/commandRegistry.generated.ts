@@ -306,6 +306,47 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'work_set_name_by_bms_optimized',
+    name: '根据 BMS 重命名工作目录（优化版）',
+    category: CommandCategory.Work,
+    description: `根据 BMS 文件信息重命名工作目录，支持嵌套目录处理和相似度合并`,
+    parameters: [
+      {
+        name: 'workDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 工作目录路径`
+      },
+      {
+        name: 'setType',
+        type: ParameterType.Enum,
+        typeString: 'BmsFolderSetNameType',
+        required: true,
+        description: `- 命名方式`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      },
+      {
+        name: 'replacePreset',
+        type: ParameterType.Enum,
+        typeString: 'ReplacePreset',
+        required: true,
+        description: `- 文件替换策略`,
+        defaultValue: "ReplacePreset.Default"
+      }
+    ],
+    returnType: 'boolean',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
     id: 'root_root_set_name_by_bms',
     name: '批量重命名工作目录',
     category: CommandCategory.Root,
@@ -527,10 +568,170 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     returnType: 'void',
     dangerous: true,
     isFrontendCommand: true
+  },
+  {
+    id: 'root_split_folders_with_first_char',
+    name: '按首字符拆分文件夹',
+    category: CommandCategory.Bigpack,
+    description: `将目录下的作品按照首字符规则分成多个文件夹`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 是否模拟运行`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_works_with_same_name_to_siblings',
+    name: '移动同名作品到平级目录',
+    category: CommandCategory.Bigpack,
+    description: `将目录中文件名相似的子文件夹合并到各平级目录中`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_media_info',
+    name: '获取媒体文件信息',
+    category: CommandCategory.Media,
+    description: `使用 ffprobe 获取音频或视频文件的详细信息`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 媒体文件路径`
+      }
+    ],
+    returnType: 'MediaInfo | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_video_info',
+    name: '获取视频信息',
+    category: CommandCategory.Media,
+    description: `获取视频文件的尺寸和比特率信息`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 视频文件路径`
+      }
+    ],
+    returnType: 'VideoInfo | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_video_size',
+    name: '获取视频尺寸',
+    category: CommandCategory.Media,
+    description: `获取视频文件的宽度和高度`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 视频文件路径`
+      }
+    ],
+    returnType: '{ width: number; height: number; } | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_media_duration',
+    name: '获取媒体时长',
+    category: CommandCategory.Media,
+    description: `获取音频或视频文件的时长（秒）`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 媒体文件路径`
+      }
+    ],
+    returnType: 'number | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'rawpack_batch_rename_with_num',
+    name: '批量添加文件编号',
+    category: CommandCategory.Rawpack,
+    description: `为多个文件添加编号前缀`,
+    parameters: [
+      {
+        name: 'params',
+        type: ParameterType.Enum,
+        typeString: 'SetFileNumParams',
+        required: true,
+        description: `- 编号设置参数`
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'wasted_fix',
+    name: 'Aery 标签作品修复',
+    category: CommandCategory.Wasted,
+    description: `处理 Aery 标签作品的特殊合并逻辑，根据相似度阈值合并相似文件夹`,
+    parameters: [
+      {
+        name: 'params',
+        type: ParameterType.Enum,
+        typeString: 'AeryFixParams',
+        required: true,
+        description: ``
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
   }
 ];
 
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 19;
+export const COMMAND_COUNT = 28;
