@@ -10,7 +10,7 @@ export function isFileNameValid(fileName: string): boolean {
   // Windows 非法字符
   const windowsIllegalChars = /[:"\\/*?"<>|]/;
   // 控制字符 (0x00-0x1F)
-  const controlChars = /[\x00-\x1F]/;
+  const controlChars = /[\x00-\x1F]/; // eslint-disable-line no-control-regex
   // 保留名称 (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9)
   const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$/i;
 

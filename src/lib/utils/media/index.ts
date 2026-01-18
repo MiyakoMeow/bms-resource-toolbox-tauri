@@ -5,6 +5,9 @@
  * 从 Rust 代码迁移至前端实现
  */
 
+import { MediaProbe } from './probe.js';
+import { MediaCleaner } from './cleanup.js';
+
 // 类型定义
 export type {
   ProcessResult,
@@ -30,3 +33,6 @@ export { AudioConverter } from './audio.js';
 export { VideoConverter } from './video.js';
 export { MediaCleaner } from './cleanup.js';
 export { MediaProbe } from './probe.js';
+
+export const { getMediaInfo, getVideoInfo, getVideoSize, getMediaDuration } = MediaProbe;
+export const { removeZeroSizedMediaFiles, removeUnneedMediaFiles } = MediaCleaner;

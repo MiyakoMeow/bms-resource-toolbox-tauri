@@ -31,6 +31,145 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'wasted_fix',
+    name: 'Aery 标签作品修复',
+    category: CommandCategory.Wasted,
+    description: `处理 Aery 标签作品的特殊合并逻辑，根据相似度阈值合并相似文件夹`,
+    parameters: [
+      {
+        name: 'params',
+        type: ParameterType.Enum,
+        typeString: 'AeryFixParams',
+        required: true,
+        description: ``
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'rawpack_batch_rename_with_num',
+    name: '批量添加文件编号',
+    category: CommandCategory.Rawpack,
+    description: `为多个文件添加编号前缀`,
+    parameters: [
+      {
+        name: 'params',
+        type: ParameterType.Enum,
+        typeString: 'SetFileNumParams',
+        required: true,
+        description: `- 编号设置参数`
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_split_folders_with_first_char',
+    name: '按首字符拆分文件夹',
+    category: CommandCategory.BigPack,
+    description: `将目录下的作品按照首字符规则分成多个文件夹`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 是否模拟运行`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_works_with_same_name_to_siblings',
+    name: '移动同名作品到平级目录',
+    category: CommandCategory.BigPack,
+    description: `将目录中文件名相似的子文件夹合并到各平级目录中`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_merge_split_folders',
+    name: '合并带艺术家的文件夹',
+    category: CommandCategory.BigPack,
+    description: `将形如 "Title [Artist]" 的文件夹内容合并到 "Title" 文件夹中`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_scan_similar_folders',
+    name: '扫描相似文件夹',
+    category: CommandCategory.Root,
+    description: `扫描指定目录中名称相似的文件夹，用于发现重复或误操作`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 要扫描的目录路径`
+      },
+      {
+        name: 'similarityTrigger',
+        type: ParameterType.Number,
+        typeString: 'number',
+        required: false,
+        description: `- 相似度触发阈值（默认 0.7）`
+      }
+    ],
+    returnType: '{ folder1: string; folder2: string; similarity: number; }[]',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
     id: 'read_and_parse_bms_file',
     name: '解析 BMS 文件',
     category: CommandCategory.BMS,
@@ -121,6 +260,38 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'extract_work_name',
+    name: '提取作品名称',
+    category: CommandCategory.BMS,
+    description: `从多个 BMS 标题中提取共同的作品名`,
+    parameters: [
+      {
+        name: 'titles',
+        type: ParameterType.String,
+        typeString: 'string[]',
+        required: true,
+        description: `- 包含多个 BMS 标题的列表`
+      },
+      {
+        name: 'removeUnlosedPair',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 是否移除未闭合括号及其后续内容`
+      },
+      {
+        name: 'removeTailingSignList',
+        type: ParameterType.String,
+        typeString: 'string[]',
+        required: false,
+        description: `- 要移除的尾部符号列表`
+      }
+    ],
+    returnType: 'string',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
     id: 'remove_empty_folders',
     name: '删除空文件夹',
     category: CommandCategory.FS,
@@ -144,6 +315,78 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     ],
     returnType: 'void',
     dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_media_info',
+    name: '获取媒体文件信息',
+    category: CommandCategory.Media,
+    description: `使用 ffprobe 获取音频或视频文件的详细信息`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 媒体文件路径`
+      }
+    ],
+    returnType: 'MediaInfo | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_video_info',
+    name: '获取视频信息',
+    category: CommandCategory.Media,
+    description: `获取视频文件的尺寸和比特率信息`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 视频文件路径`
+      }
+    ],
+    returnType: 'VideoInfo | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_video_size',
+    name: '获取视频尺寸',
+    category: CommandCategory.Media,
+    description: `获取视频文件的宽度和高度`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 视频文件路径`
+      }
+    ],
+    returnType: '{ width: number; height: number; } | null',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_get_media_duration',
+    name: '获取媒体时长',
+    category: CommandCategory.Media,
+    description: `获取音频或视频文件的时长（秒）`,
+    parameters: [
+      {
+        name: 'filePath',
+        type: ParameterType.File,
+        typeString: 'string',
+        required: true,
+        description: `- 媒体文件路径`
+      }
+    ],
+    returnType: 'number | null',
+    dangerous: false,
     isFrontendCommand: true
   },
   {
@@ -454,89 +697,6 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
-    id: 'root_merge_split_folders',
-    name: '合并带艺术家的文件夹',
-    category: CommandCategory.Bigpack,
-    description: `将形如 "Title [Artist]" 的文件夹内容合并到 "Title" 文件夹中`,
-    parameters: [
-      {
-        name: 'rootDir',
-        type: ParameterType.Directory,
-        typeString: 'string',
-        required: true,
-        description: `- 根目录路径`
-      },
-      {
-        name: 'dryRun',
-        type: ParameterType.Boolean,
-        typeString: 'boolean',
-        required: true,
-        description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
-      }
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true
-  },
-  {
-    id: 'root_scan_similar_folders',
-    name: '扫描相似文件夹',
-    category: CommandCategory.Root,
-    description: `扫描指定目录中名称相似的文件夹，用于发现重复或误操作`,
-    parameters: [
-      {
-        name: 'rootDir',
-        type: ParameterType.Directory,
-        typeString: 'string',
-        required: true,
-        description: `- 要扫描的目录路径`
-      },
-      {
-        name: 'similarityTrigger',
-        type: ParameterType.Number,
-        typeString: 'number',
-        required: false,
-        description: `- 相似度触发阈值（默认 0.7）`
-      }
-    ],
-    returnType: '{ folder1: string; folder2: string; similarity: number; }[]',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
-    id: 'extract_work_name',
-    name: '提取作品名称',
-    category: CommandCategory.BMS,
-    description: `从多个 BMS 标题中提取共同的作品名`,
-    parameters: [
-      {
-        name: 'titles',
-        type: ParameterType.String,
-        typeString: 'string[]',
-        required: true,
-        description: `- 包含多个 BMS 标题的列表`
-      },
-      {
-        name: 'removeUnlosedPair',
-        type: ParameterType.Boolean,
-        typeString: 'boolean',
-        required: false,
-        description: `- 是否移除未闭合括号及其后续内容`
-      },
-      {
-        name: 'removeTailingSignList',
-        type: ParameterType.String,
-        typeString: 'string[]',
-        required: false,
-        description: `- 要移除的尾部符号列表`
-      }
-    ],
-    returnType: 'string',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
     id: 'pack_pack_hq_to_lq',
     name: 'HQ 版本转 LQ 版本',
     category: CommandCategory.Pack,
@@ -562,166 +722,6 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         type: ParameterType.Enum,
         typeString: 'IProgressManager',
         required: false,
-        description: ``
-      }
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true
-  },
-  {
-    id: 'root_split_folders_with_first_char',
-    name: '按首字符拆分文件夹',
-    category: CommandCategory.Bigpack,
-    description: `将目录下的作品按照首字符规则分成多个文件夹`,
-    parameters: [
-      {
-        name: 'rootDir',
-        type: ParameterType.Directory,
-        typeString: 'string',
-        required: true,
-        description: `- 根目录路径`
-      },
-      {
-        name: 'dryRun',
-        type: ParameterType.Boolean,
-        typeString: 'boolean',
-        required: true,
-        description: `- 是否模拟运行`,
-        defaultValue: true
-      }
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true
-  },
-  {
-    id: 'root_move_works_with_same_name_to_siblings',
-    name: '移动同名作品到平级目录',
-    category: CommandCategory.Bigpack,
-    description: `将目录中文件名相似的子文件夹合并到各平级目录中`,
-    parameters: [
-      {
-        name: 'rootDir',
-        type: ParameterType.Directory,
-        typeString: 'string',
-        required: true,
-        description: `- 根目录路径`
-      },
-      {
-        name: 'dryRun',
-        type: ParameterType.Boolean,
-        typeString: 'boolean',
-        required: true,
-        description: `- 模拟运行（不实际执行）`,
-        defaultValue: true
-      }
-    ],
-    returnType: 'void',
-    dangerous: true,
-    isFrontendCommand: true
-  },
-  {
-    id: 'work_get_media_info',
-    name: '获取媒体文件信息',
-    category: CommandCategory.Media,
-    description: `使用 ffprobe 获取音频或视频文件的详细信息`,
-    parameters: [
-      {
-        name: 'filePath',
-        type: ParameterType.File,
-        typeString: 'string',
-        required: true,
-        description: `- 媒体文件路径`
-      }
-    ],
-    returnType: 'MediaInfo | null',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
-    id: 'work_get_video_info',
-    name: '获取视频信息',
-    category: CommandCategory.Media,
-    description: `获取视频文件的尺寸和比特率信息`,
-    parameters: [
-      {
-        name: 'filePath',
-        type: ParameterType.File,
-        typeString: 'string',
-        required: true,
-        description: `- 视频文件路径`
-      }
-    ],
-    returnType: 'VideoInfo | null',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
-    id: 'work_get_video_size',
-    name: '获取视频尺寸',
-    category: CommandCategory.Media,
-    description: `获取视频文件的宽度和高度`,
-    parameters: [
-      {
-        name: 'filePath',
-        type: ParameterType.File,
-        typeString: 'string',
-        required: true,
-        description: `- 视频文件路径`
-      }
-    ],
-    returnType: '{ width: number; height: number; } | null',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
-    id: 'work_get_media_duration',
-    name: '获取媒体时长',
-    category: CommandCategory.Media,
-    description: `获取音频或视频文件的时长（秒）`,
-    parameters: [
-      {
-        name: 'filePath',
-        type: ParameterType.File,
-        typeString: 'string',
-        required: true,
-        description: `- 媒体文件路径`
-      }
-    ],
-    returnType: 'number | null',
-    dangerous: false,
-    isFrontendCommand: true
-  },
-  {
-    id: 'rawpack_batch_rename_with_num',
-    name: '批量添加文件编号',
-    category: CommandCategory.Rawpack,
-    description: `为多个文件添加编号前缀`,
-    parameters: [
-      {
-        name: 'params',
-        type: ParameterType.Enum,
-        typeString: 'SetFileNumParams',
-        required: true,
-        description: `- 编号设置参数`
-      }
-    ],
-    returnType: 'RenameOperation[]',
-    dangerous: true,
-    isFrontendCommand: true
-  },
-  {
-    id: 'wasted_fix',
-    name: 'Aery 标签作品修复',
-    category: CommandCategory.Wasted,
-    description: `处理 Aery 标签作品的特殊合并逻辑，根据相似度阈值合并相似文件夹`,
-    parameters: [
-      {
-        name: 'params',
-        type: ParameterType.Enum,
-        typeString: 'AeryFixParams',
-        required: true,
         description: ``
       }
     ],

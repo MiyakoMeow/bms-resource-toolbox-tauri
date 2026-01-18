@@ -34,8 +34,6 @@ export async function mergeSplitFolders(rootDir: string, dryRun: boolean): Promi
   const pairs: Array<{ target: string; source: string }> = [];
 
   for (const dirName of dirNames) {
-    const dirPath = `${rootDir}/${dirName}`;
-
     // Situation 1: 结尾为 "]"
     if (!dirName.endsWith(']')) {
       continue;

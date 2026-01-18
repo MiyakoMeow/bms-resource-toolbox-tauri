@@ -709,13 +709,19 @@ ${commandIds}
    * 格式化分类名称，将小写转换为正确的枚举值
    */
   private formatCategoryName(category: string): string {
-    // 特殊处理全大写缩写词
+    // 特殊处理全大写缩写词和特殊命名
     const uppercaseAcronyms: Record<string, string> = {
       bms: 'BMS',
       fs: 'FS',
       bmsevent: 'BMSEvent',
       rootevent: 'RootEvent',
       wasted: 'Wasted',
+      bigpack: 'BigPack',
+      pack: 'Pack',
+      rawpack: 'Rawpack',
+      media: 'Media',
+      work: 'Work',
+      root: 'Root',
     };
 
     const lowerCategory = category.toLowerCase();
@@ -736,6 +742,15 @@ ${commandIds}
     const relativePath = path
       .relative(path.join(this.projectPath, 'src/lib/utils'), filePath)
       .replace(/\\/g, '/'); // 统一使用正斜杠
+
+    // 对于特定模块，导入其 index.ts 文件而不是直接文件
+    const modulesWithIndex = ['media', 'rawpack', 'wasted'];
+    for (const moduleName of modulesWithIndex) {
+      if (relativePath.includes(`${moduleName}/`)) {
+        return `$lib/utils/${moduleName}/index.js`;
+      }
+    }
+
     return `$lib/utils/${relativePath.replace(/\.ts$/, '.js')}`;
   }
 }

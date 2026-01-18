@@ -4,6 +4,12 @@
  * 定义了所有后端 Rust 枚举对应的 TypeScript 枚举类型
  */
 
+import type { IProgressManager } from '$lib/utils/progress.js';
+import type { AeryFixParams } from '$lib/utils/wasted/aery_fix.js';
+import type { SetFileNumParams } from '$lib/utils/rawpack/numbering.js';
+
+export type { IProgressManager, AeryFixParams, SetFileNumParams };
+
 /**
  * BMS 文件夹命名类型
  * 对应 Rust: BmsFolderSetNameType
@@ -104,6 +110,8 @@ export enum CommandCategory {
   RootEvent = 'root_event',
   /** BMS 活动 - BMS 活动相关操作 */
   BMSEvent = 'bms_event',
+  /** 媒体处理 - 音视频文件处理和探测 */
+  Media = 'media',
   /** Wasted - 特殊工具集 */
   Wasted = 'wasted',
 }

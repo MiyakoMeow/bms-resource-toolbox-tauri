@@ -82,6 +82,20 @@ export const CATEGORY_METADATA: Record<CommandCategory, CategoryMetadata> = {
     description: 'BMS 活动相关操作',
     color: 'from-fuchsia-500 to-pink-500',
   },
+  [CommandCategory.Media]: {
+    id: CommandCategory.Media,
+    name: '媒体处理',
+    icon: '🎬',
+    description: '音视频文件处理和探测',
+    color: 'from-violet-500 to-purple-500',
+  },
+  [CommandCategory.Wasted]: {
+    id: CommandCategory.Wasted,
+    name: 'Wasted',
+    icon: '🧩',
+    description: '特殊工具集',
+    color: 'from-slate-500 to-gray-500',
+  },
 };
 
 /**

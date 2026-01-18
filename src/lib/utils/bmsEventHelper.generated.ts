@@ -22,6 +22,42 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: result };
     }
 
+    if (commandId === 'wasted_fix') {
+      const { fix } = await import('$lib/utils/wasted/index.js');
+      await fix(params.params as AeryFixParams);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'rawpack_batch_rename_with_num') {
+      const { batchRenameWithNum } = await import('$lib/utils/rawpack/index.js');
+      const result = await batchRenameWithNum(params.params as SetFileNumParams);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'root_split_folders_with_first_char') {
+      const { splitFoldersWithFirstChar } = await import('$lib/utils/bigpack/split.js');
+      await splitFoldersWithFirstChar(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_works_with_same_name_to_siblings') {
+      const { moveWorksWithSameNameToSiblings } = await import('$lib/utils/bigpack/split.js');
+      await moveWorksWithSameNameToSiblings(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_merge_split_folders') {
+      const { mergeSplitFolders } = await import('$lib/utils/bigpack/merge.js');
+      await mergeSplitFolders(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_scan_similar_folders') {
+      const { scanSimilarFolders } = await import('$lib/utils/bigpack/similarity.js');
+      const result = await scanSimilarFolders(params.rootDir as string, params.similarityTrigger as number);
+      return { success: true, data: result };
+    }
+
     if (commandId === 'read_and_parse_bms_file') {
       const { readAndParseBmsFile } = await import('$lib/utils/bms/scanner.js');
       const result = await readAndParseBmsFile(params.filePath as string);
@@ -52,20 +88,50 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: result };
     }
 
+    if (commandId === 'extract_work_name') {
+      const { extractWorkName } = await import('$lib/utils/bms/work.js');
+      const result = await extractWorkName(params.titles as string[], params.removeUnlosedPair as boolean, params.removeTailingSignList as string[]);
+      return { success: true, data: result };
+    }
+
     if (commandId === 'remove_empty_folders') {
       const { removeEmptyFolders } = await import('$lib/utils/fs/cleanup.js');
       await removeEmptyFolders(params.parentDir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'work_get_media_info') {
+      const { getMediaInfo } = await import('$lib/utils/media/index.js');
+      const result = await getMediaInfo(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_video_info') {
+      const { getVideoInfo } = await import('$lib/utils/media/index.js');
+      const result = await getVideoInfo(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_video_size') {
+      const { getVideoSize } = await import('$lib/utils/media/index.js');
+      const result = await getVideoSize(params.filePath as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'work_get_media_duration') {
+      const { getMediaDuration } = await import('$lib/utils/media/index.js');
+      const result = await getMediaDuration(params.filePath as string);
+      return { success: true, data: result };
+    }
+
     if (commandId === 'work_remove_zero_sized_media_files') {
-      const { removeZeroSizedMediaFiles } = await import('$lib/utils/media/cleanup.js');
+      const { removeZeroSizedMediaFiles } = await import('$lib/utils/media/index.js');
       await removeZeroSizedMediaFiles(params.dir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
     if (commandId === 'work_remove_unneed_media_files') {
-      const { removeUnneedMediaFiles } = await import('$lib/utils/media/cleanup.js');
+      const { removeUnneedMediaFiles } = await import('$lib/utils/media/index.js');
       await removeUnneedMediaFiles(params.rootDir as string, params.preset as RemoveMediaPreset);
       return { success: true, data: undefined };
     }
@@ -112,75 +178,9 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
-    if (commandId === 'root_merge_split_folders') {
-      const { mergeSplitFolders } = await import('$lib/utils/bigpack/merge.js');
-      await mergeSplitFolders(params.rootDir as string, params.dryRun as boolean);
-      return { success: true, data: undefined };
-    }
-
-    if (commandId === 'root_scan_similar_folders') {
-      const { scanSimilarFolders } = await import('$lib/utils/bigpack/similarity.js');
-      const result = await scanSimilarFolders(params.rootDir as string, params.similarityTrigger as number);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'extract_work_name') {
-      const { extractWorkName } = await import('$lib/utils/bms/work.js');
-      const result = await extractWorkName(params.titles as string[], params.removeUnlosedPair as boolean, params.removeTailingSignList as string[]);
-      return { success: true, data: result };
-    }
-
     if (commandId === 'pack_pack_hq_to_lq') {
       const { packHqToLq } = await import('$lib/utils/pack/pack.js');
       await packHqToLq(params.rootDir as string, params.dryRun as boolean, params.progressManager as IProgressManager);
-      return { success: true, data: undefined };
-    }
-
-    if (commandId === 'root_split_folders_with_first_char') {
-      const { splitFoldersWithFirstChar } = await import('$lib/utils/bigpack/split.js');
-      await splitFoldersWithFirstChar(params.rootDir as string, params.dryRun as boolean);
-      return { success: true, data: undefined };
-    }
-
-    if (commandId === 'root_move_works_with_same_name_to_siblings') {
-      const { moveWorksWithSameNameToSiblings } = await import('$lib/utils/bigpack/split.js');
-      await moveWorksWithSameNameToSiblings(params.rootDir as string, params.dryRun as boolean);
-      return { success: true, data: undefined };
-    }
-
-    if (commandId === 'work_get_media_info') {
-      const { getMediaInfo } = await import('$lib/utils/media/probe.js');
-      const result = await getMediaInfo(params.filePath as string);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'work_get_video_info') {
-      const { getVideoInfo } = await import('$lib/utils/media/probe.js');
-      const result = await getVideoInfo(params.filePath as string);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'work_get_video_size') {
-      const { getVideoSize } = await import('$lib/utils/media/probe.js');
-      const result = await getVideoSize(params.filePath as string);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'work_get_media_duration') {
-      const { getMediaDuration } = await import('$lib/utils/media/probe.js');
-      const result = await getMediaDuration(params.filePath as string);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'rawpack_batch_rename_with_num') {
-      const { batchRenameWithNum } = await import('$lib/utils/rawpack/numbering.js');
-      const result = await batchRenameWithNum(params.params as SetFileNumParams);
-      return { success: true, data: result };
-    }
-
-    if (commandId === 'wasted_fix') {
-      const { fix } = await import('$lib/utils/wasted/aery_fix.js');
-      await fix(params.params as AeryFixParams);
       return { success: true, data: undefined };
     }
 
@@ -201,12 +201,23 @@ export async function executeGeneratedFrontendCommand(
  */
 export const FRONTEND_COMMAND_IDS: string[] = [
   'is_dir_having_file',
+  'wasted_fix',
+  'rawpack_batch_rename_with_num',
+  'root_split_folders_with_first_char',
+  'root_move_works_with_same_name_to_siblings',
+  'root_merge_split_folders',
+  'root_scan_similar_folders',
   'read_and_parse_bms_file',
   'get_dir_bms_list',
   'get_dir_bms_info',
   'is_work_dir',
   'is_root_dir',
+  'extract_work_name',
   'remove_empty_folders',
+  'work_get_media_info',
+  'work_get_video_info',
+  'work_get_video_size',
+  'work_get_media_duration',
   'work_remove_zero_sized_media_files',
   'work_remove_unneed_media_files',
   'work_set_name_by_bms',
@@ -216,16 +227,5 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'root_root_set_name_by_bms',
   'root_root_undo_set_name_by_bms',
   'root_copy_numbered_workdir_names',
-  'root_merge_split_folders',
-  'root_scan_similar_folders',
-  'extract_work_name',
-  'pack_pack_hq_to_lq',
-  'root_split_folders_with_first_char',
-  'root_move_works_with_same_name_to_siblings',
-  'work_get_media_info',
-  'work_get_video_info',
-  'work_get_video_size',
-  'work_get_media_duration',
-  'rawpack_batch_rename_with_num',
-  'wasted_fix'
+  'pack_pack_hq_to_lq'
 ];
