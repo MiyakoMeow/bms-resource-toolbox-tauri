@@ -20,3 +20,4 @@ jobs:
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check bans licenses sources
+          args: --manifest-path src-tauri/Cargo.toml
