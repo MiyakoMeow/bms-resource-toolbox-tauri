@@ -37,16 +37,16 @@
     "xlsx": "npm:xlsx@^0.18.5"
   },
   "tasks": {
-    "dev": "deno run -A npm:vite dev",
-    "build": "deno run -A npm:vite build",
-    "preview": "deno run -A npm:vite preview",
-    "check": "deno run -A npm:svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "deno run -A npm:svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "deno run -A npm:eslint",
-    "lint:fix": "deno run -A npm:eslint --fix",
-    "format": "deno run -A npm:prettier --check .",
-    "format:fix": "deno run -A npm:prettier --write .",
-    "tauri": "deno run -A npm:tauri"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "tauri": "tauri"
   },
   "exclude": ["target/", "build/", ".svelte-kit/"],
   "nodeModulesDir": "auto",
