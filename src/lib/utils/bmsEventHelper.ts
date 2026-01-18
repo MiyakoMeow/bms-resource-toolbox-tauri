@@ -20,6 +20,7 @@ export function getBMSEventListUrl(event: BMSEvent): string {
   const urlMap = {
     [BMSEvent.BOFNT]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=142',
     [BMSEvent.BOFTT]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=146',
+    [BMSEvent.BOF21]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=149',
     [BMSEvent.LetsBMSEdit]: 'https://venue.bmssearch.net/letsbmsedit',
     [BMSEvent.LetsBMSEdit2]: 'https://venue.bmssearch.net/letsbmsedit2',
     [BMSEvent.LetsBMSEdit3]: 'https://venue.bmssearch.net/letsbmsedit3',
@@ -42,6 +43,8 @@ export function getBMSEventWorkUrl(event: BMSEvent, workNum: number): string {
       return `https://manbow.nothing.sh/event/event.cgi?action=More_def&num=${workNum}&event=142`;
     case BMSEvent.BOFTT:
       return `https://manbow.nothing.sh/event/event.cgi?action=More_def&num=${workNum}&event=146`;
+    case BMSEvent.BOF21:
+      return `https://manbow.nothing.sh/event/event.cgi?action=More_def&num=${workNum}&event=149`;
     case BMSEvent.LetsBMSEdit:
       return `https://venue.bmssearch.net/letsbmsedit/${workNum}`;
     case BMSEvent.LetsBMSEdit2:

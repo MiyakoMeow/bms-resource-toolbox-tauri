@@ -35,6 +35,7 @@ export enum ReplacePreset {
 export enum BMSEvent {
   BOFNT = 19,
   BOFTT = 20,
+  BOF21 = 21,
   LetsBMSEdit = 101,
   LetsBMSEdit2 = 102,
   LetsBMSEdit3 = 103,
