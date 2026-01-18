@@ -19,5 +19,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
-          command: check bans licenses sources
-          args: --manifest-path src-tauri/Cargo.toml
+          command: check
+          arguments: --all-features
+          command-arguments: bans licenses sources
+          manifest-path: src-tauri/Cargo.toml
