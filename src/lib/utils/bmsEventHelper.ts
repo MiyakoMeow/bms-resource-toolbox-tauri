@@ -11,10 +11,10 @@ import { executeGeneratedFrontendCommand, FRONTEND_COMMAND_IDS } from './bmsEven
  * 获取 BMS 活动列表页面 URL
  *
  * @param event - BMS 活动类型
- * @returns 活动列表页面的完整 URL
+ * @returns 活动列表页面的完整 URL，如果活动不支持则返回空字符串
  */
 export function getBMSEventListUrl(event: BMSEvent): string {
-  const urlMap = {
+  const urlMap: Partial<Record<BMSEvent, string>> = {
     [BMSEvent.BOFNT]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=142',
     [BMSEvent.BOFTT]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=146',
     [BMSEvent.BOF21]: 'https://manbow.nothing.sh/event/event.cgi?action=sp&event=149',
@@ -24,7 +24,7 @@ export function getBMSEventListUrl(event: BMSEvent): string {
     [BMSEvent.LetsBMSEdit4]: 'https://venue.bmssearch.net/letsbmsedit4',
   };
 
-  return urlMap[event];
+  return urlMap[event] ?? '';
 }
 
 /**

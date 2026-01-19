@@ -37,29 +37,31 @@ export async function scanSimilarFolders(
   // 排序
   dirNames.sort();
 
-  // 扫描相邻文件夹
-  for (let i = 1; i < dirNames.length; i++) {
-    const formerDirName = dirNames[i - 1];
-    const currentDirName = dirNames[i];
+  // 扫描所有文件夹对（使用嵌套循环）
+  for (let i = 0; i < dirNames.length; i++) {
+    for (let j = i + 1; j < dirNames.length; j++) {
+      const formerDirName = dirNames[i];
+      const currentDirName = dirNames[j];
 
-    // 计算相似度
-    const similarity = stringSimilarity(formerDirName, currentDirName);
+      // 计算相似度
+      const similarity = stringSimilarity(formerDirName, currentDirName);
 
-    if (similarity < similarityTrigger) {
-      continue;
+      if (similarity < similarityTrigger) {
+        continue;
+      }
+
+      result.push({
+        folder1: formerDirName,
+        folder2: currentDirName,
+        similarity,
+      });
+
+      console.log(
+        `发现相似项：${formerDirName} <=> ${currentDirName} (相似度: ${(similarity * 100).toFixed(
+          2
+        )}%)`
+      );
     }
-
-    result.push({
-      folder1: formerDirName,
-      folder2: currentDirName,
-      similarity,
-    });
-
-    console.log(
-      `发现相似项：${formerDirName} <=> ${currentDirName} (相似度: ${(similarity * 100).toFixed(
-        2
-      )}%)`
-    );
   }
 
   return result;

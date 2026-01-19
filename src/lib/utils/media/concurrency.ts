@@ -31,7 +31,8 @@ export class ConcurrencyPool<T> {
   async add(task: () => Promise<T>): Promise<T> {
     // 如果已达到并发限制，等待其他任务完成
     while (this.running.size >= this.concurrency) {
-      await Promise.race(this.running);
+      const done = Promise.race(this.running);
+      await done.catch(() => {});
     }
 
     // 创建任务并添加到运行集合
@@ -53,7 +54,8 @@ export class ConcurrencyPool<T> {
   async drain(): Promise<void> {
     // 持续等待直到没有正在运行的任务
     while (this.running.size > 0) {
-      await Promise.race(this.running);
+      const done = Promise.race(this.running);
+      await done.catch(() => {});
     }
   }
 

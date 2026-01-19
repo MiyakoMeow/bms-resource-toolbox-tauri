@@ -225,7 +225,7 @@ export class ProgressManager implements IProgressManager {
    * 等待恢复（如果暂停中）
    */
   async waitForResume(): Promise<void> {
-    while (this.paused && !this.cancelled) {
+    while (this.paused && !this.cancelled && !this.completed) {
       // 每 100ms 检查一次状态
       await new Promise((resolve) => setTimeout(resolve, 100));
     }

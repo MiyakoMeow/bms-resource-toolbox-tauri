@@ -97,14 +97,21 @@ export class MediaProbe {
 
       // 解析格式信息
       if (probeOutput.format) {
-        if (probeOutput.format.duration) {
-          mediaInfo.duration = parseFloat(probeOutput.format.duration);
+        const durationStr = probeOutput.format.duration;
+        const sizeStr = probeOutput.format.size;
+        const bitRateStr = probeOutput.format.bit_rate;
+
+        if (durationStr && durationStr !== 'N/A') {
+          const parsed = parseFloat(durationStr);
+          mediaInfo.duration = isNaN(parsed) ? undefined : parsed;
         }
-        if (probeOutput.format.size) {
-          mediaInfo.size = parseInt(probeOutput.format.size, 10);
+        if (sizeStr && sizeStr !== 'N/A') {
+          const parsed = parseInt(sizeStr, 10);
+          mediaInfo.size = isNaN(parsed) ? undefined : parsed;
         }
-        if (probeOutput.format.bit_rate) {
-          mediaInfo.bitRate = parseInt(probeOutput.format.bit_rate, 10);
+        if (bitRateStr && bitRateStr !== 'N/A') {
+          const parsed = parseInt(bitRateStr, 10);
+          mediaInfo.bitRate = isNaN(parsed) ? undefined : parsed;
         }
       }
 
@@ -113,10 +120,12 @@ export class MediaProbe {
         mediaInfo.streamTypes.push(stream.codec_type);
 
         if (stream.codec_type === 'video' && stream.width && stream.height) {
+          const bitRateStr = stream.bit_rate;
+          const bitRate = bitRateStr && bitRateStr !== 'N/A' ? parseInt(bitRateStr, 10) : 0;
           mediaInfo.video = {
             width: stream.width,
             height: stream.height,
-            bitRate: stream.bit_rate ? parseInt(stream.bit_rate, 10) : 0,
+            bitRate: isNaN(bitRate) ? 0 : bitRate,
           };
         }
       }

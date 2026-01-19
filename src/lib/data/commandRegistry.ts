@@ -115,9 +115,19 @@ const COMMAND_REGISTRY_WITH_EXTRAS: CommandDefinition[] = GENERATED_COMMAND_REGI
       for (const [key, options] of Object.entries(ENUM_OPTIONS_MAP)) {
         // 检查参数类型字符串是否包含枚举名称
         if (param.typeString && param.typeString.includes(key)) {
+          // 转换默认值为实际枚举值
+          let defaultValue = param.defaultValue;
+          if (typeof defaultValue === 'string' && defaultValue.startsWith(`${key}.`)) {
+            const enumKey = defaultValue.split('.')[1];
+            const enumOption = options.find((o) => o.value === enumKey);
+            if (enumOption) {
+              defaultValue = enumOption.value;
+            }
+          }
           return {
             ...param,
             enumOptions: options,
+            defaultValue,
           };
         }
       }
