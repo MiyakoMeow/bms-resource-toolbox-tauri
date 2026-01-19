@@ -176,8 +176,17 @@ export async function syncFolder(
   const dstRemoveFiles: string[] = [];
   const dstRemoveDirs: string[] = [];
 
+  // 创建目标目录（如果不存在）
+  const dstExists = await exists(dstDir);
+  if (!dstExists) {
+    await mkdir(dstDir, { recursive: true });
+  }
+
   // 收集目录条目
-  const [srcEntries, dstEntries] = await Promise.all([readDir(srcDir), readDir(dstDir)]);
+  const [srcEntries, dstEntries] = await Promise.all([
+    readDir(srcDir),
+    dstExists ? readDir(dstDir) : Promise.resolve([]),
+  ]);
 
   const srcMap = new Map<string, { entry: (typeof srcEntries)[0] }>();
   const dstMap = new Map<string, (typeof dstEntries)[0]>();

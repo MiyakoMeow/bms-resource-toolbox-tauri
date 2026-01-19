@@ -157,7 +157,8 @@ export class VideoConverter {
       if (progressManager?.shouldStop()) {
         if (progressManager.getProgress().cancelled) {
           console.log('转换已取消');
-          break;
+          await pool.drain();
+          return !hadError.value;
         }
         // 等待恢复
         await progressManager.waitForResume();
@@ -166,7 +167,7 @@ export class VideoConverter {
       const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
       progressManager?.setMessage(`转换 ${fileName}`);
 
-      await pool.add(async () => {
+      pool.add(async () => {
         console.log(`Processing video: ${filePath}`);
 
         // 选择预设

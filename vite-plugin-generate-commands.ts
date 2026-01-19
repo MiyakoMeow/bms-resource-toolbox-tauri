@@ -79,6 +79,7 @@ export class CommandGenerator {
    * 生成命令注册表和路由
    */
   public generate(): void {
+    this.commands = [];
     const sourceFiles = this.program.getSourceFiles();
 
     for (const sourceFile of sourceFiles) {

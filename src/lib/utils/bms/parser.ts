@@ -39,7 +39,10 @@ export class BmsParser {
         args = [];
       } else {
         command = commandPart.substring(0, firstSpaceIndex);
-        args = [commandPart.substring(firstSpaceIndex + 1)];
+        args = commandPart
+          .substring(firstSpaceIndex + 1)
+          .trim()
+          .split(/\s+/);
       }
 
       // 解析各种命令
