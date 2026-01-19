@@ -9,6 +9,7 @@ import { ConcurrencyPool } from './concurrency';
 import { AUDIO_PRESETS } from './presets';
 import type { AudioPreset, AudioProcessParams } from './types';
 import type { IProgressManager } from '../progress';
+import { AUDIO_FILE_EXTS } from '../bms/scanner';
 
 /**
  * 音频转换器类
@@ -470,7 +471,6 @@ export async function transferAudio(
   skipOnFail: boolean,
   progressManager?: IProgressManager
 ): Promise<void> {
-  const { AUDIO_FILE_EXTS } = await import('../bms/scanner');
   await AudioConverter.processBmsFolders({
     rootDir,
     inputExtensions: [...AUDIO_FILE_EXTS],

@@ -3,6 +3,7 @@
  * 使用 Web Crypto API 计算 SHA512 哈希值
  */
 
+import { Command } from '@tauri-apps/plugin-shell';
 import { readFile, stat } from '@tauri-apps/plugin-fs';
 
 /**
@@ -97,14 +98,19 @@ export async function setFileModificationTime(
 
   try {
     // 尝试使用 Node.js fs 设置时间（在 Node.js 环境中）
-    const fs = await import('fs');
+    // 注意：fs 模块在浏览器环境中可能不可用
+    let fs: typeof import('fs');
+    try {
+      fs = await import('fs');
+    } catch {
+      // 如果 Node.js fs 不可用，跳过此方法
+      throw new Error('Node.js fs not available');
+    }
     const timestamp = date.getTime() / 1000;
     fs.utimesSync(targetPath, timestamp, timestamp);
   } catch {
     // 在 Tauri 环境中，使用 shell 命令设置时间
     try {
-      const { Command } = await import('@tauri-apps/plugin-shell');
-
       // 格式化日期字符串用于 Windows PowerShell
       const psDateString = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
       const isoString = date.toISOString();

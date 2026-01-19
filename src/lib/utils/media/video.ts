@@ -9,6 +9,7 @@ import { ConcurrencyPool } from './concurrency';
 import { VIDEO_PRESETS } from './presets';
 import type { VideoInfo, VideoPreset, VideoProcessParams } from './types';
 import type { IProgressManager } from '../progress';
+import { VIDEO_FILE_EXTS } from '../bms/scanner';
 
 /**
  * 视频转换器类
@@ -494,7 +495,6 @@ export async function transferVideo(
   usePrefered: boolean,
   progressManager?: IProgressManager
 ): Promise<void> {
-  const { VIDEO_FILE_EXTS } = await import('../bms/scanner');
   await VideoConverter.processBmsFolders({
     rootDir,
     inputExtensions: [...VIDEO_FILE_EXTS],

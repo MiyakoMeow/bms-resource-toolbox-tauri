@@ -3,9 +3,10 @@
  * 用于扫描目录中的 BMS 文件
  */
 
-import { readDir } from '@tauri-apps/plugin-fs';
+import { readDir, readFile, exists } from '@tauri-apps/plugin-fs';
 import type { BmsOutput } from './types';
 import { BmsParser } from './parser';
+import { getBmsFileStr } from './encoding';
 
 /**
  * BMS 文件扩展名
@@ -104,7 +105,6 @@ export function isChartFile(filePath: string): boolean {
 export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput | null> {
   try {
     // 读取文件内容（使用 Tauri FS API）
-    const { readFile, exists } = await import('@tauri-apps/plugin-fs');
 
     if (!(await exists(filePath))) {
       return null;
@@ -118,7 +118,6 @@ export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput |
     } else {
       // 非 BMSON 文件使用编码感知读取
       const fileBytes = await readFile(filePath);
-      const { getBmsFileStr } = await import('./encoding');
       const content = getBmsFileStr(new Uint8Array(fileBytes));
       return BmsParser.parse(content);
     }
@@ -132,7 +131,6 @@ export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput |
  * 使用 Tauri FS 读取文本文件
  */
 async function readTextFile(filePath: string): Promise<string> {
-  const { readFile } = await import('@tauri-apps/plugin-fs');
   const fileBytes = await readFile(filePath);
   const decoder = new TextDecoder('utf-8', { ignoreBOM: true });
   return decoder.decode(fileBytes);

@@ -2,7 +2,7 @@
  * 文件夹同步工具
  */
 
-import { copyFile, exists, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
+import { copyFile, exists, mkdir, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
 import { getFileExtension } from './path';
 import { isFileSameContent } from './compare';
 
@@ -336,6 +336,5 @@ export async function syncFolder(
  * 创建目录（包括父目录）
  */
 async function createDirectory(dirPath: string): Promise<void> {
-  const { mkdir } = await import('@tauri-apps/plugin-fs');
   await mkdir(dirPath, { recursive: true });
 }

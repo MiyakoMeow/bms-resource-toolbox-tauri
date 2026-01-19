@@ -2,7 +2,7 @@
  * 根目录批量操作工具
  */
 
-import { readDir } from '@tauri-apps/plugin-fs';
+import { readDir, rename } from '@tauri-apps/plugin-fs';
 import { BmsFolderSetNameType, setNameByBms, undoSetNameByBms } from '../work/rename';
 import { ReplacePreset } from '../fs/moving';
 
@@ -105,9 +105,6 @@ export async function copyNumberedWorkdirNames(
   toDir: string,
   dryRun: boolean
 ): Promise<void> {
-  // Note: exists, mkdir, writeFile were removed as unused
-  await import('@tauri-apps/plugin-fs');
-
   const entries = await readDir(fromDir);
   const nameMap = new Map<string, string>();
 
@@ -154,7 +151,6 @@ export async function copyNumberedWorkdirNames(
           console.log(`[dry-run] Would rename: ${oldPath} -> ${newPath}`);
         } else {
           try {
-            const { rename } = await import('@tauri-apps/plugin-fs');
             await rename(oldPath, newPath);
           } catch (error) {
             console.error(`Failed to rename ${oldPath}:`, error);

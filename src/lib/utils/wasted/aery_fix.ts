@@ -6,7 +6,7 @@
  * 这些作品通常有相似的文件夹结构，需要根据相似度阈值进行合并
  */
 
-import { readDir } from '@tauri-apps/plugin-fs';
+import { readDir, remove } from '@tauri-apps/plugin-fs';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 import { calculateSimilarity } from '../fs/similarity';
 
@@ -144,7 +144,6 @@ export class AeryFix {
       );
 
       // 删除空源目录
-      const { remove } = await import('@tauri-apps/plugin-fs');
       try {
         const sourceEntries = await readDir(pair.source);
         if (sourceEntries.length === 0) {

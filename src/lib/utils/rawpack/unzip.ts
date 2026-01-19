@@ -2,7 +2,7 @@
  * 原始包解压工具
  */
 
-import { exists, mkdir, readDir, rename } from '@tauri-apps/plugin-fs';
+import { exists, mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
 import { ArchiveExtractor } from '../fs/archive';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 
@@ -195,7 +195,6 @@ async function moveOutFilesInFolderInCacheDir(
       if (entry.isDirectory) {
         // 跳过 __MACOSX 目录
         if (entry.name === '__MACOSX') {
-          const { remove } = await import('@tauri-apps/plugin-fs');
           await remove(`${cacheDirPath}/${entry.name}`, { recursive: true });
           continue;
         }
@@ -238,7 +237,6 @@ async function moveOutFilesInFolderInCacheDir(
       await moveElementsAcrossDir(innerPath, cacheDirPath, replaceOptionsFromPreset(replacePreset));
 
       // 删除内部目录
-      const { remove } = await import('@tauri-apps/plugin-fs');
       await remove(innerPath, { recursive: true }).catch(() => {});
     }
 
@@ -253,7 +251,6 @@ async function moveOutFilesInFolderInCacheDir(
 
   if (totalFolderCount === 0 && totalFileCount === 0) {
     console.log(` !_! ${cacheDirPath}: Cache is Empty!`);
-    const { remove } = await import('@tauri-apps/plugin-fs');
     await remove(cacheDirPath, { recursive: true });
     return false;
   }

@@ -5,6 +5,7 @@
 
 import { writeFile } from '@tauri-apps/plugin-fs';
 import type { WorkInfoRow } from './folder';
+import * as XLSX from 'xlsx';
 
 /**
  * 生成 Excel 工作信息表
@@ -13,9 +14,6 @@ export async function generateWorkInfoExcel(
   workInfoList: WorkInfoRow[],
   outputPath: string
 ): Promise<void> {
-  // 动态导入 xlsx
-  const XLSX = await import('xlsx');
-
   // 准备数据
   const data = [['编号', '文件夹名', '标题', '艺术家', '流派']];
 

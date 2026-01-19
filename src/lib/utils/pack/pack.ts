@@ -3,7 +3,7 @@
  * Raw -> HQ -> LQ
  */
 
-import { mkdir, remove } from '@tauri-apps/plugin-fs';
+import { mkdir, readDir, remove } from '@tauri-apps/plugin-fs';
 import { AudioConverter } from '../media/audio';
 import { MediaCleaner } from '../media/cleanup';
 import { VideoConverter } from '../media/video';
@@ -15,6 +15,7 @@ import { presetForAppend, syncFolder } from '../fs/sync';
 import { removeEmptyFolders } from '../fs/cleanup';
 import { AudioPreset, VideoPreset } from '../media/types';
 import type { IProgressManager } from '../progress';
+import { unzipNumericToBmsFolder } from '../rawpack/unzip';
 
 /**
  * Pack 生成脚本：Raw pack -> HQ pack
@@ -51,7 +52,6 @@ export async function setupRawpackToHq(
     await mkdir(cacheDir, { recursive: true });
   }
 
-  const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
   if (!dryRun) {
     await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
   } else {
@@ -59,7 +59,6 @@ export async function setupRawpackToHq(
   }
 
   // 检查缓存目录是否为空，删除如果为空
-  const { readDir } = await import('@tauri-apps/plugin-fs');
   if (!dryRun) {
     const cacheEntries = await readDir(cacheDir);
     if (cacheEntries.length === 0) {
@@ -148,7 +147,6 @@ export async function updateRawpackToHq(
     await mkdir(cacheDir, { recursive: true });
   }
 
-  const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
   if (!dryRun) {
     await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
   } else {

@@ -3,6 +3,8 @@
  * 从 Python 代码迁移：legacy/bms/encoding.py
  */
 
+import { readFile } from '@tauri-apps/plugin-fs';
+
 /**
  * 支持的编码列表（优先级从高到低）
  */
@@ -191,7 +193,6 @@ export function getBmsFileStr(fileBytes: Uint8Array, encoding?: string): string 
  * @returns 解码后的字符串
  */
 export async function readBmsFile(filePath: string, encoding?: string): Promise<string> {
-  const { readFile } = await import('@tauri-apps/plugin-fs');
   const fileBytes = await readFile(filePath);
   return getBmsFileStr(new Uint8Array(fileBytes as unknown as ArrayBufferLike), encoding);
 }

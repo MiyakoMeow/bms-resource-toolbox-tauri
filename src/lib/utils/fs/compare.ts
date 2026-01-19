@@ -3,7 +3,7 @@
  */
 
 import { isFileSameContent as checkFileSameContent } from './hash';
-import { readDir } from '@tauri-apps/plugin-fs';
+import { readDir, stat } from '@tauri-apps/plugin-fs';
 
 /**
  * 检查目录是否包含文件
@@ -101,7 +101,6 @@ export async function compareDirectories(
       if (entry.isDirectory) continue;
       if (!entry.name) continue;
 
-      const { stat } = await import('@tauri-apps/plugin-fs');
       const meta = await stat(`${dirA}/${entry.name}`);
       mapA.set(entry.name, {
         size: meta.size,
@@ -137,7 +136,6 @@ export async function compareDirectories(
         }
       } else {
         // 只比较大小
-        const { stat } = await import('@tauri-apps/plugin-fs');
         const metaB = await stat(pathB);
         if (metaB.size === fileA.size) {
           diff.same.push(name);

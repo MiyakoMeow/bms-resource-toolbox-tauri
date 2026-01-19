@@ -3,7 +3,7 @@
  * 从 Python 代码迁移：legacy/options/bms_folder_bigpack.py
  */
 
-import { mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import { mkdir, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 import { isDirHavingContent } from '../fs/compare';
 
@@ -387,7 +387,6 @@ export async function mergeFoldersWithSameNameWithinDir(
         );
 
         // 删除空目录
-        const { remove } = await import('@tauri-apps/plugin-fs');
         await remove(sourceFolder, { recursive: true }).catch(() => {});
       }
     }
@@ -486,7 +485,7 @@ export async function moveWorksWithSameNameToSiblings(
 ): Promise<void> {
   // 验证输入路径
   try {
-    const metadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(rootDir));
+    const metadata = await stat(rootDir);
     if (!metadata.isDirectory) {
       throw new Error(`路径不是目录: ${rootDir}`);
     }
@@ -621,7 +620,7 @@ export async function moveWorksWithSameName(
 ): Promise<void> {
   // 验证输入路径
   try {
-    const fromMetadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(fromDir));
+    const fromMetadata = await stat(fromDir);
     if (!fromMetadata.isDirectory) {
       throw new Error(`源路径不是目录: ${fromDir}`);
     }
@@ -630,7 +629,7 @@ export async function moveWorksWithSameName(
   }
 
   try {
-    const toMetadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(toDir));
+    const toMetadata = await stat(toDir);
     if (!toMetadata.isDirectory) {
       throw new Error(`目标路径不是目录: ${toDir}`);
     }
@@ -699,7 +698,6 @@ export async function moveWorksWithSameName(
     try {
       const fromEntriesAfter = await readDir(fromPath);
       if (fromEntriesAfter.length === 0) {
-        const { remove } = await import('@tauri-apps/plugin-fs');
         await remove(fromPath, { recursive: true });
         console.log(`    已删除空目录: ${fromDirName}`);
       }
