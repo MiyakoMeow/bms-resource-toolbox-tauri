@@ -37,7 +37,7 @@ export async function generateWorkInfoExcel(
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
   // 生成 Excel 缓冲区
-  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
   // 写入文件
   await writeFile(outputPath, new Uint8Array(excelBuffer as ArrayBuffer));

@@ -54,6 +54,32 @@ export async function isFileSameContent(file1: string, file2: string): Promise<b
 }
 
 /**
+ * 从时间戳获取日期时间元组
+ *
+ * @param timestamp - 时间戳（毫秒）
+ * @returns 日期时间元组（本地时间）
+ */
+export function getDateTimeTupleFromTimestamp(timestamp: number): DateTimeTuple {
+  const date = new Date(timestamp);
+
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+  };
+}
+
+/**
+ * 从日期时间元组创建 Date 对象（本地时间）
+ */
+function createDateFromTuple(dateTimeTuple: DateTimeTuple): Date {
+  const { year, month, day, hour, minute } = dateTimeTuple;
+  return new Date(year, month - 1, day, hour, minute);
+}
+
+/**
  * 设置文件的修改时间
  *
  * 注意：由于 Tauri FS 插件的限制，此功能在 Windows 和 Linux 上可能不可用
@@ -67,31 +93,29 @@ export async function setFileModificationTime(
   targetPath: string,
   dateTimeTuple: DateTimeTuple
 ): Promise<void> {
-  const { year, month, day, hour, minute } = dateTimeTuple;
-
-  // 格式化为时间戳字符串
-  const timeString = `${year}/${month}/${day} ${hour}:${minute}`;
-
-  // 转换为时间戳（毫秒）
-  const timestamp = new Date(timeString).getTime();
+  const date = createDateFromTuple(dateTimeTuple);
 
   try {
     // 尝试使用 Node.js fs 设置时间（在 Node.js 环境中）
     const fs = await import('fs');
-    fs.utimesSync(targetPath, timestamp / 1000, timestamp / 1000);
+    const timestamp = date.getTime() / 1000;
+    fs.utimesSync(targetPath, timestamp, timestamp);
   } catch {
     // 在 Tauri 环境中，使用 shell 命令设置时间
     try {
       const { Command } = await import('@tauri-apps/plugin-shell');
 
+      // 格式化日期字符串用于 Windows PowerShell
+      const psDateString = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+      const isoString = date.toISOString();
+
       // Windows: 使用 PowerShell（使用 -LiteralPath 防止路径注入）
       if (navigator.platform?.toLowerCase().includes('win')) {
-        const ps1Script = `(Get-Item -LiteralPath "${targetPath}").LastWriteTime = Get-Date "${timeString}"`;
+        const ps1Script = `(Get-Item -LiteralPath "${targetPath}").LastWriteTime = Get-Date "${psDateString}"`;
         await Command.create('powershell', ['-Command', ps1Script]).execute();
       } // macOS/Linux: 使用 touch 命令
       else {
-        const touchDate = new Date(timestamp).toISOString();
-        await Command.create('touch', ['-d', touchDate, targetPath]).execute();
+        await Command.create('touch', ['-d', isoString, targetPath]).execute();
       }
     } catch (err) {
       // 如果文件不存在，忽略错误
@@ -100,22 +124,4 @@ export async function setFileModificationTime(
       }
     }
   }
-}
-
-/**
- * 从时间戳获取日期时间元组
- *
- * @param timestamp - 时间戳（毫秒）
- * @returns 日期时间元组
- */
-export function getDateTimeTupleFromTimestamp(timestamp: number): DateTimeTuple {
-  const date = new Date(timestamp);
-
-  return {
-    year: date.getFullYear(),
-    month: date.getMonth() + 1,
-    day: date.getDate(),
-    hour: date.getHours(),
-    minute: date.getMinutes(),
-  };
 }

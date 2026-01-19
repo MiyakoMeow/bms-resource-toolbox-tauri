@@ -15,22 +15,16 @@ export class ProcessRunner {
    *
    * @param program - 可执行文件名（如 'ffmpeg', 'flac'）
    * @param args - 命令行参数数组
-   * @param options - 可选配置
+   * @param _options - 可选配置（timeout 暂不支持，仅保留接口兼容）
    * @returns 执行结果
    */
   static async exec(
     program: string,
     args: string[],
-    options?: { timeout?: number }
+    _options?: { timeout?: number } // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<ProcessResult> {
     try {
       const command = Command.create(program, args);
-
-      // 设置超时（如果指定）
-      if (options?.timeout) {
-        // Tauri Shell Command 可能不支持直接的超时设置
-        // 这里预留接口，实际超时控制可能需要其他方式实现
-      }
 
       const result = await command.execute();
 

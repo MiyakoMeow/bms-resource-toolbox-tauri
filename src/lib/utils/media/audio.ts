@@ -241,11 +241,8 @@ export class AudioConverter {
       if (outputExists) {
         if (removeExisting) {
           try {
-            const metadata = await fs.stat(outputPath);
-            if (metadata.size && metadata.size > 0) {
-              console.log(`Removing existing file: ${outputPath}`);
-              await fs.remove(outputPath);
-            }
+            console.log(`Removing existing file: ${outputPath}`);
+            await fs.remove(outputPath);
           } catch (error) {
             console.error(`Failed to remove existing file: ${outputPath}`, error);
           }

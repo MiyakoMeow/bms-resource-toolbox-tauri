@@ -104,24 +104,38 @@ export function isChartFile(filePath: string): boolean {
 export async function readAndParseBmsFile(filePath: string): Promise<BmsOutput | null> {
   try {
     // 读取文件内容（使用 Tauri FS API）
-    const { readTextFile, exists } = await import('@tauri-apps/plugin-fs');
+    const { readFile, exists } = await import('@tauri-apps/plugin-fs');
 
     if (!(await exists(filePath))) {
       return null;
     }
 
-    const content = await readTextFile(filePath);
-
     // 根据扩展名选择解析器
     if (isBmsonFile(filePath)) {
+      // BMSON 文件使用 UTF-8 读取
+      const content = await readTextFile(filePath);
       return BmsParser.parseBmson(content);
     } else {
+      // 非 BMSON 文件使用编码感知读取
+      const fileBytes = await readFile(filePath);
+      const { getBmsFileStr } = await import('./encoding');
+      const content = getBmsFileStr(new Uint8Array(fileBytes));
       return BmsParser.parse(content);
     }
   } catch (error) {
     console.error(`Failed to parse BMS file: ${filePath}`, error);
     return null;
   }
+}
+
+/**
+ * 使用 Tauri FS 读取文本文件
+ */
+async function readTextFile(filePath: string): Promise<string> {
+  const { readFile } = await import('@tauri-apps/plugin-fs');
+  const fileBytes = await readFile(filePath);
+  const decoder = new TextDecoder('utf-8', { ignoreBOM: true });
+  return decoder.decode(fileBytes);
 }
 
 /**

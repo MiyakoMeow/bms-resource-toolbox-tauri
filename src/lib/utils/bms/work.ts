@@ -55,13 +55,19 @@ export function extractWorkName(
     return '';
   }
 
+  // 当只有一个标题时，没有共同前缀，直接返回空字符串
+  if (titles.length <= 1) {
+    return '';
+  }
+
   // 找到最大出现次数
   const maxCount = Math.max(...prefixCounts.values());
 
   // 筛选出超过 2/3 次数的前缀
+  const threshold = maxCount * 0.67;
   const candidates: [string, number][] = [];
   for (const [prefix, count] of prefixCounts.entries()) {
-    if (count >= maxCount * 0.67) {
+    if (count >= threshold) {
       candidates.push([prefix, count]);
     }
   }

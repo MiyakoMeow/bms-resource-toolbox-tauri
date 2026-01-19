@@ -35,7 +35,10 @@ interface DirElements {
 /**
  * 获取目录元素
  */
-async function fetchDirElements(dir: string): Promise<DirElements> {
+async function fetchDirElements(
+  dir: string,
+  preloadedEntries?: Awaited<ReturnType<typeof readDir>>
+): Promise<DirElements> {
   const elements: DirElements = {
     files: [],
     mediaStems: new Set(),
@@ -43,7 +46,7 @@ async function fetchDirElements(dir: string): Promise<DirElements> {
   };
 
   try {
-    const entries = await readDir(dir);
+    const entries = preloadedEntries ?? (await readDir(dir));
 
     for (const entry of entries) {
       if (entry.isDirectory) {
@@ -76,11 +79,16 @@ async function fetchDirElements(dir: string): Promise<DirElements> {
  * 计算两个 BMS 目录的相似度
  * 通过比较媒体文件名的交集来计算
  */
-export async function bmsDirSimilarity(dirA: string, dirB: string): Promise<number> {
+export async function bmsDirSimilarity(
+  dirA: string,
+  dirB: string,
+  preloadedEntriesA?: Awaited<ReturnType<typeof readDir>>,
+  preloadedEntriesB?: Awaited<ReturnType<typeof readDir>>
+): Promise<number> {
   try {
     const [elementsA, elementsB] = await Promise.all([
-      fetchDirElements(dirA),
-      fetchDirElements(dirB),
+      fetchDirElements(dirA, preloadedEntriesA),
+      fetchDirElements(dirB, preloadedEntriesB),
     ]);
 
     // 如果任一目录为空或没有媒体文件，返回 0

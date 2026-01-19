@@ -173,10 +173,15 @@ async function moveOutFilesInFolderInCacheDir(
 ): Promise<boolean> {
   let done = false;
   let error = false;
-  let cacheFolderCount = 0;
-  let cacheFileCount = 0;
+
+  // 在循环外部声明计数器，用于最终检查
+  let totalFolderCount = 0;
+  let totalFileCount = 0;
 
   while (true) {
+    // 每个循环开始时重置计数器
+    let cacheFolderCount = 0;
+    let cacheFileCount = 0;
     let innerDirName: string | null = null;
 
     // 重新扫描目录
@@ -236,13 +241,17 @@ async function moveOutFilesInFolderInCacheDir(
       const { remove } = await import('@tauri-apps/plugin-fs');
       await remove(innerPath, { recursive: true }).catch(() => {});
     }
+
+    // 保存计数器的值用于最终检查
+    totalFolderCount = cacheFolderCount;
+    totalFileCount = cacheFileCount;
   }
 
   if (error) {
     return false;
   }
 
-  if (cacheFolderCount === 0 && cacheFileCount === 0) {
+  if (totalFolderCount === 0 && totalFileCount === 0) {
     console.log(` !_! ${cacheDirPath}: Cache is Empty!`);
     const { remove } = await import('@tauri-apps/plugin-fs');
     await remove(cacheDirPath, { recursive: true });
