@@ -59,6 +59,7 @@ function formatTime(timestamp: number): string {
   flex-direction: column;
   gap: 1rem;
   height: 100%;
+  overflow: hidden;
 }
 
 .history-header {

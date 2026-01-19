@@ -33,6 +33,8 @@ import { commandStore } from '$lib/stores/commandStore.svelte.js';
 .sidebar-left {
   width: 16rem;
   flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .command-list {
@@ -43,5 +45,7 @@ import { commandStore } from '$lib/stores/commandStore.svelte.js';
 .sidebar-right {
   width: 20rem;
   flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

@@ -41,6 +41,8 @@ function selectCategory(category: CommandCategory) {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .nav-title {
