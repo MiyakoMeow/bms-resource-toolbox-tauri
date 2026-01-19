@@ -3,7 +3,7 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import { bmsDirSimilarity } from '$lib/utils/fs/similarity.js';
+import { bmsDirSimilarity } from '../fs/similarity';
 
 /**
  * 相似文件夹对

@@ -3,9 +3,9 @@
  * 导出所有公共 API
  */
 
-import { FileNumberSetter } from './numbering.js';
+import { FileNumberSetter } from './numbering';
 
-export * from './unzip.js';
-export * from './numbering.js';
+export * from './unzip';
+export * from './numbering';
 
 export const { batchRenameWithNum } = FileNumberSetter;

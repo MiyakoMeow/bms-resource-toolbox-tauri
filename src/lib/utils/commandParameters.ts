@@ -1,5 +1,5 @@
-import type { CommandDefinition } from '$lib/types/commands.js';
-import { ParameterType } from '$lib/types/enums.js';
+import type { CommandDefinition } from '../types/commands';
+import { ParameterType } from '../types/enums';
 
 /**
  * 参数类型到中文标签的映射

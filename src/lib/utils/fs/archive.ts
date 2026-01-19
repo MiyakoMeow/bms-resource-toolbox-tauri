@@ -4,7 +4,7 @@
  */
 
 import { Command } from '@tauri-apps/plugin-shell';
-import { getFileExtension } from './path.js';
+import { getFileExtension } from './path';
 
 /**
  * 解压结果

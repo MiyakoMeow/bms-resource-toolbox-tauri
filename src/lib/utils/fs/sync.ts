@@ -2,9 +2,9 @@
  * 文件夹同步工具
  */
 
-import { readDir, copyFile, rename, stat, exists, remove } from '@tauri-apps/plugin-fs';
-import { getFileExtension } from './path.js';
-import { isFileSameContent } from './compare.js';
+import { copyFile, exists, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
+import { getFileExtension } from './path';
+import { isFileSameContent } from './compare';
 
 /**
  * 同步执行类型

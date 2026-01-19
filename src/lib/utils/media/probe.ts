@@ -5,8 +5,8 @@
  * 使用 ffprobe 获取音频和视频文件的详细信息
  */
 
-import { ProcessRunner } from './processRunner.js';
-import type { VideoInfo } from './types.js';
+import { ProcessRunner } from './processRunner';
+import type { VideoInfo } from './types';
 
 /**
  * ffprobe 输出的媒体信息结构

@@ -4,7 +4,7 @@
  */
 
 import { Command } from '@tauri-apps/plugin-shell';
-import type { ProcessResult } from './types.js';
+import type { ProcessResult } from './types';
 
 /**
  * 进程执行器类

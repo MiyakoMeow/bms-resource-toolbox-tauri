@@ -114,7 +114,7 @@ export type RemoveMediaRule = [string[], string[]];
 /**
  * 进度管理器接口（重复定义，导入自 progress.ts）
  */
-export type IProgressManager = import('../progress.js').IProgressManager;
+export type IProgressManager = import('../progress').IProgressManager;
 
 /**
  * 视频信息

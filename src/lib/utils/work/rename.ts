@@ -2,15 +2,11 @@
  * 工作目录重命名工具
  */
 
-import { rename, exists, readDir, remove } from '@tauri-apps/plugin-fs';
-import { getDirBmsInfo } from '$lib/utils/bms/scanner.js';
-import { getValidFileName } from '$lib/utils/fs/path.js';
-import { bmsDirSimilarity } from '$lib/utils/fs/similarity.js';
-import {
-  moveElementsAcrossDir,
-  replaceOptionsFromPreset,
-  ReplacePreset,
-} from '$lib/utils/fs/moving.js';
+import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import { getDirBmsInfo } from '../bms/scanner';
+import { getValidFileName } from '../fs/path';
+import { bmsDirSimilarity } from '../fs/similarity';
+import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 
 /**
  * 默认标题

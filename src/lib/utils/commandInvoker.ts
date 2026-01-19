@@ -5,8 +5,8 @@
  */
 
 import { invoke } from '@tauri-apps/api/core';
-import type { CommandResult } from '$lib/types/api.js';
-import { isFrontendCommand, executeFrontendCommand } from './bmsEventHelper.js';
+import type { CommandResult } from '../types/api';
+import { executeFrontendCommand, isFrontendCommand } from './bmsEventHelper';
 
 /**
  * 调用 Tauri 命令

@@ -3,13 +3,9 @@
  * 从 Python 代码迁移：legacy/options/bms_folder_bigpack.py
  */
 
-import { readDir, mkdir, rename, remove } from '@tauri-apps/plugin-fs';
-import {
-  moveElementsAcrossDir,
-  replaceOptionsFromPreset,
-  ReplacePreset,
-} from '$lib/utils/fs/moving.js';
-import { isDirHavingFile } from '$lib/utils/fs/compare.js';
+import { mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
+import { isDirHavingFile } from '../fs/compare';
 
 // 正则表达式
 const RE_JAPANESE_HIRAGANA = /[\u3040-\u309f]/;
@@ -31,15 +27,30 @@ interface FirstCharRule {
  * 对应 Python: FIRST_CHAR_RULES (bms_folder_bigpack.py:21-32)
  */
 const FIRST_CHAR_RULES: FirstCharRule[] = [
-  { name: '0-9', match: (name) => '0' <= name[0].toUpperCase() && name[0].toUpperCase() <= '9' },
-  { name: 'ABCD', match: (name) => 'A' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'D' },
+  {
+    name: '0-9',
+    match: (name) => '0' <= name[0].toUpperCase() && name[0].toUpperCase() <= '9',
+  },
+  {
+    name: 'ABCD',
+    match: (name) => 'A' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'D',
+  },
   {
     name: 'EFGHIJK',
     match: (name) => 'E' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'K',
   },
-  { name: 'LMNOPQ', match: (name) => 'L' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'Q' },
-  { name: 'RST', match: (name) => 'R' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'T' },
-  { name: 'UVWXYZ', match: (name) => 'U' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'Z' },
+  {
+    name: 'LMNOPQ',
+    match: (name) => 'L' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'Q',
+  },
+  {
+    name: 'RST',
+    match: (name) => 'R' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'T',
+  },
+  {
+    name: 'UVWXYZ',
+    match: (name) => 'U' <= name[0].toUpperCase() && name[0].toUpperCase() <= 'Z',
+  },
   { name: '平假名', match: (name) => RE_JAPANESE_HIRAGANA.test(name[0]) },
   { name: '片假名', match: (name) => RE_JAPANESE_KATAKANA.test(name[0]) },
   { name: '汉字', match: (name) => RE_CHINESE_CHARACTER.test(name[0]) },
@@ -145,6 +156,19 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 
 /**
  * 撤销拆分
+ * 对应 Python: undo_split_pack (bms_folder_bigpack.py:68-83)
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 撤销拆分
+ * @description 撤销按首字符拆分的操作，将所有子文件夹移回根目录
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
@@ -196,6 +220,20 @@ export async function undoSplitAndMerge(rootDir: string, dryRun: boolean): Promi
 
 /**
  * 移动包内的作品
+ * 对应 Python: move_works_in_pack (bms_folder_bigpack.py:152-179)
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 移动包内作品
+ * @description 将目录A下的作品，移动到目录B（自动合并）
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {string} targetPackName - 目标包名称
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function moveWorksInPack(
   rootDir: string,
@@ -233,6 +271,20 @@ export async function moveWorksInPack(
 
 /**
  * 移出作品
+ * 对应 Python: move_out_works (bms_folder_bigpack.py:286-301)
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 移出一层目录
+ * @description 将子包中的作品移出，合并到根目录
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {string} sourcePackName - 源包名称
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
 export async function moveOutWorks(
   rootDir: string,
@@ -321,6 +373,59 @@ export async function moveWorksWithSameName(rootDir: string, dryRun: boolean): P
         await remove(sourceFolder, { recursive: true }).catch(() => {});
       }
     }
+  }
+}
+
+/**
+ * 移动作品包（匹配 Python 版本接口）
+ * 对应 Python: move_works_in_pack (bms_folder_bigpack.py:152-179)
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 移动作品包
+ * @description 将目录A下的作品，移动到目录B（自动合并）
+ * @frontend true
+ *
+ * @param {string} fromDir - 源目录路径
+ * @param {string} toDir - 目标目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ */
+export async function moveWorksInPackPython(
+  fromDir: string,
+  toDir: string,
+  dryRun: boolean
+): Promise<void> {
+  const entries = await readDir(fromDir);
+  let moveCount = 0;
+
+  for (const entry of entries) {
+    if (!entry.isDirectory || !entry.name) {
+      continue;
+    }
+
+    console.log(`Moving: ${entry.name}`);
+
+    const fromPath = `${fromDir}/${entry.name}`;
+    const toPath = `${toDir}/${entry.name}`;
+
+    if (dryRun) {
+      console.log(`[dry-run] Would move: ${fromPath} -> ${toPath}`);
+    } else {
+      await moveElementsAcrossDir(
+        fromPath,
+        toPath,
+        replaceOptionsFromPreset(ReplacePreset.UpdatePack)
+      );
+    }
+
+    moveCount++;
+  }
+
+  if (moveCount > 0) {
+    console.log(`Move ${moveCount} songs.`);
   }
 }
 

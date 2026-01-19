@@ -4,11 +4,11 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
-import { ProcessRunner } from './processRunner.js';
-import { ConcurrencyPool } from './concurrency.js';
-import { AUDIO_PRESETS } from './presets.js';
-import type { AudioProcessParams } from './types.js';
-import type { IProgressManager } from '../progress.js';
+import { ProcessRunner } from './processRunner';
+import { ConcurrencyPool } from './concurrency';
+import { AUDIO_PRESETS } from './presets';
+import type { AudioPreset, AudioProcessParams } from './types';
+import type { IProgressManager } from '../progress';
 
 /**
  * 音频转换器类
@@ -443,4 +443,44 @@ export class AudioConverter {
       return false;
     }
   }
+}
+
+/**
+ * 音频文件转换
+ * 对应 Python: transfer_audio (bms_folder_media.py:15-32)
+ *
+ * @command
+ * @category media
+ * @dangerous true
+ * @name 音频文件转换
+ * @description 转换BMS根目录下的音频文件
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {AudioPreset[]} presetNames - 目标格式预设名称
+ * @param {boolean} removeOriginFileWhenSuccess - 成功时删除原文件
+ * @param {boolean} removeOriginFileWhenFailed - 失败时删除原文件
+ * @param {boolean} skipOnFail - 遇到失败时跳过
+ * @param {IProgressManager} progressManager - 进度管理器（可选）
+ *
+ * @returns {Promise<void>}
+ */
+export async function transferAudio(
+  rootDir: string,
+  presetNames: AudioPreset[],
+  removeOriginFileWhenSuccess: boolean,
+  removeOriginFileWhenFailed: boolean,
+  skipOnFail: boolean,
+  progressManager?: IProgressManager
+): Promise<void> {
+  const { AUDIO_FILE_EXTS } = await import('../bms/scanner');
+  await AudioConverter.processBmsFolders({
+    rootDir,
+    inputExtensions: [...AUDIO_FILE_EXTS],
+    presetNames,
+    removeOnSuccess: removeOriginFileWhenSuccess,
+    removeOnFail: removeOriginFileWhenFailed,
+    skipOnFail,
+    progressManager,
+  });
 }

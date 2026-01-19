@@ -5,15 +5,15 @@
  * 每个命令都有其参数、描述、返回类型等信息
  */
 
-import type { CommandDefinition, CategoryMetadata } from '$lib/types/commands.js';
-import { CommandCategory, ParameterType } from '$lib/types/enums.js';
+import type { CategoryMetadata, CommandDefinition } from '../types/commands';
+import { CommandCategory, ParameterType } from '../types/enums';
 import {
-  BmsFolderSetNameType,
-  ReplacePreset,
   BMSEvent,
+  BmsFolderSetNameType,
   RemoveMediaPreset,
-} from '$lib/types/enums.js';
-import { GENERATED_COMMAND_REGISTRY } from './commandRegistry.generated.js';
+  ReplacePreset,
+} from '../types/enums';
+import { GENERATED_COMMAND_REGISTRY } from './commandRegistry.generated';
 
 /**
  * 分类元数据
@@ -104,8 +104,14 @@ export const CATEGORY_METADATA: Record<CommandCategory, CategoryMetadata> = {
  */
 const ENUM_OPTIONS_MAP: Record<string, Array<{ value: unknown; label: string }>> = {
   BmsFolderSetNameType: [
-    { value: BmsFolderSetNameType.ReplaceTitleArtist, label: '替换为 "Title [Artist]"' },
-    { value: BmsFolderSetNameType.AppendTitleArtist, label: '追加 " Title [Artist]"' },
+    {
+      value: BmsFolderSetNameType.ReplaceTitleArtist,
+      label: '替换为 "Title [Artist]"',
+    },
+    {
+      value: BmsFolderSetNameType.AppendTitleArtist,
+      label: '追加 " Title [Artist]"',
+    },
     { value: BmsFolderSetNameType.AppendArtist, label: '追加 " [Artist]"' },
   ],
   ReplacePreset: [
@@ -121,7 +127,10 @@ const ENUM_OPTIONS_MAP: Record<string, Array<{ value: unknown; label: string }>>
     { value: BMSEvent.LetsBMSEdit4, label: 'LetsBMSEdit4' },
   ],
   RemoveMediaPreset: [
-    { value: RemoveMediaPreset.Oraja, label: '完整预设（推荐用于 beatoraja/Qwilight）' },
+    {
+      value: RemoveMediaPreset.Oraja,
+      label: '完整预设（推荐用于 beatoraja/Qwilight）',
+    },
     { value: RemoveMediaPreset.WavFillFlac, label: '简单预设：wav -> flac' },
     { value: RemoveMediaPreset.MpgFillWmv, label: '简单预设：mpg -> wmv' },
   ],

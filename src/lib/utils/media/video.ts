@@ -4,11 +4,11 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
-import { ProcessRunner } from './processRunner.js';
-import { ConcurrencyPool } from './concurrency.js';
-import { VIDEO_PRESETS } from './presets.js';
-import type { VideoProcessParams, VideoInfo } from './types.js';
-import type { IProgressManager } from '../progress.js';
+import { ProcessRunner } from './processRunner';
+import { ConcurrencyPool } from './concurrency';
+import { VIDEO_PRESETS } from './presets';
+import type { VideoInfo, VideoPreset, VideoProcessParams } from './types';
+import type { IProgressManager } from '../progress';
 
 /**
  * 视频转换器类
@@ -464,4 +464,44 @@ export class VideoConverter {
       return false;
     }
   }
+}
+
+/**
+ * 视频文件转换
+ * 对应 Python: transfer_video (bms_folder_media.py:35-52)
+ *
+ * @command
+ * @category media
+ * @dangerous true
+ * @name 视频文件转换
+ * @description 转换BMS根目录下的视频文件
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {VideoPreset[]} presetNames - 目标格式预设名称
+ * @param {boolean} removeOriginFile - 成功时删除原文件
+ * @param {boolean} removeExistingTargetFile - 删除已存在的目标文件
+ * @param {boolean} usePrefered - 使用推荐预设
+ * @param {IProgressManager} progressManager - 进度管理器（可选）
+ *
+ * @returns {Promise<void>}
+ */
+export async function transferVideo(
+  rootDir: string,
+  presetNames: VideoPreset[],
+  removeOriginFile: boolean,
+  removeExistingTargetFile: boolean,
+  usePrefered: boolean,
+  progressManager?: IProgressManager
+): Promise<void> {
+  const { VIDEO_FILE_EXTS } = await import('../bms/scanner');
+  await VideoConverter.processBmsFolders({
+    rootDir,
+    inputExtensions: [...VIDEO_FILE_EXTS],
+    presetNames,
+    removeOriginal: removeOriginFile,
+    removeExisting: removeExistingTargetFile,
+    usePreferred: usePrefered,
+    progressManager,
+  });
 }

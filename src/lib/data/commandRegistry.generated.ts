@@ -67,6 +67,100 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'rawpack_unzip_numeric_to_bms_folder',
+    name: '解压编号压缩包',
+    category: CommandCategory.Rawpack,
+    description: `将赋予编号的文件，解压或放置至指定根目录下，带对应编号的作品目录（自动处理文件夹嵌套）`,
+    parameters: [
+      {
+        name: 'packDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 压缩包目录`
+      },
+      {
+        name: 'cacheDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 缓存目录`
+      },
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录`
+      },
+      {
+        name: 'confirm',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 是否确认`
+      },
+      {
+        name: 'replacePreset',
+        type: ParameterType.Enum,
+        typeString: 'ReplacePreset',
+        required: true,
+        description: `- 文件替换策略`,
+        defaultValue: "ReplacePreset.Default"
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'rawpack_unzip_with_name_to_bms_folder',
+    name: '解压命名压缩包',
+    category: CommandCategory.Rawpack,
+    description: `将文件，解压或放置至指定根目录下，对应原文件名的作品目录（自动处理文件夹嵌套）`,
+    parameters: [
+      {
+        name: 'packDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 压缩包目录`
+      },
+      {
+        name: 'cacheDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 缓存目录`
+      },
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录`
+      },
+      {
+        name: 'confirm',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 是否确认`
+      },
+      {
+        name: 'replacePreset',
+        type: ParameterType.Enum,
+        typeString: 'ReplacePreset',
+        required: true,
+        description: `- 文件替换策略`,
+        defaultValue: "ReplacePreset.Default"
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
     id: 'root_split_folders_with_first_char',
     name: '按首字符拆分文件夹',
     category: CommandCategory.BigPack,
@@ -85,6 +179,131 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'boolean',
         required: true,
         description: `- 是否模拟运行`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_undo_split_pack',
+    name: '撤销拆分',
+    category: CommandCategory.BigPack,
+    description: `撤销按首字符拆分的操作，将所有子文件夹移回根目录`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_works_in_pack',
+    name: '移动包内作品',
+    category: CommandCategory.BigPack,
+    description: `将目录A下的作品，移动到目录B（自动合并）`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'targetPackName',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 目标包名称`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_out_works',
+    name: '移出一层目录',
+    category: CommandCategory.BigPack,
+    description: `将子包中的作品移出，合并到根目录`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'sourcePackName',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 源包名称`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_works_in_pack_python',
+    name: '移动作品包',
+    category: CommandCategory.BigPack,
+    description: `将目录A下的作品，移动到目录B（自动合并）`,
+    parameters: [
+      {
+        name: 'fromDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 源目录路径`
+      },
+      {
+        name: 'toDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 目标目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
         defaultValue: true
       }
     ],
@@ -292,6 +511,99 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'root_event_check_num_folder',
+    name: '检查编号文件夹',
+    category: CommandCategory.RootEvent,
+    description: `检查各个编号对应的文件夹是否存在`,
+    parameters: [
+      {
+        name: 'dir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 目录路径`
+      },
+      {
+        name: 'max',
+        type: ParameterType.Number,
+        typeString: 'number',
+        required: true,
+        description: `- 最大编号`
+      }
+    ],
+    returnType: 'string[]',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_event_create_num_folders',
+    name: '创建编号文件夹',
+    category: CommandCategory.RootEvent,
+    description: `创建只带有编号的空文件夹`,
+    parameters: [
+      {
+        name: 'dir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 目录路径`
+      },
+      {
+        name: 'max',
+        type: ParameterType.Number,
+        typeString: 'number',
+        required: true,
+        description: `- 最大编号`
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_event_generate_work_info_table',
+    name: '生成作品信息表',
+    category: CommandCategory.RootEvent,
+    description: `生成活动作品的xlsx表格数据`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      }
+    ],
+    returnType: 'WorkInfoRow[]',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_event_jump_to_work_info',
+    name: '跳转至作品目录',
+    category: CommandCategory.BMSEvent,
+    description: `打开浏览器跳转到BMS活动作品目录页面`,
+    parameters: [
+      {
+        name: 'event',
+        type: ParameterType.Enum,
+        typeString: 'BMSEvent',
+        required: true,
+        description: `- BMS 活动类型`
+      },
+      {
+        name: 'workIds',
+        type: ParameterType.NumberArray,
+        typeString: 'number[]',
+        required: false,
+        description: `- 作品 ID 列表（可选，为空时跳转到活动列表）`
+      }
+    ],
+    returnType: 'void',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
     id: 'remove_empty_folders',
     name: '删除空文件夹',
     category: CommandCategory.FS,
@@ -435,6 +747,112 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         required: true,
         description: `- 清理规则预设`,
         defaultValue: "RemoveMediaPreset.Oraja"
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_transfer_audio',
+    name: '音频文件转换',
+    category: CommandCategory.Media,
+    description: `转换BMS根目录下的音频文件`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'presetNames',
+        type: ParameterType.Enum,
+        typeString: 'AudioPreset[]',
+        required: true,
+        description: `- 目标格式预设名称`
+      },
+      {
+        name: 'removeOriginFileWhenSuccess',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 成功时删除原文件`
+      },
+      {
+        name: 'removeOriginFileWhenFailed',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 失败时删除原文件`
+      },
+      {
+        name: 'skipOnFail',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 遇到失败时跳过`
+      },
+      {
+        name: 'progressManager',
+        type: ParameterType.Enum,
+        typeString: 'IProgressManager',
+        required: false,
+        description: `- 进度管理器（可选）`
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'work_transfer_video',
+    name: '视频文件转换',
+    category: CommandCategory.Media,
+    description: `转换BMS根目录下的视频文件`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'presetNames',
+        type: ParameterType.Enum,
+        typeString: 'VideoPreset[]',
+        required: true,
+        description: `- 目标格式预设名称`
+      },
+      {
+        name: 'removeOriginFile',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 成功时删除原文件`
+      },
+      {
+        name: 'removeExistingTargetFile',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 删除已存在的目标文件`
+      },
+      {
+        name: 'usePrefered',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 使用推荐预设`
+      },
+      {
+        name: 'progressManager',
+        type: ParameterType.Enum,
+        typeString: 'IProgressManager',
+        required: false,
+        description: `- 进度管理器（可选）`
       }
     ],
     returnType: 'void',
@@ -734,4 +1152,4 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 28;
+export const COMMAND_COUNT = 40;

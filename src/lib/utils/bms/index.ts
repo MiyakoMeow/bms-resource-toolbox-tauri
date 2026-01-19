@@ -3,8 +3,8 @@
  * 导出所有公共 API
  */
 
-export * from './types.js';
-export * from './parser.js';
-export * from './scanner.js';
-export * from './encoding.js';
-export * from './work.js';
+export * from './types';
+export * from './parser';
+export * from './scanner';
+export * from './encoding';
+export * from './work';

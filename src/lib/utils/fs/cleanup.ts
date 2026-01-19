@@ -3,7 +3,7 @@
  */
 
 import { readDir, remove } from '@tauri-apps/plugin-fs';
-import { isDirHavingFile } from './compare.js';
+import { isDirHavingFile } from './compare';
 
 /**
  * 递归删除指定目录下的所有空文件夹

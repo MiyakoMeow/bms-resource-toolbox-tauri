@@ -4,8 +4,8 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import type { BmsOutput } from './types.js';
-import { BmsParser } from './parser.js';
+import type { BmsOutput } from './types';
+import { BmsParser } from './parser';
 
 /**
  * BMS 文件扩展名

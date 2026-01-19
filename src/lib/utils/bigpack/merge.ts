@@ -3,12 +3,8 @@
  * 从 Python 代码迁移：legacy/options/bms_folder_bigpack.py 中的 merge_split_folders 函数
  */
 
-import { readDir, exists, remove } from '@tauri-apps/plugin-fs';
-import {
-  moveElementsAcrossDir,
-  replaceOptionsFromPreset,
-  ReplacePreset,
-} from '$lib/utils/fs/moving.js';
+import { exists, readDir, remove } from '@tauri-apps/plugin-fs';
+import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 
 /**
  * 合并拆分的文件夹（将 `Title [Artist]` 合并到 `Title` 中）

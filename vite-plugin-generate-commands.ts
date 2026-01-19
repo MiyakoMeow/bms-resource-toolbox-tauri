@@ -9,6 +9,7 @@ import { type Plugin } from 'vite';
 import ts from 'typescript';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 /**
  * 命令元数据
@@ -500,7 +501,8 @@ ${parameters}
   private formatParameters(parameters: ParameterMetadata[]): string {
     return parameters
       .map(
-        (param) => `      {
+        (param) =>
+          `      {
         name: '${param.name}',
         type: ${this.mapTypeToParameterType(param.typeString, param.name)},
         typeString: '${param.typeString}',
@@ -623,7 +625,9 @@ ${parameters}
           /^[A-Z]/.test(param.typeString) &&
           !param.typeString.includes('|')
         ) {
-          typeImports.add(param.typeString);
+          // 移除数组语法（如 AudioPreset[] -> AudioPreset）
+          const cleanType = param.typeString.replace(/\[\]$/, '');
+          typeImports.add(cleanType);
         }
       });
     });

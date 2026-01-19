@@ -2,7 +2,7 @@
  * 文件比较工具
  */
 
-import { isFileSameContent as checkFileSameContent } from './hash.js';
+import { isFileSameContent as checkFileSameContent } from './hash';
 import { readDir } from '@tauri-apps/plugin-fs';
 
 /**
@@ -40,7 +40,7 @@ export async function isDirHavingFile(dirPath: string): Promise<boolean> {
 /**
  * 导出文件哈希比较函数
  */
-export { isFileSameContent, calculateFileHash } from './hash.js';
+export { calculateFileHash, isFileSameContent } from './hash';
 
 /**
  * 比较两个目录的文件差异
@@ -79,7 +79,10 @@ export async function compareDirectories(
 
       const { stat } = await import('@tauri-apps/plugin-fs');
       const meta = await stat(`${dirA}/${entry.name}`);
-      mapA.set(entry.name, { size: meta.size, modified: meta.mtime?.getTime() });
+      mapA.set(entry.name, {
+        size: meta.size,
+        modified: meta.mtime?.getTime(),
+      });
     }
 
     // 构建 B 的文件映射

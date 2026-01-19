@@ -3,5 +3,5 @@
  * 导出所有公共 API
  */
 
-export * from './batch.js';
-export * from './similarity.js';
+export * from './batch';
+export * from './similarity';

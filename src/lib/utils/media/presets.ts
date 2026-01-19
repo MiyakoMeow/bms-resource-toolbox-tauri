@@ -3,8 +3,8 @@
  * 从 Rust 代码迁移：src-tauri/src/media/audio.rs 和 video.rs
  */
 
-import type { RemoveMediaRule } from './types.js';
-import { RemoveMediaPreset } from '$lib/types/enums.js';
+import type { RemoveMediaRule } from './types';
+import { RemoveMediaPreset } from '../../types/enums';
 
 /**
  * 音频预设配置

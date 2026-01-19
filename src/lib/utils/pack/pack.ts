@@ -4,17 +4,17 @@
  */
 
 import { mkdir, remove } from '@tauri-apps/plugin-fs';
-import { AudioConverter } from '$lib/utils/media/audio.js';
-import { MediaCleaner } from '$lib/utils/media/cleanup.js';
-import { VideoConverter } from '$lib/utils/media/video.js';
-import { RemoveMediaPreset } from '$lib/types/enums.js';
-import { setNameByBms, BmsFolderSetNameType } from '$lib/utils/work/rename.js';
-import { ReplacePreset } from '$lib/utils/fs/moving.js';
-import { copyNumberedWorkdirNames } from '$lib/utils/root/batch.js';
-import { syncFolder, presetForAppend } from '$lib/utils/fs/sync.js';
-import { removeEmptyFolders } from '$lib/utils/fs/cleanup.js';
-import { AudioPreset, VideoPreset } from '$lib/utils/media/types.js';
-import type { IProgressManager } from '$lib/utils/progress.js';
+import { AudioConverter } from '../media/audio';
+import { MediaCleaner } from '../media/cleanup';
+import { VideoConverter } from '../media/video';
+import { RemoveMediaPreset } from '../../types/enums';
+import { BmsFolderSetNameType, setNameByBms } from '../work/rename';
+import { ReplacePreset } from '../fs/moving';
+import { copyNumberedWorkdirNames } from '../root/batch';
+import { presetForAppend, syncFolder } from '../fs/sync';
+import { removeEmptyFolders } from '../fs/cleanup';
+import { AudioPreset, VideoPreset } from '../media/types';
+import type { IProgressManager } from '../progress';
 
 /**
  * Pack 生成脚本：Raw pack -> HQ pack
@@ -28,7 +28,7 @@ export async function setupRawpackToHq(packDir: string, rootDir: string): Promis
   const cacheDir = `${rootDir}/CacheDir`;
   await mkdir(cacheDir, { recursive: true });
 
-  const { unzipNumericToBmsFolder } = await import('$lib/utils/rawpack/unzip.js');
+  const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
   await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
 
   // 检查缓存目录是否为空，删除如果为空
@@ -86,7 +86,7 @@ export async function updateRawpackToHq(
   const cacheDir = `${rootDir}/CacheDir`;
   await mkdir(cacheDir, { recursive: true });
 
-  const { unzipNumericToBmsFolder } = await import('$lib/utils/rawpack/unzip.js');
+  const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
   await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
 
   // 2. 同步文件夹名称

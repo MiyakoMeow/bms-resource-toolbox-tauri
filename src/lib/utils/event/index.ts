@@ -3,5 +3,5 @@
  * 导出所有公共 API
  */
 
-export * from './folder.js';
-export * from './table.js';
+export * from './folder';
+export * from './table';

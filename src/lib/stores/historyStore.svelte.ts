@@ -4,7 +4,7 @@
  * 使用 Svelte 5 Runes 管理命令执行历史
  */
 
-import type { CommandExecution } from '$lib/types/commands.js';
+import type { CommandExecution } from '../types/commands';
 
 class HistoryStore {
   /** 执行历史列表 */

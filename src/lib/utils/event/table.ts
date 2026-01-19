@@ -4,7 +4,7 @@
  */
 
 import { writeFile } from '@tauri-apps/plugin-fs';
-import type { WorkInfoRow } from './folder.js';
+import type { WorkInfoRow } from './folder';
 
 /**
  * 生成 Excel 工作信息表

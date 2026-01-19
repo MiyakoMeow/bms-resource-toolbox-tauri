@@ -3,12 +3,12 @@
  * 导出所有公共 API
  */
 
-export * from './hash.js';
-export * from './path.js';
-export * from './archive.js';
-export * from './compare.js';
-export * from './cleanup.js';
-export * from './similarity.js';
-export * from './moving.js';
-export * from './sync.js';
-export * from './name.js';
+export * from './hash';
+export * from './path';
+export * from './archive';
+export * from './compare';
+export * from './cleanup';
+export * from './similarity';
+export * from './moving';
+export * from './sync';
+export * from './name';

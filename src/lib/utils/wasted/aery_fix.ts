@@ -7,12 +7,8 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import {
-  moveElementsAcrossDir,
-  replaceOptionsFromPreset,
-  ReplacePreset,
-} from '$lib/utils/fs/moving.js';
-import { calculateSimilarity } from '$lib/utils/fs/similarity.js';
+import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
+import { calculateSimilarity } from '../fs/similarity';
 
 /**
  * Aery 标签作品修复参数

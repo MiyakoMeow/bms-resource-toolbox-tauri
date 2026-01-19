@@ -88,8 +88,7 @@ export async function setFileModificationTime(
       if (navigator.platform?.toLowerCase().includes('win')) {
         const ps1Script = `(Get-Item "${targetPath}").LastWriteTime = Get-Date "${timeString}"`;
         await Command.create('powershell', ['-Command', ps1Script]).execute();
-      }
-      // macOS/Linux: 使用 touch 命令
+      } // macOS/Linux: 使用 touch 命令
       else {
         const touchDate = new Date(timestamp).toISOString();
         await Command.create('touch', ['-d', touchDate, targetPath]).execute();

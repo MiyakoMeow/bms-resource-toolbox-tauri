@@ -2,8 +2,8 @@
  * 跨目录文件移动工具（含冲突处理）
  */
 
-import { readDir, rename, stat, exists, remove } from '@tauri-apps/plugin-fs';
-import { isFileSameContent, isDirHavingFile } from './compare.js';
+import { exists, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
+import { isDirHavingFile, isFileSameContent } from './compare';
 
 /**
  * 替换操作类型
@@ -66,7 +66,7 @@ function replaceOptionsUpdatePack(): ReplaceOptions {
  * 获取特定文件的替换策略
  */
 async function getActionForPath(options: ReplaceOptions, filePath: string): Promise<ReplaceAction> {
-  const { getFileExtension } = await import('./path.js');
+  const { getFileExtension } = await import('./path');
   const ext = getFileExtension(filePath);
   return options.ext[ext] ?? options.default;
 }
@@ -301,7 +301,7 @@ async function moveFile(src: string, dst: string, options: ReplaceOptions): Prom
  */
 async function moveFileRename(src: string, dstDir: string): Promise<void> {
   const srcFileName = src.split('/').pop() || src.split('\\').pop() || 'file';
-  const { getFileStem, getFileExtension } = await import('./path.js');
+  const { getFileStem, getFileExtension } = await import('./path');
 
   const stem = getFileStem(srcFileName);
   const ext = getFileExtension(srcFileName);

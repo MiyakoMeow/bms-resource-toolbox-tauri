@@ -5,34 +5,38 @@
  * 从 Rust 代码迁移至前端实现
  */
 
-import { MediaProbe } from './probe.js';
-import { MediaCleaner } from './cleanup.js';
+import { MediaProbe } from './probe';
+import { MediaCleaner } from './cleanup';
 
 // 类型定义
 export type {
-  ProcessResult,
   AudioProcessParams,
-  VideoProcessParams,
   MediaCleanupParams,
+  ProcessResult,
   RemoveMediaRule,
   VideoInfo,
-} from './types.js';
+  VideoProcessParams,
+} from './types';
 
 // 枚举（既是类型也是值）
-export { AudioPreset, VideoPreset } from './types.js';
+export { AudioPreset, VideoPreset } from './types';
 
 // 预设配置
-export { AUDIO_PRESETS, VIDEO_PRESETS, REMOVE_MEDIA_RULES, MEDIA_EXT_LIST } from './presets.js';
+export { AUDIO_PRESETS, MEDIA_EXT_LIST, REMOVE_MEDIA_RULES, VIDEO_PRESETS } from './presets';
 
 // 核心工具类
-export { ProcessRunner } from './processRunner.js';
-export { ConcurrencyPool } from './concurrency.js';
+export { ProcessRunner } from './processRunner';
+export { ConcurrencyPool } from './concurrency';
 
 // 功能模块
-export { AudioConverter } from './audio.js';
-export { VideoConverter } from './video.js';
-export { MediaCleaner } from './cleanup.js';
-export { MediaProbe } from './probe.js';
+export { AudioConverter } from './audio';
+export { VideoConverter } from './video';
+export { MediaCleaner } from './cleanup';
+export { MediaProbe } from './probe';
+
+// 功能函数
+export { transferAudio } from './audio';
+export { transferVideo } from './video';
 
 export const { getMediaInfo, getVideoInfo, getVideoSize, getMediaDuration } = MediaProbe;
 export const { removeZeroSizedMediaFiles, removeUnneedMediaFiles } = MediaCleaner;

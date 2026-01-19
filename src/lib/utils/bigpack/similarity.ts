@@ -4,7 +4,7 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import { stringSimilarity } from '$lib/utils/fs/similarity.js';
+import { stringSimilarity } from '../fs/similarity';
 
 /**
  * 扫描相似文件夹名称
@@ -56,7 +56,9 @@ export async function scanSimilarFolders(
     });
 
     console.log(
-      `发现相似项：${formerDirName} <=> ${currentDirName} (相似度: ${(similarity * 100).toFixed(2)}%)`
+      `发现相似项：${formerDirName} <=> ${currentDirName} (相似度: ${(similarity * 100).toFixed(
+        2
+      )}%)`
     );
   }
 

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
   "imports": {
     "@eslint/compat": "npm:@eslint/compat@^2.0.0",
     "@eslint/core": "npm:@eslint/core@^1.0.0",
@@ -49,6 +50,12 @@
     "tauri": "tauri"
   },
   "exclude": ["target/", "build/", ".svelte-kit/"],
+  "lint": {
+    "exclude": ["**/*"]
+  },
+  "fmt": {
+    "exclude": ["**/*"]
+  },
   "nodeModulesDir": "auto",
   "lock": true
 }

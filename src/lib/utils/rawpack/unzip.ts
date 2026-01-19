@@ -2,16 +2,28 @@
  * 原始包解压工具
  */
 
-import { readDir, exists, mkdir, rename } from '@tauri-apps/plugin-fs';
-import { ArchiveExtractor } from '$lib/utils/fs/archive.js';
-import {
-  moveElementsAcrossDir,
-  replaceOptionsFromPreset,
-  ReplacePreset,
-} from '$lib/utils/fs/moving.js';
+import { exists, mkdir, readDir, rename } from '@tauri-apps/plugin-fs';
+import { ArchiveExtractor } from '../fs/archive';
+import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 
 /**
  * 解压数字编号压缩包到 BMS 文件夹
+ * 对应 Python: unzip_numeric_to_bms_folder (rawpack.py:13-80)
+ *
+ * @command
+ * @category rawpack
+ * @dangerous true
+ * @name 解压编号压缩包
+ * @description 将赋予编号的文件，解压或放置至指定根目录下，带对应编号的作品目录（自动处理文件夹嵌套）
+ * @frontend true
+ *
+ * @param {string} packDir - 压缩包目录
+ * @param {string} cacheDir - 缓存目录
+ * @param {string} rootDir - 根目录
+ * @param {boolean} confirm - 是否确认
+ * @param {ReplacePreset} replacePreset - 文件替换策略
+ *
+ * @returns {Promise<void>}
  */
 export async function unzipNumericToBmsFolder(
   packDir: string,
@@ -78,6 +90,22 @@ export async function unzipNumericToBmsFolder(
 
 /**
  * 解压命名压缩包到 BMS 文件夹
+ * 对应 Python: unzip_with_name_to_bms_folder (rawpack.py:82-141)
+ *
+ * @command
+ * @category rawpack
+ * @dangerous true
+ * @name 解压命名压缩包
+ * @description 将文件，解压或放置至指定根目录下，对应原文件名的作品目录（自动处理文件夹嵌套）
+ * @frontend true
+ *
+ * @param {string} packDir - 压缩包目录
+ * @param {string} cacheDir - 缓存目录
+ * @param {string} rootDir - 根目录
+ * @param {boolean} confirm - 是否确认
+ * @param {ReplacePreset} replacePreset - 文件替换策略
+ *
+ * @returns {Promise<void>}
  */
 export async function unzipWithNameToBmsFolder(
   packDir: string,

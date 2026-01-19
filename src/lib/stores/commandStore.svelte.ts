@@ -4,7 +4,7 @@
  * 使用 Svelte 5 Runes 管理全局命令状态
  */
 
-import type { CommandCategory } from '$lib/types/enums.js';
+import type { CommandCategory } from '../types/enums';
 
 class CommandStore {
   /** 当前选中的命令分类 */

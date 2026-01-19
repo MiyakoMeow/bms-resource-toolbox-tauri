@@ -4,7 +4,7 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import { getFileExtension, getFileStem } from './path.js';
+import { getFileExtension, getFileStem } from './path';
 
 /**
  * 媒体文件扩展名列表

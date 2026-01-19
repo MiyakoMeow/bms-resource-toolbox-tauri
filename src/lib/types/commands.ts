@@ -4,7 +4,7 @@
  * 定义了命令系统的核心接口和类型
  */
 
-import type { ParameterType, CommandCategory } from './enums.js';
+import type { CommandCategory, ParameterType } from './enums';
 
 /**
  * 命令参数定义

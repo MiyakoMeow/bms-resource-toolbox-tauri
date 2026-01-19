@@ -75,7 +75,9 @@ export class PriorityDecoder {
         const maxLength = Math.min(5, byteData.length - start);
         for (let length = 1; length < maxLength; length++) {
           try {
-            const char = decoder.decode(byteData.slice(start, start + length), { stream: true });
+            const char = decoder.decode(byteData.slice(start, start + length), {
+              stream: true,
+            });
             return [char, length];
           } catch {
             // 解码失败，继续尝试下一个长度

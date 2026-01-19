@@ -6,7 +6,7 @@
  */
 
 import type { CommandResult } from '$lib/types/api.js';
-import type { AeryFixParams, BmsFolderSetNameType, IProgressManager, RemoveMediaPreset, ReplacePreset, SetFileNumParams } from '$lib/types/enums.js';
+import type { AeryFixParams, AudioPreset, BMSEvent, BmsFolderSetNameType, IProgressManager, RemoveMediaPreset, ReplacePreset, SetFileNumParams, VideoPreset } from '$lib/types/enums.js';
 
 /**
  * 自动生成的前端命令执行函数
@@ -34,9 +34,45 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: result };
     }
 
+    if (commandId === 'rawpack_unzip_numeric_to_bms_folder') {
+      const { unzipNumericToBmsFolder } = await import('$lib/utils/rawpack/index.js');
+      await unzipNumericToBmsFolder(params.packDir as string, params.cacheDir as string, params.rootDir as string, params.confirm as boolean, params.replacePreset as ReplacePreset);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'rawpack_unzip_with_name_to_bms_folder') {
+      const { unzipWithNameToBmsFolder } = await import('$lib/utils/rawpack/index.js');
+      await unzipWithNameToBmsFolder(params.packDir as string, params.cacheDir as string, params.rootDir as string, params.confirm as boolean, params.replacePreset as ReplacePreset);
+      return { success: true, data: undefined };
+    }
+
     if (commandId === 'root_split_folders_with_first_char') {
       const { splitFoldersWithFirstChar } = await import('$lib/utils/bigpack/split.js');
       await splitFoldersWithFirstChar(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_undo_split_pack') {
+      const { undoSplitPack } = await import('$lib/utils/bigpack/split.js');
+      await undoSplitPack(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_works_in_pack') {
+      const { moveWorksInPack } = await import('$lib/utils/bigpack/split.js');
+      await moveWorksInPack(params.rootDir as string, params.targetPackName as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_out_works') {
+      const { moveOutWorks } = await import('$lib/utils/bigpack/split.js');
+      await moveOutWorks(params.rootDir as string, params.sourcePackName as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_works_in_pack_python') {
+      const { moveWorksInPackPython } = await import('$lib/utils/bigpack/split.js');
+      await moveWorksInPackPython(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
@@ -94,6 +130,30 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: result };
     }
 
+    if (commandId === 'root_event_check_num_folder') {
+      const { checkNumFolder } = await import('$lib/utils/event/folder.js');
+      const result = await checkNumFolder(params.dir as string, params.max as number);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'root_event_create_num_folders') {
+      const { createNumFolders } = await import('$lib/utils/event/folder.js');
+      await createNumFolders(params.dir as string, params.max as number);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_event_generate_work_info_table') {
+      const { generateWorkInfoTable } = await import('$lib/utils/event/folder.js');
+      const result = await generateWorkInfoTable(params.rootDir as string);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'root_event_jump_to_work_info') {
+      const { jumpToWorkInfo } = await import('$lib/utils/event/jumpToWorkInfo.js');
+      await jumpToWorkInfo(params.event as BMSEvent, params.workIds as number[]);
+      return { success: true, data: undefined };
+    }
+
     if (commandId === 'remove_empty_folders') {
       const { removeEmptyFolders } = await import('$lib/utils/fs/cleanup.js');
       await removeEmptyFolders(params.parentDir as string, params.dryRun as boolean);
@@ -133,6 +193,18 @@ export async function executeGeneratedFrontendCommand(
     if (commandId === 'work_remove_unneed_media_files') {
       const { removeUnneedMediaFiles } = await import('$lib/utils/media/index.js');
       await removeUnneedMediaFiles(params.rootDir as string, params.preset as RemoveMediaPreset);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'work_transfer_audio') {
+      const { transferAudio } = await import('$lib/utils/media/index.js');
+      await transferAudio(params.rootDir as string, params.presetNames as AudioPreset[], params.removeOriginFileWhenSuccess as boolean, params.removeOriginFileWhenFailed as boolean, params.skipOnFail as boolean, params.progressManager as IProgressManager);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'work_transfer_video') {
+      const { transferVideo } = await import('$lib/utils/media/index.js');
+      await transferVideo(params.rootDir as string, params.presetNames as VideoPreset[], params.removeOriginFile as boolean, params.removeExistingTargetFile as boolean, params.usePrefered as boolean, params.progressManager as IProgressManager);
       return { success: true, data: undefined };
     }
 
@@ -203,7 +275,13 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'is_dir_having_file',
   'wasted_fix',
   'rawpack_batch_rename_with_num',
+  'rawpack_unzip_numeric_to_bms_folder',
+  'rawpack_unzip_with_name_to_bms_folder',
   'root_split_folders_with_first_char',
+  'root_undo_split_pack',
+  'root_move_works_in_pack',
+  'root_move_out_works',
+  'root_move_works_in_pack_python',
   'root_move_works_with_same_name_to_siblings',
   'root_merge_split_folders',
   'root_scan_similar_folders',
@@ -213,6 +291,10 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'is_work_dir',
   'is_root_dir',
   'extract_work_name',
+  'root_event_check_num_folder',
+  'root_event_create_num_folders',
+  'root_event_generate_work_info_table',
+  'root_event_jump_to_work_info',
   'remove_empty_folders',
   'work_get_media_info',
   'work_get_video_info',
@@ -220,6 +302,8 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'work_get_media_duration',
   'work_remove_zero_sized_media_files',
   'work_remove_unneed_media_files',
+  'work_transfer_audio',
+  'work_transfer_video',
   'work_set_name_by_bms',
   'work_undo_set_name_by_bms',
   'work_append_artist_name_by_bms',

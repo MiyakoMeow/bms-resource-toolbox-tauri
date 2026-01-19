@@ -91,7 +91,10 @@ const config: Linter.Config[] = [
               body: [],
               tokens: [],
               comments: [],
-              loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } },
+              loc: {
+                start: { line: 1, column: 0 },
+                end: { line: 1, column: 0 },
+              },
               range: [0, 0],
               sourceType: 'module',
             },

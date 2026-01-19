@@ -3,6 +3,6 @@
  * 导出所有公共 API
  */
 
-export * from './split.js';
-export * from './merge.js';
-export * from './similarity.js';
+export * from './split';
+export * from './merge';
+export * from './similarity';

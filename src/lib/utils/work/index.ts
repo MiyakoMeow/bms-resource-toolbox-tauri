@@ -3,4 +3,4 @@
  * 导出所有公共 API
  */
 
-export * from './rename.js';
+export * from './rename';

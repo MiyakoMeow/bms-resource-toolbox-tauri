@@ -4,11 +4,14 @@
  * 定义了所有后端 Rust 枚举对应的 TypeScript 枚举类型
  */
 
-import type { IProgressManager } from '$lib/utils/progress.js';
-import type { AeryFixParams } from '$lib/utils/wasted/aery_fix.js';
-import type { SetFileNumParams } from '$lib/utils/rawpack/numbering.js';
+import type { IProgressManager } from '../utils/progress';
+import type { AeryFixParams } from '../utils/wasted/aery_fix';
+import type { SetFileNumParams } from '../utils/rawpack/numbering';
 
-export type { IProgressManager, AeryFixParams, SetFileNumParams };
+export type { AeryFixParams, IProgressManager, SetFileNumParams };
+
+export { AudioPreset } from '../utils/media/types';
+export { VideoPreset } from '../utils/media/types';
 
 /**
  * BMS 文件夹命名类型

@@ -3,8 +3,8 @@
  */
 
 import { readDir } from '@tauri-apps/plugin-fs';
-import { setNameByBms, undoSetNameByBms, BmsFolderSetNameType } from '$lib/utils/work/rename.js';
-import { ReplacePreset } from '$lib/utils/fs/moving.js';
+import { BmsFolderSetNameType, setNameByBms, undoSetNameByBms } from '../work/rename';
+import { ReplacePreset } from '../fs/moving';
 
 /**
  * 递归设置目录名（根目录版本）

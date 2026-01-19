@@ -3,8 +3,8 @@
  * 导出所有公共 API
  */
 
-import { AeryFix } from './aery_fix.js';
+import { AeryFix } from './aery_fix';
 
-export * from './aery_fix.js';
+export * from './aery_fix';
 
 export const { fix } = AeryFix;
