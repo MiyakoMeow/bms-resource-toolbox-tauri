@@ -70,6 +70,12 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'root_merge_folders_with_same_name_within_dir') {
+      const { mergeFoldersWithSameNameWithinDir } = await import('$lib/utils/bigpack/split.js');
+      await mergeFoldersWithSameNameWithinDir(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
     if (commandId === 'root_move_works_in_pack_python') {
       const { moveWorksInPackPython } = await import('$lib/utils/bigpack/split.js');
       await moveWorksInPackPython(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
@@ -79,6 +85,12 @@ export async function executeGeneratedFrontendCommand(
     if (commandId === 'root_move_works_with_same_name_to_siblings') {
       const { moveWorksWithSameNameToSiblings } = await import('$lib/utils/bigpack/split.js');
       await moveWorksWithSameNameToSiblings(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'root_move_works_with_same_name') {
+      const { moveWorksWithSameName } = await import('$lib/utils/bigpack/split.js');
+      await moveWorksWithSameName(params.fromDir as string, params.toDir as string, params.dryRun as boolean);
       return { success: true, data: undefined };
     }
 
@@ -281,8 +293,10 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'root_undo_split_pack',
   'root_move_works_in_pack',
   'root_move_out_works',
+  'root_merge_folders_with_same_name_within_dir',
   'root_move_works_in_pack_python',
   'root_move_works_with_same_name_to_siblings',
+  'root_move_works_with_same_name',
   'root_merge_split_folders',
   'root_scan_similar_folders',
   'read_and_parse_bms_file',

@@ -320,9 +320,21 @@ export async function moveOutWorks(
 }
 
 /**
- * 合并同名作品
+ * 合并同名作品（在同一目录内）
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 合并同名作品
+ * @description 合并同一目录中名称相同的文件夹
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
  */
-export async function moveWorksWithSameName(rootDir: string, dryRun: boolean): Promise<void> {
+export async function mergeFoldersWithSameNameWithinDir(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
   const nameMap = new Map<string, string[]>();
 
@@ -553,6 +565,136 @@ export async function moveWorksWithSameNameToSiblings(
     console.log(`  合并: '${fromName}' -> '${targetName}'`);
 
     await moveElementsAcrossDir(from, target, replaceOptionsFromPreset(ReplacePreset.Default));
+  }
+
+  console.log(`\n合并完成，共 ${pairs.length} 个操作`);
+}
+
+/**
+ * 合并同名作品到指定目录
+ * 对应 Python: move_works_with_same_name (bms_folder_bigpack.py:304-358)
+ *
+ * 将源文件夹中的子文件夹合并到目标文件夹中的对应子文件夹。
+ * 规则：
+ * 1. 对于 fromDir 中的每个子文件夹 A
+ * 2. 在 toDir 中查找名称包含 A 的子文件夹 B
+ * 3. 如果找到，将 A 的内容合并到 B 中
+ * 4. 递归处理子文件夹内的文件结构
+ *
+ * @command
+ * @category bigpack
+ * @dangerous true
+ * @name 合并同名作品
+ * @description 将源文件夹中名称相似的子文件夹合并到目标文件夹中的对应子文件夹
+ * @frontend true
+ *
+ * @param {string} fromDir - 源文件夹路径
+ * @param {string} toDir - 目标文件夹路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ *
+ * @example
+ * ```typescript
+ * // 假设有以下目录结构：
+ * // BOFTT_Original/
+ * //   001. Title1 [Artist1]/
+ * //   002. Title2 [Artist2]/
+ * // BOFTT_Update/
+ * //   001. Title1 [Artist1] v2/
+ * //   002. Title2 [Artist2] v2/
+ *
+ * // 运行后将把 Original 中的文件夹合并到 Update 中名称包含的文件夹
+ * await moveWorksWithSameName('D:/Packs/BOFTT_Original', 'D:/Packs/BOFTT_Update', false);
+ * ```
+ */
+export async function moveWorksWithSameName(
+  fromDir: string,
+  toDir: string,
+  dryRun: boolean
+): Promise<void> {
+  // 验证输入路径
+  try {
+    const fromMetadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(fromDir));
+    if (!fromMetadata.isDirectory) {
+      throw new Error(`源路径不是目录: ${fromDir}`);
+    }
+  } catch {
+    throw new Error(`源路径不存在或不是目录: ${fromDir}`);
+  }
+
+  try {
+    const toMetadata = await import('@tauri-apps/plugin-fs').then((fs) => fs.stat(toDir));
+    if (!toMetadata.isDirectory) {
+      throw new Error(`目标路径不是目录: ${toDir}`);
+    }
+  } catch {
+    throw new Error(`目标路径不存在或不是目录: ${toDir}`);
+  }
+
+  // 获取源目录中的所有直接子文件夹
+  const fromEntries = await readDir(fromDir);
+  const fromSubdirs = fromEntries.filter((e) => e.isDirectory && e.name).map((e) => e.name!);
+
+  console.log(`源目录 ${fromDir} 中有 ${fromSubdirs.length} 个子文件夹`);
+
+  // 获取目标目录中的所有直接子文件夹
+  const toEntries = await readDir(toDir);
+  const toSubdirs = toEntries.filter((e) => e.isDirectory && e.name).map((e) => e.name!);
+
+  console.log(`目标目录 ${toDir} 中有 ${toSubdirs.length} 个子文件夹`);
+
+  // 收集合并对： (fromDirName, fromDirPath, toDirName, toDirPath)
+  const pairs: Array<{ fromDirName: string; fromPath: string; toDirName: string; toPath: string }> = [];
+
+  // 遍历源目录的每个子文件夹
+  for (const fromDirName of fromSubdirs) {
+    const fromPath = `${fromDir}/${fromDirName}`;
+
+    // 查找匹配的目标子文件夹（名称包含源文件夹名）
+    for (const toDirName of toSubdirs) {
+      if (fromDirName === toDirName || toDirName.includes(fromDirName) || fromDirName.includes(toDirName)) {
+        const toPath = `${toDir}/${toDirName}`;
+        pairs.push({ fromDirName, fromPath, toDirName, toPath });
+        break;
+      }
+    }
+  }
+
+  if (pairs.length === 0) {
+    console.log('未找到可合并的文件夹对');
+    return;
+  }
+
+  console.log(`\n找到 ${pairs.length} 个合并操作：`);
+  for (const { fromDirName, toDirName } of pairs) {
+    console.log(`  ${fromDirName} => ${toDirName}`);
+  }
+
+  if (dryRun) {
+    console.log('\n[dry-run] 跳过实际合并操作');
+    return;
+  }
+
+  console.log('\n开始合并...');
+
+  // 将源文件夹内容合并到每个匹配的目标文件夹
+  for (const { fromDirName, fromPath, toDirName, toPath } of pairs) {
+    console.log(`  合并: '${fromDirName}' -> '${toDirName}'`);
+
+    await moveElementsAcrossDir(fromPath, toPath, replaceOptionsFromPreset(ReplacePreset.Default));
+
+    // 删除空源目录
+    try {
+      const fromEntriesAfter = await readDir(fromPath);
+      if (fromEntriesAfter.length === 0) {
+        const { remove } = await import('@tauri-apps/plugin-fs');
+        await remove(fromPath, { recursive: true });
+        console.log(`    已删除空目录: ${fromDirName}`);
+      }
+    } catch (error) {
+      console.warn(`    删除目录失败: ${fromDirName}`, error);
+    }
   }
 
   console.log(`\n合并完成，共 ${pairs.length} 个操作`);

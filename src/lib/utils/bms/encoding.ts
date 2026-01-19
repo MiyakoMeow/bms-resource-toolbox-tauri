@@ -189,5 +189,5 @@ export function getBmsFileStr(fileBytes: Uint8Array, encoding?: string): string 
 export async function readBmsFile(filePath: string, encoding?: string): Promise<string> {
   const { readFile } = await import('@tauri-apps/plugin-fs');
   const fileBytes = await readFile(filePath);
-  return getBmsFileStr(new Uint8Array(fileBytes as ArrayBuffer), encoding);
+  return getBmsFileStr(new Uint8Array(fileBytes as unknown as ArrayBufferLike), encoding);
 }

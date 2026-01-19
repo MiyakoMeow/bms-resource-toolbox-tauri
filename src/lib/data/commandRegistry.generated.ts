@@ -279,6 +279,32 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'root_merge_folders_with_same_name_within_dir',
+    name: '合并同名作品',
+    category: CommandCategory.BigPack,
+    description: `合并同一目录中名称相同的文件夹`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
     id: 'root_move_works_in_pack_python',
     name: '移动作品包',
     category: CommandCategory.BigPack,
@@ -323,6 +349,39 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'root_move_works_with_same_name',
+    name: '合并同名作品',
+    category: CommandCategory.BigPack,
+    description: `将源文件夹中名称相似的子文件夹合并到目标文件夹中的对应子文件夹`,
+    parameters: [
+      {
+        name: 'fromDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 源文件夹路径`
+      },
+      {
+        name: 'toDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 目标文件夹路径`
       },
       {
         name: 'dryRun',
@@ -1152,4 +1211,4 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 40;
+export const COMMAND_COUNT = 42;

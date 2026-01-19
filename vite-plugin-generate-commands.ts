@@ -779,7 +779,7 @@ interface GenerateCommandsPluginOptions {
 export function generateCommandsPlugin(options: GenerateCommandsPluginOptions = {}): Plugin {
   const { watch = true, generateOnStartup = true } = options;
 
-  let generateTimer: NodeJS.Timeout | undefined;
+  let generateTimer: number | undefined;
   let generator: CommandGenerator;
 
   /**
@@ -814,7 +814,7 @@ export function generateCommandsPlugin(options: GenerateCommandsPluginOptions = 
     }
     generateTimer = setTimeout(() => {
       runGenerator();
-    }, 500); // 500ms 防抖
+    }, 500) as unknown as number; // 500ms 防抖
   }
 
   return {
