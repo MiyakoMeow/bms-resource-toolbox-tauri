@@ -12,6 +12,13 @@ interface Props {
 
 let { param, value = $bindable(), disabled }: Props = $props();
 
+// 参数标签：显示参数描述（去掉 - 前缀），如果描述为空则使用参数名
+const paramLabel = $derived(
+  param.description
+    ? param.description.replace(/^- /, '')
+    : param.name
+);
+
 // 生成唯一的 input ID
 const inputId = $derived(`input-${param.name}-${Math.random().toString(36).substring(2, 9)}`);
 
@@ -43,10 +50,8 @@ $effect(() => {
     {#if param.required}
       <span class="text-red-400">*</span>
     {/if}
-    {param.name}
+    {paramLabel}
   </label>
-
-  <p class="text-xs text-white/50">{param.description}</p>
 
   {#if param.type === ParameterType.String}
     <input
