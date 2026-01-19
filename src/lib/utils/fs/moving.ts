@@ -3,7 +3,7 @@
  */
 
 import { exists, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
-import { isDirHavingFile, isFileSameContent } from './compare';
+import { isDirHavingContent, isFileSameContent } from './compare';
 
 /**
  * 替换操作类型
@@ -72,6 +72,26 @@ async function getActionForPath(options: ReplaceOptions, filePath: string): Prom
 }
 
 /**
+ * 检查目录中是否有被跳过的文件
+ */
+async function hasSkippedFiles(
+  currentFrom: string,
+  replaceOptions: ReplaceOptions
+): Promise<boolean> {
+  const entries = await readDir(currentFrom);
+  for (const entry of entries) {
+    if (!entry.name || entry.isDirectory) {
+      continue;
+    }
+    const action = await getActionForPath(replaceOptions, `${currentFrom}/${entry.name}`);
+    if (action === ReplaceAction.Skip) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * 递归移动目录内容
  */
 export async function moveElementsAcrossDir(
@@ -125,9 +145,10 @@ export async function moveElementsAcrossDir(
     // 将发现的子目录加入队列
     queue.push(...subdirs);
 
-    // 清理空目录
-    const hasFiles = await isDirHavingFile(currentFrom);
-    const skipCleanup = replaceOptions.default === ReplaceAction.Skip && hasFiles;
+    // 清理空目录（检查是否有任何内容：文件或目录）
+    const hasContent = await isDirHavingContent(currentFrom);
+    const skippedFiles = await hasSkippedFiles(currentFrom, replaceOptions);
+    const skipCleanup = hasContent || skippedFiles;
 
     if (!skipCleanup) {
       try {
@@ -310,7 +331,13 @@ async function moveFileRename(src: string, dstDir: string): Promise<void> {
   while (true) {
     count++;
 
-    const newName = count === 1 ? `${stem}.${ext}` : `${stem}.${count}.${ext}`;
+    const newName = ext
+      ? count === 1
+        ? `${stem}.${ext}`
+        : `${stem}.${count}.${ext}`
+      : count === 1
+        ? `${stem}`
+        : `${stem}.${count}`;
     const dst = `${dstDir.split('/').slice(0, -1).join('/')}/${newName}`;
 
     if (!(await exists(dst))) {

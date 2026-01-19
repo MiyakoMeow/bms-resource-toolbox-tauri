@@ -18,7 +18,8 @@ export function getFileExtension(filePath: string): string {
  * 获取文件名（不含扩展名）
  */
 export function getFileStem(filePath: string): string {
-  const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || filePath;
+  const parts = filePath.split(/[/\\]/);
+  const fileName = parts[parts.length - 1] || filePath;
   const lastDotIndex = fileName.lastIndexOf('.');
 
   if (lastDotIndex === -1) {
@@ -32,7 +33,8 @@ export function getFileStem(filePath: string): string {
  * 获取文件名（含扩展名）
  */
 export function getFileName(filePath: string): string {
-  return filePath.split('/').pop() || filePath.split('\\').pop() || filePath;
+  const parts = filePath.split(/[/\\]/);
+  return parts[parts.length - 1] || filePath;
 }
 
 /**

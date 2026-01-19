@@ -45,10 +45,10 @@ export class PriorityDecoder {
   constructor(encodingPriority: string[], final: string = 'utf-8') {
     this.encodingPriority = encodingPriority;
     this.codecs = new Map();
-    // 预加载所有编码的 TextDecoder
+    // 预加载所有编码的 TextDecoder（使用 fatal: true 启用严格错误处理）
     for (const enc of encodingPriority) {
       try {
-        this.codecs.set(enc, new TextDecoder(enc));
+        this.codecs.set(enc, new TextDecoder(enc, { fatal: true }));
       } catch (error) {
         console.warn(`Failed to create TextDecoder for encoding: ${enc}`, error);
       }
@@ -73,10 +73,10 @@ export class PriorityDecoder {
       try {
         // 尝试解码 1-4 个字节（日文编码通常不超过 4 字节）
         const maxLength = Math.min(5, byteData.length - start);
-        for (let length = 1; length < maxLength; length++) {
+        for (let length = 1; length <= maxLength; length++) {
           try {
             const char = decoder.decode(byteData.slice(start, start + length), {
-              stream: true,
+              stream: false,
             });
             return [char, length];
           } catch {

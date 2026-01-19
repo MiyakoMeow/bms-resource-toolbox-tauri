@@ -38,6 +38,30 @@ export async function isDirHavingFile(dirPath: string): Promise<boolean> {
 }
 
 /**
+ * 检查目录是否包含任何内容（文件或目录）
+ *
+ * @command
+ * @category fs
+ * @dangerous false
+ * @name 检查目录内容
+ * @description 检查目录是否包含任何内容（文件或目录）
+ * @frontend true
+ *
+ * @param {string} dirPath - 目录路径
+ *
+ * @returns {Promise<boolean>} 是否包含内容
+ */
+export async function isDirHavingContent(dirPath: string): Promise<boolean> {
+  try {
+    const entries = await readDir(dirPath);
+    return entries.length > 0;
+  } catch (error) {
+    console.error(`Failed to check directory: ${dirPath}`, error);
+    return false;
+  }
+}
+
+/**
  * 导出文件哈希比较函数
  */
 export { calculateFileHash, isFileSameContent } from './hash';

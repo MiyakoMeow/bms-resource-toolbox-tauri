@@ -84,9 +84,9 @@ export async function setFileModificationTime(
     try {
       const { Command } = await import('@tauri-apps/plugin-shell');
 
-      // Windows: 使用 PowerShell
+      // Windows: 使用 PowerShell（使用 -LiteralPath 防止路径注入）
       if (navigator.platform?.toLowerCase().includes('win')) {
-        const ps1Script = `(Get-Item "${targetPath}").LastWriteTime = Get-Date "${timeString}"`;
+        const ps1Script = `(Get-Item -LiteralPath "${targetPath}").LastWriteTime = Get-Date "${timeString}"`;
         await Command.create('powershell', ['-Command', ps1Script]).execute();
       } // macOS/Linux: 使用 touch 命令
       else {
@@ -112,10 +112,10 @@ export function getDateTimeTupleFromTimestamp(timestamp: number): DateTimeTuple 
   const date = new Date(timestamp);
 
   return {
-    year: date.getUTCFullYear(),
-    month: date.getUTCMonth() + 1,
-    day: date.getUTCDate(),
-    hour: date.getUTCHours(),
-    minute: date.getUTCMinutes(),
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: date.getHours(),
+    minute: date.getMinutes(),
   };
 }

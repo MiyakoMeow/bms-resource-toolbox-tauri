@@ -38,5 +38,9 @@ export { MediaProbe } from './probe';
 export { transferAudio } from './audio';
 export { transferVideo } from './video';
 
-export const { getMediaInfo, getVideoInfo, getVideoSize, getMediaDuration } = MediaProbe;
-export const { removeZeroSizedMediaFiles, removeUnneedMediaFiles } = MediaCleaner;
+export const getMediaInfo = MediaProbe.getMediaInfo.bind(MediaProbe);
+export const getVideoInfo = MediaProbe.getVideoInfo.bind(MediaProbe);
+export const getVideoSize = MediaProbe.getVideoSize.bind(MediaProbe);
+export const getMediaDuration = MediaProbe.getMediaDuration.bind(MediaProbe);
+export const removeZeroSizedMediaFiles = MediaCleaner.removeZeroSizedMediaFiles.bind(MediaCleaner);
+export const removeUnneedMediaFiles = MediaCleaner.removeUnneedMediaFiles.bind(MediaCleaner);

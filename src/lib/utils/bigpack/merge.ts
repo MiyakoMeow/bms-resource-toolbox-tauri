@@ -41,7 +41,7 @@ export async function mergeSplitFolders(rootDir: string, dryRun: boolean): Promi
       continue;
     }
 
-    const dirNameWithoutArtist = dirName.substring(0, bracketIndex - 1);
+    const dirNameWithoutArtist = dirName.substring(0, bracketIndex).trim();
 
     if (dirNameWithoutArtist.length === 0) {
       continue;

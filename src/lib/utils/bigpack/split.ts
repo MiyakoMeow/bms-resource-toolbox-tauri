@@ -5,7 +5,7 @@
 
 import { mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
-import { isDirHavingFile } from '../fs/compare';
+import { isDirHavingContent } from '../fs/compare';
 
 // 正则表达式
 const RE_JAPANESE_HIRAGANA = /[\u3040-\u309f]/;
@@ -109,8 +109,8 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 
   // 按首字符规则分组
   for (const entry of entries) {
-    if (entry.isDirectory || !entry.name) {
-      continue; // 跳过文件
+    if (!entry.isDirectory || !entry.name) {
+      continue; // 跳过文件，只处理目录
     }
 
     const groupName = findFirstCharRule(entry.name);
@@ -147,8 +147,8 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 
   // 移除原始文件夹（如果可能）
   if (!dryRun) {
-    const hasFile = await isDirHavingFile(rootDir);
-    if (!hasFile) {
+    const hasContent = await isDirHavingContent(rootDir);
+    if (!hasContent) {
       await remove(rootDir, { recursive: true });
     }
   }
@@ -173,13 +173,16 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
 
+  // 获取所有规则名称
+  const ruleNames = FIRST_CHAR_RULES.map((r) => r.name);
+
   for (const entry of entries) {
     if (!entry.isDirectory || !entry.name) {
       continue;
     }
 
-    // 检查是否为单字符目录名
-    if (entry.name.length !== 1) {
+    // 检查是否为规则定义的目录名（支持多字符如 "0-9", "ABCD", "平假名"）
+    if (!ruleNames.includes(entry.name)) {
       continue;
     }
 
@@ -203,7 +206,7 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
       }
     }
 
-    // 删除空的单字符目录
+    // 删除空的规则目录
     if (!dryRun) {
       await remove(charDir, { recursive: true });
     }
