@@ -38,15 +38,15 @@ $effect(() => {
 });
 </script>
 
-<div class="param-input">
-  <label class="param-label" for={inputId}>
+<div class="flex flex-col gap-2">
+  <label class="text-sm font-medium text-white/80" for={inputId}>
     {#if param.required}
-      <span class="required">*</span>
+      <span class="text-red-400">*</span>
     {/if}
     {param.name}
   </label>
 
-  <p class="param-desc">{param.description}</p>
+  <p class="text-xs text-white/50">{param.description}</p>
 
   {#if param.type === ParameterType.String}
     <input
@@ -55,18 +55,24 @@ $effect(() => {
       bind:value
       {disabled}
       placeholder="请输入..."
-      class="input-text"
+      class="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white/90 placeholder:text-white/40 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:opacity-50"
     />
   {:else if param.type === ParameterType.Number}
-    <input id={inputId} type="number" bind:value {disabled} class="input-text" />
+    <input
+      id={inputId}
+      type="number"
+      bind:value
+      {disabled}
+      class="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white/90 placeholder:text-white/40 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:opacity-50"
+    />
   {:else if param.type === ParameterType.Boolean}
-    <label class="checkbox-label">
+    <label class="flex cursor-pointer items-center gap-2 select-none">
       <input
         id={inputId}
         type="checkbox"
         bind:checked={boolValue}
         {disabled}
-        class="input-checkbox"
+        class="h-5 w-5 rounded-sm border border-white/20 bg-white/10 accent-purple-500"
       />
       <span>{boolValue ? '是' : '否'}</span>
     </label>
@@ -77,82 +83,20 @@ $effect(() => {
   {:else if param.type === ParameterType.Directory}
     <FilePicker bind:value={stringValue} {inputId} mode="directory" {disabled} />
   {:else if param.type === ParameterType.StringArray}
-    <textarea id={inputId} bind:value {disabled} placeholder="每行一个值" class="input-textarea"
+    <textarea
+      id={inputId}
+      bind:value
+      {disabled}
+      placeholder="每行一个值"
+      class="min-h-20 w-full resize-y rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white/90 placeholder:text-white/40 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:opacity-50"
     ></textarea>
   {:else if param.type === ParameterType.NumberArray}
-    <textarea id={inputId} bind:value {disabled} placeholder="每行一个数字" class="input-textarea"
+    <textarea
+      id={inputId}
+      bind:value
+      {disabled}
+      placeholder="每行一个数字"
+      class="min-h-20 w-full resize-y rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white/90 placeholder:text-white/40 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:opacity-50"
     ></textarea>
   {/if}
 </div>
-
-<style>
-.param-input {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.param-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgb(255 255 255 / 0.8);
-}
-
-.required {
-  color: rgb(248 113 113);
-}
-
-.param-desc {
-  font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.5);
-}
-
-.input-text,
-.input-textarea {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(255 255 255 / 0.2);
-  background-color: rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.9);
-}
-
-.input-text::placeholder,
-.input-textarea::placeholder {
-  color: rgb(255 255 255 / 0.4);
-}
-
-.input-text:focus,
-.input-textarea:focus {
-  outline: none;
-  border-color: rgb(192 132 252);
-  box-shadow: 0 0 0 2px rgb(192 132 252 / 0.2);
-}
-
-.input-text:disabled,
-.input-textarea:disabled {
-  opacity: 0.5;
-}
-
-.input-textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.input-checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 0.25rem;
-  background-color: rgb(255 255 255 / 0.1);
-  border: 1px solid rgb(255 255 255 / 0.2);
-  accent-color: rgb(192 132 252);
-}
-</style>

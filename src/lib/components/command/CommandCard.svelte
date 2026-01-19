@@ -24,109 +24,36 @@ function handleKeydown(e: KeyboardEvent) {
 </script>
 
 <div
-  class="command-card"
+  class="flex cursor-pointer flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10"
   onclick={openDialog}
   onkeydown={handleKeydown}
   role="button"
   tabindex="0"
   aria-label={command.name}
 >
-  <div class="card-header">
-    <h3 class="card-title">{command.name}</h3>
+  <div class="flex items-center justify-between gap-2">
+    <h3 class="m-0 font-semibold text-white/90">{command.name}</h3>
     {#if command.dangerous}
-      <span class="danger-badge">⚠️ 危险</span>
+      <span class="rounded-sm border border-red-500/30 bg-red-500/20 px-2 py-1 text-xs text-red-400"
+        >⚠️ 危险</span
+      >
     {/if}
   </div>
 
-  <p class="card-desc">{command.description}</p>
+  <p class="m-0 flex-1 text-sm text-white/60">{command.description}</p>
 
-  <div class="card-footer">
-    <span class="param-types" title={formatParameterTypes(command)}
+  <div class="mt-auto flex items-center justify-between">
+    <span class="max-w-[70%] truncate text-xs text-white/50" title={formatParameterTypes(command)}
       >{formatParameterTypes(command)}</span
     >
-    <button class="execute-btn">执行</button>
+    <button
+      class="cursor-pointer rounded-lg border border-purple-500/30 bg-purple-500/20 px-4 py-2 text-purple-400 transition-colors hover:bg-purple-500/30"
+    >
+      执行
+    </button>
   </div>
 </div>
 
 {#if showDialog}
   <CommandDialog {command} bind:show={showDialog} />
 {/if}
-
-<style>
-.command-card {
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background-color: rgb(255 255 255 / 0.05);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.command-card:hover {
-  background-color: rgb(255 255 255 / 0.1);
-  border-color: rgb(255 255 255 / 0.2);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.card-title {
-  font-weight: 600;
-  color: rgb(255 255 255 / 0.9);
-  margin: 0;
-}
-
-.danger-badge {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  background-color: rgb(239 68 68 / 0.2);
-  color: rgb(252 165 165);
-  border: 1px solid rgb(239 68 68 / 0.3);
-}
-
-.card-desc {
-  font-size: 0.875rem;
-  color: rgb(255 255 255 / 0.6);
-  margin: 0;
-  flex: 1;
-}
-
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-}
-
-.param-types {
-  font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.5);
-  max-width: 70%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.execute-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background-color: rgb(192 132 252 / 0.2);
-  color: rgb(216 180 254);
-  border: 1px solid rgb(192 132 252 / 0.3);
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.execute-btn:hover {
-  background-color: rgb(192 132 252 / 0.3);
-}
-</style>

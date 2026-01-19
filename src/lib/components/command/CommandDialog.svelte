@@ -80,9 +80,14 @@ function handleKeydown(e: KeyboardEvent) {
 </script>
 
 {#if show}
-  <div class="dialog-overlay" onclick={close} onkeydown={handleKeydown} role="presentation">
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    onclick={close}
+    onkeydown={handleKeydown}
+    role="presentation"
+  >
     <div
-      class="dialog-content"
+      class="m-4 max-h-[80vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/20 bg-black/40 p-6 shadow-2xl backdrop-blur-xl"
       onclick={(e) => e.stopPropagation()}
       onkeydown={handleKeydown}
       role="dialog"
@@ -91,20 +96,27 @@ function handleKeydown(e: KeyboardEvent) {
       tabindex="-1"
     >
       <!-- 头部 -->
-      <div class="dialog-header">
-        <h2 class="dialog-title">{command.name}</h2>
-        <button class="close-btn" onclick={close}>✕</button>
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white/90">{command.name}</h2>
+        <button
+          class="cursor-pointer border-none bg-transparent p-1 text-2xl leading-none text-white/60 hover:text-white/90"
+          onclick={close}
+        >
+          ✕
+        </button>
       </div>
 
       <!-- 描述 -->
-      <p class="dialog-description">{command.description}</p>
+      <p class="mb-4 text-sm text-white/60">{command.description}</p>
 
       {#if command.dangerous}
-        <p class="dialog-warning">⚠️ 此操作会修改文件系统，请谨慎操作</p>
+        <p class="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+          ⚠️ 此操作会修改文件系统，请谨慎操作
+        </p>
       {/if}
 
       <!-- 参数表单 -->
-      <div class="dialog-body">
+      <div class="mb-6 flex flex-col gap-4">
         {#each command.parameters as param}
           <ParameterInput
             bind:value={params[param.name]}
@@ -116,167 +128,37 @@ function handleKeydown(e: KeyboardEvent) {
 
       <!-- 结果展示 -->
       {#if status !== 'idle'}
-        <div class="dialog-result">
+        <div class="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
           {#if status === 'executing'}
-            <div class="loading">执行中...</div>
+            <div class="text-center text-white/60">执行中...</div>
           {:else if status === 'success'}
             <ResultDisplay {result} />
-            <p class="execution-time">
-              执行耗时: {Number(historyStore.getById(Date.now().toString())?.duration || 0)}ms
+            <p class="mt-2 text-xs text-white/50">
+              执行耗时:
+              {Number(historyStore.getById(Date.now().toString())?.duration || 0)}ms
             </p>
           {:else if status === 'error'}
-            <div class="error-message">{error}</div>
+            <div class="text-red-400">{error}</div>
           {/if}
         </div>
       {/if}
 
       <!-- 底部按钮 -->
-      <div class="dialog-footer">
-        <button class="btn-cancel" onclick={close}>取消</button>
-        <button class="btn-execute" onclick={execute} disabled={status === 'executing'}>
+      <div class="flex justify-end gap-3">
+        <button
+          class="cursor-pointer rounded-lg border-none bg-white/10 px-6 py-2 font-medium text-white/80 transition-all hover:bg-white/15"
+          onclick={close}
+        >
+          取消
+        </button>
+        <button
+          class="cursor-pointer rounded-lg border border-purple-500/30 bg-purple-500/30 px-6 py-2 font-medium text-purple-400 transition-all hover:bg-purple-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+          onclick={execute}
+          disabled={status === 'executing'}
+        >
           {status === 'executing' ? '执行中...' : '执行'}
         </button>
       </div>
     </div>
   </div>
 {/if}
-
-<style>
-.dialog-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(0 0 0 / 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.dialog-content {
-  width: 100%;
-  max-width: 48rem;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 1.5rem;
-  margin: 1rem;
-  border-radius: 1rem;
-  background-color: rgb(0 0 0 / 0.4);
-  border: 1px solid rgb(255 255 255 / 0.2);
-  backdrop-filter: blur(24px);
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
-}
-
-.dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.dialog-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: rgb(255 255 255 / 0.9);
-}
-
-.close-btn {
-  font-size: 1.5rem;
-  color: rgb(255 255 255 / 0.6);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  line-height: 1;
-}
-
-.close-btn:hover {
-  color: rgb(255 255 255 / 0.9);
-}
-
-.dialog-description {
-  font-size: 0.875rem;
-  color: rgb(255 255 255 / 0.6);
-  margin-bottom: 1rem;
-}
-
-.dialog-warning {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: 0.5rem;
-  background-color: rgb(239 68 68 / 0.1);
-  border: 1px solid rgb(239 68 68 / 0.3);
-  color: rgb(252 165 165);
-  font-size: 0.875rem;
-}
-
-.dialog-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.dialog-result {
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 0.5rem;
-  background-color: rgb(255 255 255 / 0.05);
-  border: 1px solid rgb(255 255 255 / 0.1);
-}
-
-.loading {
-  text-align: center;
-  color: rgb(255 255 255 / 0.6);
-}
-
-.execution-time {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.5);
-}
-
-.error-message {
-  color: rgb(252 165 165);
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.btn-cancel,
-.btn-execute {
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-cancel {
-  background-color: rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.8);
-  border: none;
-}
-
-.btn-cancel:hover {
-  background-color: rgb(255 255 255 / 0.15);
-}
-
-.btn-execute {
-  background-color: rgb(192 132 252 / 0.3);
-  color: rgb(216 180 254);
-  border: 1px solid rgb(192 132 252 / 0.3);
-}
-
-.btn-execute:hover:not(:disabled) {
-  background-color: rgb(192 132 252 / 0.4);
-}
-
-.btn-execute:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

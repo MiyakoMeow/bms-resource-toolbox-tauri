@@ -29,73 +29,34 @@ function clear() {
 }
 </script>
 
-<div class="file-picker">
+<div class="flex gap-2">
   <input
     type="text"
     bind:value
     {disabled}
     id={inputId}
     placeholder={mode === 'directory' ? '选择目录...' : '选择文件...'}
-    class="file-input"
+    class="flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white/90 placeholder:text-white/40 disabled:opacity-50"
   />
 
-  <div class="file-actions">
-    <button class="btn-browse" onclick={browse} {disabled} title={buttonTitle}>
+  <div class="flex gap-2">
+    <button
+      class="cursor-pointer rounded-lg border-none bg-white/10 px-4 py-2 text-white/80 transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
+      onclick={browse}
+      {disabled}
+      title={buttonTitle}
+    >
       {buttonText}
     </button>
     {#if value}
-      <button class="btn-clear" onclick={clear} {disabled} title="清除当前路径"> ✕ </button>
+      <button
+        class="cursor-pointer rounded-lg border-none bg-white/10 px-4 py-2 text-white/80 transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-50"
+        onclick={clear}
+        {disabled}
+        title="清除当前路径"
+      >
+        ✕
+      </button>
     {/if}
   </div>
 </div>
-
-<style>
-.file-picker {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.file-input {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(255 255 255 / 0.2);
-  background-color: rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.9);
-}
-
-.file-input::placeholder {
-  color: rgb(255 255 255 / 0.4);
-}
-
-.file-input:disabled {
-  opacity: 0.5;
-}
-
-.file-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-browse,
-.btn-clear {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background-color: rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.8);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btn-browse:hover,
-.btn-clear:hover {
-  background-color: rgb(255 255 255 / 0.15);
-}
-
-.btn-browse:disabled,
-.btn-clear:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

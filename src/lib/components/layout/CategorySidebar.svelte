@@ -13,89 +13,27 @@ function selectCategory(category: CommandCategory) {
 }
 </script>
 
-<nav class="category-nav">
-  <h2 class="nav-title">命令分类</h2>
+<nav class="flex h-full flex-col gap-4 overflow-y-auto">
+  <h2 class="text-xl font-bold text-white/90">命令分类</h2>
 
-  <div class="category-list">
+  <div class="flex flex-col gap-2">
     {#each Object.values(CATEGORY_METADATA) as category (category.id)}
       <button
-        class="category-item"
-        class:selected={selectedCategory === category.id}
+        class="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3 transition-all hover:border-white/20 hover:bg-white/10 {selectedCategory ===
+        category.id
+          ? 'border-white/30 bg-white/15 shadow-[0_10px_15px_-3px_rgba(168,85,247,0.1)]'
+          : ''}"
         onclick={() => selectCategory(category.id)}
         aria-label={category.name}
         aria-pressed={selectedCategory === category.id}
         type="button"
       >
-        <span class="category-icon">{category.icon}</span>
-        <div class="category-info">
-          <span class="category-name">{category.name}</span>
-          <span class="category-desc">{category.description}</span>
+        <span class="text-2xl">{category.icon}</span>
+        <div class="flex flex-col">
+          <span class="font-medium text-white/90">{category.name}</span>
+          <span class="text-xs text-white/60">{category.description}</span>
         </div>
       </button>
     {/each}
   </div>
 </nav>
-
-<style>
-.category-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.nav-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: rgb(255 255 255 / 0.9);
-}
-
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  background-color: rgb(255 255 255 / 0.05);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.category-item:hover {
-  background-color: rgb(255 255 255 / 0.1);
-  border-color: rgb(255 255 255 / 0.2);
-}
-
-.category-item.selected {
-  background-color: rgb(255 255 255 / 0.15);
-  border-color: rgb(255 255 255 / 0.3);
-  box-shadow: 0 10px 15px -3px rgb(168 85 247 / 0.1);
-}
-
-.category-icon {
-  font-size: 2rem;
-}
-
-.category-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.category-name {
-  font-weight: 500;
-  color: rgb(255 255 255 / 0.9);
-}
-
-.category-desc {
-  font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.6);
-}
-</style>
