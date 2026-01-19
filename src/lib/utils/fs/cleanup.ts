@@ -9,7 +9,7 @@ import { isDirHavingFile } from './compare';
  * 递归删除指定目录下的所有空文件夹
  *
  * @command
- * @category fs
+ * @category bmsfolder
  * @dangerous true
  * @name 删除空文件夹
  * @description 递归删除指定目录下的所有空文件夹

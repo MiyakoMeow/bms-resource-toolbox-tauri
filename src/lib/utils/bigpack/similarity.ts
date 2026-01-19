@@ -10,7 +10,7 @@ import { stringSimilarity } from '../fs/similarity';
  * 扫描相似文件夹名称
  *
  * @command
- * @category root
+ * @category bmsfolder
  * @dangerous false
  * @name 扫描相似文件夹
  * @description 扫描指定目录中名称相似的文件夹，用于发现重复或误操作

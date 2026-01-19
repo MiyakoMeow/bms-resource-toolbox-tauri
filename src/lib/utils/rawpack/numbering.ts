@@ -186,7 +186,7 @@ export class FileNumberSetter {
    * 批量重命名文件，添加编号前缀
    *
    * @command
-   * @category rawpack
+   * @category pack
    * @dangerous true
    * @name 批量添加文件编号
    * @description 为多个文件添加编号前缀

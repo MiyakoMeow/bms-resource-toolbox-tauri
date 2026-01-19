@@ -9,7 +9,7 @@ import { readDir } from '@tauri-apps/plugin-fs';
  * 检查目录是否包含文件
  *
  * @command
- * @category fs
+ * @category bmsfolder
  * @dangerous false
  * @name 检查目录文件
  * @description 检查目录是否包含文件
@@ -41,7 +41,7 @@ export async function isDirHavingFile(dirPath: string): Promise<boolean> {
  * 检查目录是否包含任何内容（文件或目录）
  *
  * @command
- * @category fs
+ * @category bmsfolder
  * @dangerous false
  * @name 检查目录内容
  * @description 检查目录是否包含任何内容（文件或目录）

@@ -94,7 +94,7 @@ async function tryMoveOutNestedFiles(workDir: string): Promise<boolean> {
  * 根据 BMS 信息设置目录名
  *
  * @command
- * @category work
+ * @category bmsfolder
  * @dangerous true
  * @name 根据 BMS 重命名工作目录
  * @description 根据 BMS 文件信息重命名工作目录，支持多种命名策略
@@ -181,7 +181,7 @@ export async function setNameByBms(
  * 撤销目录命名设置
  *
  * @command
- * @category work
+ * @category bmsfolder
  * @dangerous true
  * @name 撤销工作目录重命名
  * @description 撤销之前的目录重命名操作，恢复原始目录名
@@ -256,7 +256,7 @@ export async function undoSetNameByBms(
  * 该脚本适用于希望在作品文件夹名后添加" [艺术家]"的情况。
  *
  * @command
- * @category root
+ * @category bmsfolder
  * @dangerous true
  * @name 追加艺术家名称
  * @description 在作品文件夹名后追加艺术家名称
@@ -328,7 +328,7 @@ export async function appendArtistNameByBms(rootDir: string, dryRun: boolean): P
  * 对应 Python: _workdir_set_name_by_bms (bms_folder.py:89-149)
  *
  * @command
- * @category work
+ * @category bmsfolder
  * @dangerous true
  * @name 根据 BMS 重命名工作目录（优化版）
  * @description 根据 BMS 文件信息重命名工作目录，支持嵌套目录处理和相似度合并

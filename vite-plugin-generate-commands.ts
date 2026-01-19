@@ -716,16 +716,12 @@ ${commandIds}
     // 特殊处理全大写缩写词和特殊命名
     const uppercaseAcronyms: Record<string, string> = {
       bms: 'BMS',
-      fs: 'FS',
       bmsevent: 'BMSEvent',
-      rootevent: 'RootEvent',
+      bmsfolder: 'BMSFolder',
       wasted: 'Wasted',
       bigpack: 'BigPack',
       pack: 'Pack',
-      rawpack: 'Rawpack',
       media: 'Media',
-      work: 'Work',
-      root: 'Root',
     };
 
     const lowerCategory = category.toLowerCase();

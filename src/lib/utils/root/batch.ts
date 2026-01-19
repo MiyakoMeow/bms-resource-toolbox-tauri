@@ -10,7 +10,7 @@ import { ReplacePreset } from '../fs/moving';
  * 递归设置目录名（根目录版本）
  *
  * @command
- * @category root
+ * @category bmsfolder
  * @dangerous true
  * @name 批量重命名工作目录
  * @description 递归为根目录下的所有工作目录设置名称
@@ -50,7 +50,7 @@ export async function rootSetNameByBms(
  * 递归撤销目录名设置（根目录版本）
  *
  * @command
- * @category root
+ * @category bmsfolder
  * @dangerous true
  * @name 批量撤销重命名
  * @description 递归撤销根目录下所有工作目录的名称设置
@@ -88,7 +88,7 @@ export async function rootUndoSetNameByBms(
  * 复制编号目录名
  *
  * @command
- * @category root
+ * @category bmsfolder
  * @dangerous true
  * @name 复制编号目录名称
  * @description 复制编号目录的名称到目标目录

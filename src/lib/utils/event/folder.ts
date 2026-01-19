@@ -10,7 +10,7 @@ import { getDirBmsInfo } from '../bms/scanner';
  * 对应 Python: check_num_folder (bms_folder_event.py:9-14)
  *
  * @command
- * @category RootEvent
+ * @category BMSEvent
  * @dangerous false
  * @name 检查编号文件夹
  * @description 检查各个编号对应的文件夹是否存在
@@ -39,7 +39,7 @@ export async function checkNumFolder(dir: string, max: number): Promise<string[]
  * 对应 Python: create_num_folders (bms_folder_event.py:16-36)
  *
  * @command
- * @category RootEvent
+ * @category BMSEvent
  * @dangerous true
  * @name 创建编号文件夹
  * @description 创建只带有编号的空文件夹
@@ -77,7 +77,7 @@ export interface WorkInfoRow {
  * 对应 Python: generate_work_info_table (bms_folder_event.py:39-68)
  *
  * @command
- * @category RootEvent
+ * @category BMSEvent
  * @dangerous false
  * @name 生成作品信息表
  * @description 生成活动作品的xlsx表格数据

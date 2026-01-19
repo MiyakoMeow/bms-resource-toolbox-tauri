@@ -15,7 +15,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'is_dir_having_file',
     name: '检查目录文件',
-    category: CommandCategory.FS,
+    category: CommandCategory.BMSFolder,
     description: `检查目录是否包含文件`,
     parameters: [
       {
@@ -33,7 +33,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'is_dir_having_content',
     name: '检查目录内容',
-    category: CommandCategory.FS,
+    category: CommandCategory.BMSFolder,
     description: `检查目录是否包含任何内容（文件或目录）`,
     parameters: [
       {
@@ -69,7 +69,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'rawpack_batch_rename_with_num',
     name: '批量添加文件编号',
-    category: CommandCategory.Rawpack,
+    category: CommandCategory.Pack,
     description: `为多个文件添加编号前缀`,
     parameters: [
       {
@@ -87,7 +87,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'rawpack_unzip_numeric_to_bms_folder',
     name: '解压编号压缩包',
-    category: CommandCategory.Rawpack,
+    category: CommandCategory.Pack,
     description: `将赋予编号的文件，解压或放置至指定根目录下，带对应编号的作品目录（自动处理文件夹嵌套）`,
     parameters: [
       {
@@ -134,7 +134,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'rawpack_unzip_with_name_to_bms_folder',
     name: '解压命名压缩包',
-    category: CommandCategory.Rawpack,
+    category: CommandCategory.Pack,
     description: `将文件，解压或放置至指定根目录下，对应原文件名的作品目录（自动处理文件夹嵌套）`,
     parameters: [
       {
@@ -443,7 +443,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_scan_similar_folders',
     name: '扫描相似文件夹',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `扫描指定目录中名称相似的文件夹，用于发现重复或误操作`,
     parameters: [
       {
@@ -590,7 +590,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_event_check_num_folder',
     name: '检查编号文件夹',
-    category: CommandCategory.RootEvent,
+    category: CommandCategory.BMSEvent,
     description: `检查各个编号对应的文件夹是否存在`,
     parameters: [
       {
@@ -615,7 +615,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_event_create_num_folders',
     name: '创建编号文件夹',
-    category: CommandCategory.RootEvent,
+    category: CommandCategory.BMSEvent,
     description: `创建只带有编号的空文件夹`,
     parameters: [
       {
@@ -640,7 +640,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_event_generate_work_info_table',
     name: '生成作品信息表',
-    category: CommandCategory.RootEvent,
+    category: CommandCategory.BMSEvent,
     description: `生成活动作品的xlsx表格数据`,
     parameters: [
       {
@@ -683,7 +683,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'remove_empty_folders',
     name: '删除空文件夹',
-    category: CommandCategory.FS,
+    category: CommandCategory.BMSFolder,
     description: `递归删除指定目录下的所有空文件夹`,
     parameters: [
       {
@@ -781,7 +781,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_remove_zero_sized_media_files',
     name: '删除零字节媒体文件',
-    category: CommandCategory.Work,
+    category: CommandCategory.BMSFolder,
     description: `递归删除工作目录中所有零字节媒体文件`,
     parameters: [
       {
@@ -807,7 +807,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_remove_unneed_media_files',
     name: '删除重复格式媒体文件',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `根据预设规则删除重复格式的媒体文件（保留高质量格式）`,
     parameters: [
       {
@@ -939,7 +939,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_set_name_by_bms',
     name: '根据 BMS 重命名工作目录',
-    category: CommandCategory.Work,
+    category: CommandCategory.BMSFolder,
     description: `根据 BMS 文件信息重命名工作目录，支持多种命名策略`,
     parameters: [
       {
@@ -987,7 +987,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_undo_set_name_by_bms',
     name: '撤销工作目录重命名',
-    category: CommandCategory.Work,
+    category: CommandCategory.BMSFolder,
     description: `撤销之前的目录重命名操作，恢复原始目录名`,
     parameters: [
       {
@@ -1020,7 +1020,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_append_artist_name_by_bms',
     name: '追加艺术家名称',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `在作品文件夹名后追加艺术家名称`,
     parameters: [
       {
@@ -1046,7 +1046,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'work_set_name_by_bms_optimized',
     name: '根据 BMS 重命名工作目录（优化版）',
-    category: CommandCategory.Work,
+    category: CommandCategory.BMSFolder,
     description: `根据 BMS 文件信息重命名工作目录，支持嵌套目录处理和相似度合并`,
     parameters: [
       {
@@ -1087,7 +1087,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_root_set_name_by_bms',
     name: '批量重命名工作目录',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `递归为根目录下的所有工作目录设置名称`,
     parameters: [
       {
@@ -1128,7 +1128,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_root_undo_set_name_by_bms',
     name: '批量撤销重命名',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `递归撤销根目录下所有工作目录的名称设置`,
     parameters: [
       {
@@ -1161,7 +1161,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
   {
     id: 'root_copy_numbered_workdir_names',
     name: '复制编号目录名称',
-    category: CommandCategory.Root,
+    category: CommandCategory.BMSFolder,
     description: `复制编号目录的名称到目标目录`,
     parameters: [
       {
