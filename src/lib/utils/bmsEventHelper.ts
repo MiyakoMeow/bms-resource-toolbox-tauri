@@ -5,10 +5,7 @@
  */
 
 import { BMSEvent } from '../types/enums';
-import {
-  executeGeneratedFrontendCommand,
-  FRONTEND_COMMAND_IDS,
-} from './bmsEventHelper.generated';
+import { executeGeneratedFrontendCommand, FRONTEND_COMMAND_IDS } from './bmsEventHelper.generated';
 
 /**
  * 获取 BMS 活动列表页面 URL

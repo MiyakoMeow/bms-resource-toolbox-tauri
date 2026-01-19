@@ -7,12 +7,7 @@
 
 import type { CategoryMetadata, CommandDefinition } from '../types/commands';
 import { CommandCategory, ParameterType } from '../types/enums';
-import {
-  BMSEvent,
-  BmsFolderSetNameType,
-  RemoveMediaPreset,
-  ReplacePreset,
-} from '../types/enums';
+import { BMSEvent, BmsFolderSetNameType, RemoveMediaPreset, ReplacePreset } from '../types/enums';
 import { GENERATED_COMMAND_REGISTRY } from './commandRegistry.generated';
 
 /**

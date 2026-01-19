@@ -337,7 +337,10 @@ export async function moveOutWorks(
  *
  * @returns {Promise<void>}
  */
-export async function mergeFoldersWithSameNameWithinDir(rootDir: string, dryRun: boolean): Promise<void> {
+export async function mergeFoldersWithSameNameWithinDir(
+  rootDir: string,
+  dryRun: boolean
+): Promise<void> {
   const entries = await readDir(rootDir);
   const nameMap = new Map<string, string[]>();
 
@@ -648,7 +651,8 @@ export async function moveWorksWithSameName(
   console.log(`目标目录 ${toDir} 中有 ${toSubdirs.length} 个子文件夹`);
 
   // 收集合并对： (fromDirName, fromDirPath, toDirName, toDirPath)
-  const pairs: Array<{ fromDirName: string; fromPath: string; toDirName: string; toPath: string }> = [];
+  const pairs: Array<{ fromDirName: string; fromPath: string; toDirName: string; toPath: string }> =
+    [];
 
   // 遍历源目录的每个子文件夹
   for (const fromDirName of fromSubdirs) {
@@ -656,7 +660,11 @@ export async function moveWorksWithSameName(
 
     // 查找匹配的目标子文件夹（名称包含源文件夹名）
     for (const toDirName of toSubdirs) {
-      if (fromDirName === toDirName || toDirName.includes(fromDirName) || fromDirName.includes(toDirName)) {
+      if (
+        fromDirName === toDirName ||
+        toDirName.includes(fromDirName) ||
+        fromDirName.includes(toDirName)
+      ) {
         const toPath = `${toDir}/${toDirName}`;
         pairs.push({ fromDirName, fromPath, toDirName, toPath });
         break;
