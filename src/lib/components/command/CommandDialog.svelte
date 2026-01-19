@@ -24,11 +24,11 @@ $effect(() => {
     const defaults: Record<string, unknown> = {};
     command.parameters.forEach((param) => {
       if (param.defaultValue !== undefined) {
-        // 危险命令默认 dry_run = true
-        if (param.name === 'dry_run' && DANGEROUS_COMMANDS.has(command.id)) {
-          defaults[param.name] = true;
+        // 危险命令默认 dryRun = true
+        if (param.key === 'dryRun' && DANGEROUS_COMMANDS.has(command.id)) {
+          defaults[param.key] = true;
         } else {
-          defaults[param.name] = param.defaultValue;
+          defaults[param.key] = param.defaultValue;
         }
       }
     });
@@ -119,7 +119,7 @@ function handleKeydown(e: KeyboardEvent) {
       <div class="mb-6 flex flex-col gap-4">
         {#each command.parameters as param}
           <ParameterInput
-            bind:value={params[param.name]}
+            bind:value={params[param.key]}
             {param}
             disabled={status === 'executing'}
           />

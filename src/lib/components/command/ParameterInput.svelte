@@ -12,15 +12,15 @@ interface Props {
 
 let { param, value = $bindable(), disabled }: Props = $props();
 
-// 参数标签：显示参数描述（去掉 - 前缀），如果描述为空则使用参数名
+// 参数标签：显示参数描述（去掉 - 前缀），如果描述为空则使用参数 key
 const paramLabel = $derived(
   param.description
     ? param.description.replace(/^- /, '')
-    : param.name
+    : param.key
 );
 
 // 生成唯一的 input ID
-const inputId = $derived(`input-${param.name}-${Math.random().toString(36).substring(2, 9)}`);
+const inputId = $derived(`input-${param.key}-${Math.random().toString(36).substring(2, 9)}`);
 
 // 类型安全的中间状态
 let stringValue = $state((value as string) ?? '');

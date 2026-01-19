@@ -31,7 +31,7 @@ interface CommandMetadata {
  * 参数元数据
  */
 interface ParameterMetadata {
-  name: string;
+  key: string;
   type: string;
   typeString: string;
   required: boolean;
@@ -346,7 +346,7 @@ export class CommandGenerator {
       }
 
       return {
-        name: paramName,
+        key: paramName,
         type: fullTypeString,
         typeString: finalTypeString,
         required: !param.questionToken && !param.initializer,
@@ -503,8 +503,8 @@ ${parameters}
       .map(
         (param) =>
           `      {
-        name: '${param.name}',
-        type: ${this.mapTypeToParameterType(param.typeString, param.name)},
+        key: '${param.key}',
+        type: ${this.mapTypeToParameterType(param.typeString, param.key)},
         typeString: '${param.typeString}',
         required: ${param.required},
         description: \`${param.description.replace(/`/g, '\\`')}\`${
@@ -706,7 +706,7 @@ ${commandIds}
    * 生成函数调用参数
    */
   private generateCallArguments(parameters: ParameterMetadata[]): string {
-    return parameters.map((param) => `params.${param.name} as ${param.typeString}`).join(', ');
+    return parameters.map((param) => `params.${param.key} as ${param.typeString}`).join(', ');
   }
 
   /**

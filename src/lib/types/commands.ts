@@ -10,8 +10,8 @@ import type { CommandCategory, ParameterType } from './enums';
  * 命令参数定义
  */
 export interface CommandParameter {
-  /** 参数名（对应 Rust 函数参数名） */
-  name: string;
+  /** 参数 key（用于内部标识和绑定） */
+  key: string;
   /** 参数类型 */
   type: ParameterType;
   /** 是否必需 */

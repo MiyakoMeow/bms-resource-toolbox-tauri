@@ -19,7 +19,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `检查目录是否包含文件`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -37,7 +37,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `检查目录是否包含任何内容（文件或目录）`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -55,7 +55,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `处理 Aery 标签作品的特殊合并逻辑，根据相似度阈值合并相似文件夹`,
     parameters: [
       {
-        name: 'params',
+        key: 'params',
         type: ParameterType.Enum,
         typeString: 'AeryFixParams',
         required: true,
@@ -73,7 +73,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `为多个文件添加编号前缀`,
     parameters: [
       {
-        name: 'params',
+        key: 'params',
         type: ParameterType.Enum,
         typeString: 'SetFileNumParams',
         required: true,
@@ -91,35 +91,35 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将赋予编号的文件，解压或放置至指定根目录下，带对应编号的作品目录（自动处理文件夹嵌套）`,
     parameters: [
       {
-        name: 'packDir',
+        key: 'packDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
-        name: 'cacheDir',
+        key: 'cacheDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
       },
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录`
       },
       {
-        name: 'confirm',
+        key: 'confirm',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 是否确认`
       },
       {
-        name: 'replacePreset',
+        key: 'replacePreset',
         type: ParameterType.Enum,
         typeString: 'ReplacePreset',
         required: true,
@@ -138,35 +138,35 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将文件，解压或放置至指定根目录下，对应原文件名的作品目录（自动处理文件夹嵌套）`,
     parameters: [
       {
-        name: 'packDir',
+        key: 'packDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
-        name: 'cacheDir',
+        key: 'cacheDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
       },
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录`
       },
       {
-        name: 'confirm',
+        key: 'confirm',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 是否确认`
       },
       {
-        name: 'replacePreset',
+        key: 'replacePreset',
         type: ParameterType.Enum,
         typeString: 'ReplacePreset',
         required: true,
@@ -185,14 +185,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将目录下的作品按照首字符规则分成多个文件夹`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -211,14 +211,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `撤销按首字符拆分的操作，将所有子文件夹移回根目录`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -237,21 +237,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将目录A下的作品，移动到目录B（自动合并）`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'targetPackName',
+        key: 'targetPackName',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 目标包名称`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -270,21 +270,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将子包中的作品移出，合并到根目录`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'sourcePackName',
+        key: 'sourcePackName',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 源包名称`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -303,14 +303,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `合并同一目录中名称相同的文件夹`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -329,21 +329,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将目录A下的作品，移动到目录B（自动合并）`,
     parameters: [
       {
-        name: 'fromDir',
+        key: 'fromDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 源目录路径`
       },
       {
-        name: 'toDir',
+        key: 'toDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目标目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -362,14 +362,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将目录中文件名相似的子文件夹合并到各平级目录中`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -388,21 +388,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将源文件夹中名称相似的子文件夹合并到目标文件夹中的对应子文件夹`,
     parameters: [
       {
-        name: 'fromDir',
+        key: 'fromDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 源文件夹路径`
       },
       {
-        name: 'toDir',
+        key: 'toDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目标文件夹路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -421,14 +421,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将形如 "Title [Artist]" 的文件夹内容合并到 "Title" 文件夹中`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -447,14 +447,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `扫描指定目录中名称相似的文件夹，用于发现重复或误操作`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 要扫描的目录路径`
       },
       {
-        name: 'similarityTrigger',
+        key: 'similarityTrigger',
         type: ParameterType.Number,
         typeString: 'number',
         required: false,
@@ -472,7 +472,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `解析单个 BMS 文件，提取元数据信息（标题、艺术家等）`,
     parameters: [
       {
-        name: 'filePath',
+        key: 'filePath',
         type: ParameterType.File,
         typeString: 'string',
         required: true,
@@ -490,7 +490,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `扫描目录，解析所有 BMS 文件`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -508,7 +508,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `从目录的 info.toml 文件读取 BMS 摘要信息`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -526,7 +526,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `检查指定目录是否为有效的 BMS 工作目录`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -544,7 +544,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `检查指定目录是否为根目录（包含工作目录的目录）`,
     parameters: [
       {
-        name: 'dirPath',
+        key: 'dirPath',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -562,21 +562,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `从多个 BMS 标题中提取共同的作品名`,
     parameters: [
       {
-        name: 'titles',
+        key: 'titles',
         type: ParameterType.String,
         typeString: 'string[]',
         required: true,
         description: `- 包含多个 BMS 标题的列表`
       },
       {
-        name: 'removeUnlosedPair',
+        key: 'removeUnlosedPair',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: false,
         description: `- 是否移除未闭合括号及其后续内容`
       },
       {
-        name: 'removeTailingSignList',
+        key: 'removeTailingSignList',
         type: ParameterType.String,
         typeString: 'string[]',
         required: false,
@@ -594,14 +594,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `检查各个编号对应的文件夹是否存在`,
     parameters: [
       {
-        name: 'dir',
+        key: 'dir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 目录路径`
       },
       {
-        name: 'max',
+        key: 'max',
         type: ParameterType.Number,
         typeString: 'number',
         required: true,
@@ -619,14 +619,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `创建只带有编号的空文件夹`,
     parameters: [
       {
-        name: 'dir',
+        key: 'dir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 目录路径`
       },
       {
-        name: 'max',
+        key: 'max',
         type: ParameterType.Number,
         typeString: 'number',
         required: true,
@@ -644,7 +644,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `生成活动作品的xlsx表格数据`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
@@ -662,14 +662,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `打开浏览器跳转到BMS活动作品目录页面`,
     parameters: [
       {
-        name: 'event',
+        key: 'event',
         type: ParameterType.Enum,
         typeString: 'BMSEvent',
         required: true,
         description: `- BMS 活动类型`
       },
       {
-        name: 'workIds',
+        key: 'workIds',
         type: ParameterType.NumberArray,
         typeString: 'number[]',
         required: false,
@@ -687,14 +687,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `递归删除指定目录下的所有空文件夹`,
     parameters: [
       {
-        name: 'parentDir',
+        key: 'parentDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 要清理的目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -713,7 +713,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `使用 ffprobe 获取音频或视频文件的详细信息`,
     parameters: [
       {
-        name: 'filePath',
+        key: 'filePath',
         type: ParameterType.File,
         typeString: 'string',
         required: true,
@@ -731,7 +731,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `获取视频文件的尺寸和比特率信息`,
     parameters: [
       {
-        name: 'filePath',
+        key: 'filePath',
         type: ParameterType.File,
         typeString: 'string',
         required: true,
@@ -749,7 +749,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `获取视频文件的宽度和高度`,
     parameters: [
       {
-        name: 'filePath',
+        key: 'filePath',
         type: ParameterType.File,
         typeString: 'string',
         required: true,
@@ -767,7 +767,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `获取音频或视频文件的时长（秒）`,
     parameters: [
       {
-        name: 'filePath',
+        key: 'filePath',
         type: ParameterType.File,
         typeString: 'string',
         required: true,
@@ -785,14 +785,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `递归删除工作目录中所有零字节媒体文件`,
     parameters: [
       {
-        name: 'dir',
+        key: 'dir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -811,14 +811,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `根据预设规则删除重复格式的媒体文件（保留高质量格式）`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'preset',
+        key: 'preset',
         type: ParameterType.Enum,
         typeString: 'RemoveMediaPreset',
         required: true,
@@ -837,42 +837,42 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `转换BMS根目录下的音频文件`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'presetNames',
+        key: 'presetNames',
         type: ParameterType.Enum,
         typeString: 'AudioPreset[]',
         required: true,
         description: `- 目标格式预设名称`
       },
       {
-        name: 'removeOriginFileWhenSuccess',
+        key: 'removeOriginFileWhenSuccess',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 成功时删除原文件`
       },
       {
-        name: 'removeOriginFileWhenFailed',
+        key: 'removeOriginFileWhenFailed',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 失败时删除原文件`
       },
       {
-        name: 'skipOnFail',
+        key: 'skipOnFail',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 遇到失败时跳过`
       },
       {
-        name: 'progressManager',
+        key: 'progressManager',
         type: ParameterType.Enum,
         typeString: 'IProgressManager',
         required: false,
@@ -890,42 +890,42 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `转换BMS根目录下的视频文件`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'presetNames',
+        key: 'presetNames',
         type: ParameterType.Enum,
         typeString: 'VideoPreset[]',
         required: true,
         description: `- 目标格式预设名称`
       },
       {
-        name: 'removeOriginFile',
+        key: 'removeOriginFile',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 成功时删除原文件`
       },
       {
-        name: 'removeExistingTargetFile',
+        key: 'removeExistingTargetFile',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 删除已存在的目标文件`
       },
       {
-        name: 'usePrefered',
+        key: 'usePrefered',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
         description: `- 使用推荐预设`
       },
       {
-        name: 'progressManager',
+        key: 'progressManager',
         type: ParameterType.Enum,
         typeString: 'IProgressManager',
         required: false,
@@ -943,21 +943,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `根据 BMS 文件信息重命名工作目录，支持多种命名策略`,
     parameters: [
       {
-        name: 'workDir',
+        key: 'workDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`
       },
       {
-        name: 'setType',
+        key: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
         description: `- 命名方式`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -965,7 +965,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: true
       },
       {
-        name: 'replacePreset',
+        key: 'replacePreset',
         type: ParameterType.Enum,
         typeString: 'ReplacePreset',
         required: true,
@@ -973,7 +973,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: "ReplacePreset.Default"
       },
       {
-        name: 'skipAlreadyFormatted',
+        key: 'skipAlreadyFormatted',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -991,21 +991,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `撤销之前的目录重命名操作，恢复原始目录名`,
     parameters: [
       {
-        name: 'workDir',
+        key: 'workDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`
       },
       {
-        name: 'setType',
+        key: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
         description: `- 命名方式`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1024,14 +1024,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `在作品文件夹名后追加艺术家名称`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1050,21 +1050,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `根据 BMS 文件信息重命名工作目录，支持嵌套目录处理和相似度合并`,
     parameters: [
       {
-        name: 'workDir',
+        key: 'workDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 工作目录路径`
       },
       {
-        name: 'setType',
+        key: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
         description: `- 命名方式`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1072,7 +1072,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: true
       },
       {
-        name: 'replacePreset',
+        key: 'replacePreset',
         type: ParameterType.Enum,
         typeString: 'ReplacePreset',
         required: true,
@@ -1091,21 +1091,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `递归为根目录下的所有工作目录设置名称`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'setType',
+        key: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
         description: `- 命名方式`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1113,7 +1113,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: true
       },
       {
-        name: 'replacePreset',
+        key: 'replacePreset',
         type: ParameterType.Enum,
         typeString: 'ReplacePreset',
         required: true,
@@ -1132,21 +1132,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `递归撤销根目录下所有工作目录的名称设置`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'setType',
+        key: 'setType',
         type: ParameterType.Enum,
         typeString: 'BmsFolderSetNameType',
         required: true,
         description: `- 命名方式`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1165,21 +1165,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `复制编号目录的名称到目标目录`,
     parameters: [
       {
-        name: 'fromDir',
+        key: 'fromDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 源目录路径`
       },
       {
-        name: 'toDir',
+        key: 'toDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目标目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1198,21 +1198,21 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `快速创建大包，从已编号的原始包到目标BMS文件夹`,
     parameters: [
       {
-        name: 'packDir',
+        key: 'packDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`
       },
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 目标根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1231,28 +1231,28 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `快速更新大包，从已编号的原始包到增量BMS文件夹`,
     parameters: [
       {
-        name: 'packDir',
+        key: 'packDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`
       },
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 增量根目录路径`
       },
       {
-        name: 'syncDir',
+        key: 'syncDir',
         type: ParameterType.String,
         typeString: 'string',
         required: true,
         description: `- 已存在的BMS文件夹路径（用于名称同步和文件检查）`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1271,14 +1271,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将 HQ 版本转换为 LQ 版本，用于 LR2 玩家`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1286,7 +1286,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: true
       },
       {
-        name: 'progressManager',
+        key: 'progressManager',
         type: ParameterType.Enum,
         typeString: 'IProgressManager',
         required: false,
@@ -1304,14 +1304,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     description: `将Raw版本转换为HQ版本，用于beatoraja/Qwilight玩家`,
     parameters: [
       {
-        name: 'rootDir',
+        key: 'rootDir',
         type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 根目录路径`
       },
       {
-        name: 'dryRun',
+        key: 'dryRun',
         type: ParameterType.Boolean,
         typeString: 'boolean',
         required: true,
@@ -1319,7 +1319,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
         defaultValue: true
       },
       {
-        name: 'progressManager',
+        key: 'progressManager',
         type: ParameterType.Enum,
         typeString: 'IProgressManager',
         required: false,
