@@ -72,8 +72,12 @@ export class PriorityDecoder {
 
       try {
         // 尝试解码 1-4 个字节（日文编码通常不超过 4 字节）
-        const maxLength = Math.min(5, byteData.length - start);
+        const remainingBytes = byteData.length - start;
+        const maxLength = Math.min(5, remainingBytes);
         for (let length = 1; length <= maxLength; length++) {
+          if (start + length > byteData.length) {
+            break;
+          }
           try {
             const char = decoder.decode(byteData.slice(start, start + length), {
               stream: false,

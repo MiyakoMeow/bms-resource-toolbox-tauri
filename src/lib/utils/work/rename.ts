@@ -154,7 +154,8 @@ export async function setNameByBms(
   targetDirName = getValidFileName(targetDirName);
 
   // 构建目标目录路径
-  const parentDir = workDir.substring(0, workDir.lastIndexOf('/'));
+  const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
+  const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
   const targetWorkDir = `${parentDir}/${targetDirName}`;
 
   // 如果源目录与目标目录相同，则跳过操作
@@ -222,7 +223,8 @@ export async function undoSetNameByBms(
   }
 
   // 构建新目录路径
-  const parentDir = workDir.substring(0, workDir.lastIndexOf('/'));
+  const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
+  const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
   let newDirPath = `${parentDir}/${originalDirName}`;
 
   // 如果源目录与目标目录相同，则跳过操作

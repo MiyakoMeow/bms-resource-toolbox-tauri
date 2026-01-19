@@ -3,7 +3,7 @@
  */
 
 import { readDir, remove } from '@tauri-apps/plugin-fs';
-import { isDirHavingFile } from './compare';
+import { isDirHavingContent } from './compare';
 
 /**
  * 递归删除指定目录下的所有空文件夹
@@ -39,10 +39,10 @@ export async function removeEmptyFolders(parentDir: string, dryRun: boolean): Pr
       // 递归检查子目录
       await removeEmptyFolders(path, dryRun);
 
-      // 检查当前目录是否为空
-      const hasFile = await isDirHavingFile(path);
+      // 检查当前目录是否为空（包含文件或子目录）
+      const hasContent = await isDirHavingContent(path);
 
-      if (!hasFile) {
+      if (!hasContent) {
         console.log(`Remove empty dir: ${path}`);
         if (dryRun) {
           console.log(`[dry-run] Skipped removing ${path}`);

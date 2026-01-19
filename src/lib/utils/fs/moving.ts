@@ -135,6 +135,7 @@ export async function moveElementsAcrossDir(
 
   // 使用队列管理待处理的目录
   const queue: [string, string][] = [[fromDir, toDir]];
+  const dirsToCleanup: string[] = [];
 
   while (queue.length > 0) {
     const [currentFrom, currentTo] = queue.shift()!;
@@ -145,17 +146,24 @@ export async function moveElementsAcrossDir(
     // 将发现的子目录加入队列
     queue.push(...subdirs);
 
-    // 清理空目录（检查是否有任何内容：文件或目录）
+    // 延迟清理：只标记待删除的目录，在队列处理完毕后再删除
     const hasContent = await isDirHavingContent(currentFrom);
     const skippedFiles = await hasSkippedFiles(currentFrom, replaceOptions);
-    const skipCleanup = hasContent || skippedFiles;
+    if (!hasContent && !skippedFiles) {
+      dirsToCleanup.push(currentFrom);
+    }
+  }
 
-    if (!skipCleanup) {
-      try {
-        await remove(currentFrom, { recursive: true });
-      } catch (error) {
-        console.warn(`权限不足，无法删除 ${currentFrom}:`, error);
+  // 队列处理完毕后，从叶子节点开始清理空目录（避免删除父目录时子目录已被删除）
+  for (const dir of dirsToCleanup) {
+    try {
+      // 再次检查目录是否真的为空（可能在队列处理过程中被移动）
+      const hasContent = await isDirHavingContent(dir);
+      if (!hasContent) {
+        await remove(dir, { recursive: true });
       }
+    } catch (error) {
+      console.warn(`权限不足，无法删除 ${dir}:`, error);
     }
   }
 }
@@ -331,13 +339,13 @@ async function moveFileRename(src: string, dstDir: string): Promise<void> {
   while (true) {
     count++;
 
-    const newName = ext
-      ? count === 1
-        ? `${stem}.${ext}`
-        : `${stem}.${count}.${ext}`
-      : count === 1
-        ? `${stem}`
-        : `${stem}.${count}`;
+    let newName: string;
+    if (ext && ext.length > 0) {
+      newName = count === 1 ? `${stem}.${ext}` : `${stem}.${count}.${ext}`;
+    } else {
+      newName = count === 1 ? `${stem}` : `${stem}.${count}`;
+    }
+
     const dst = `${dstDir.split('/').slice(0, -1).join('/')}/${newName}`;
 
     if (!(await exists(dst))) {
