@@ -31,6 +31,24 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'is_dir_having_content',
+    name: '检查目录内容',
+    category: CommandCategory.FS,
+    description: `检查目录是否包含任何内容（文件或目录）`,
+    parameters: [
+      {
+        name: 'dirPath',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 目录路径`
+      }
+    ],
+    returnType: 'boolean',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
     id: 'wasted_fix',
     name: 'Aery 标签作品修复',
     category: CommandCategory.Wasted,
@@ -1211,4 +1229,4 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 42;
+export const COMMAND_COUNT = 43;

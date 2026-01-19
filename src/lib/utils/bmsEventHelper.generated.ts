@@ -22,6 +22,12 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: result };
     }
 
+    if (commandId === 'is_dir_having_content') {
+      const { isDirHavingContent } = await import('$lib/utils/fs/compare.js');
+      const result = await isDirHavingContent(params.dirPath as string);
+      return { success: true, data: result };
+    }
+
     if (commandId === 'wasted_fix') {
       const { fix } = await import('$lib/utils/wasted/index.js');
       await fix(params.params as AeryFixParams);
@@ -285,6 +291,7 @@ export async function executeGeneratedFrontendCommand(
  */
 export const FRONTEND_COMMAND_IDS: string[] = [
   'is_dir_having_file',
+  'is_dir_having_content',
   'wasted_fix',
   'rawpack_batch_rename_with_num',
   'rawpack_unzip_numeric_to_bms_folder',
