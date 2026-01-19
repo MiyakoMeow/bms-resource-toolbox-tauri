@@ -5,7 +5,6 @@
 
 import { mkdir, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
-import { isDirHavingContent } from '../fs/compare';
 
 // 正则表达式
 const RE_JAPANESE_HIRAGANA = /[\u3040-\u309f]/;
@@ -109,7 +108,10 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 
   // 按首字符规则分组
   for (const entry of entries) {
-    if (!entry.isDirectory || !entry.name) {
+    if (!entry.name) {
+      continue;
+    }
+    if (!entry.isDirectory) {
       continue; // 跳过文件，只处理目录
     }
 
@@ -147,7 +149,8 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
 
   // 移除原始文件夹（如果可能）
   if (!dryRun) {
-    const hasContent = await isDirHavingContent(rootDir);
+    const entries = await readDir(rootDir);
+    const hasContent = entries.length > 0;
     if (!hasContent) {
       await remove(rootDir, { recursive: true });
     }

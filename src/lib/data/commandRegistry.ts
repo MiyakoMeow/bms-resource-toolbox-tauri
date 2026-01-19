@@ -119,8 +119,11 @@ const COMMAND_REGISTRY_WITH_EXTRAS: CommandDefinition[] = GENERATED_COMMAND_REGI
           let defaultValue = param.defaultValue;
           if (typeof defaultValue === 'string' && defaultValue.startsWith(`${key}.`)) {
             const enumKey = defaultValue.split('.')[1];
-            const enumOption = options.find((o) => o.value === enumKey);
-            if (enumOption) {
+            const enumOption = options.find((o) => {
+              const optVal = o.value;
+              return optVal !== undefined && String(optVal) === enumKey;
+            });
+            if (enumOption && enumOption.value !== undefined) {
               defaultValue = enumOption.value;
             }
           }

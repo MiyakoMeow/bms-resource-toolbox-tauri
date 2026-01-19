@@ -75,7 +75,7 @@ export function getDateTimeTupleFromTimestamp(timestamp: number): DateTimeTuple 
 /**
  * 从日期时间元组创建 Date 对象（本地时间）
  */
-function createDateFromTuple(dateTimeTuple: DateTimeTuple): Date {
+function createDateFromTupleLocal(dateTimeTuple: DateTimeTuple): Date {
   const { year, month, day, hour, minute } = dateTimeTuple;
   return new Date(year, month - 1, day, hour, minute);
 }
@@ -94,7 +94,7 @@ export async function setFileModificationTime(
   targetPath: string,
   dateTimeTuple: DateTimeTuple
 ): Promise<void> {
-  const date = createDateFromTuple(dateTimeTuple);
+  const date = createDateFromTupleLocal(dateTimeTuple);
 
   try {
     // 尝试使用 Node.js fs 设置时间（在 Node.js 环境中）
@@ -117,7 +117,8 @@ export async function setFileModificationTime(
 
       // Windows: 使用 PowerShell（使用 -LiteralPath 防止路径注入）
       if (navigator.platform?.toLowerCase().includes('win')) {
-        const ps1Script = `(Get-Item -LiteralPath "${targetPath}").LastWriteTime = Get-Date "${psDateString}"`;
+        const escapedPath = targetPath.replace(/'/g, "''").replace(/"/g, '""');
+        const ps1Script = `(Get-Item -LiteralPath '${escapedPath}').LastWriteTime = Get-Date '${psDateString}'`;
         await Command.create('powershell', ['-Command', ps1Script]).execute();
       } // macOS/Linux: 使用 touch 命令
       else {

@@ -147,9 +147,11 @@ export async function moveElementsAcrossDir(
     queue.push(...subdirs);
 
     // 延迟清理：只标记待删除的目录，在队列处理完毕后再删除
+    const subEntries = await readDir(currentFrom);
+    const hasSubdirs = subEntries.some((e) => e.isDirectory);
     const hasContent = await isDirHavingContent(currentFrom);
     const skippedFiles = await hasSkippedFiles(currentFrom, replaceOptions);
-    if (!hasContent && !skippedFiles) {
+    if (!hasSubdirs && !hasContent && !skippedFiles) {
       dirsToCleanup.push(currentFrom);
     }
   }

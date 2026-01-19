@@ -88,7 +88,9 @@ export async function setupRawpackToHq(
 
   // 3. 音频转换 (WAV -> FLAC)
   console.log(` > 3. Media processing (WAV -> FLAC)`);
-  if (!dryRun) {
+  if (dryRun) {
+    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+  } else {
     await AudioConverter.processBmsFolders({
       rootDir,
       inputExtensions: ['wav'],
@@ -97,16 +99,14 @@ export async function setupRawpackToHq(
       removeOnFail: true,
       skipOnFail: false,
     });
-  } else {
-    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
   }
 
   // 4. 清理冗余媒体文件
   console.log(` > 4. Clean up redundant media files`);
-  if (!dryRun) {
-    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
-  } else {
+  if (dryRun) {
     console.log('[dry-run] Would clean up redundant media files in', rootDir);
+  } else {
+    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
   }
 }
 
@@ -163,7 +163,9 @@ export async function updateRawpackToHq(
 
   // 3. 音频转换 (WAV -> FLAC)
   console.log(` > 3. Media processing (WAV -> FLAC)`);
-  if (!dryRun) {
+  if (dryRun) {
+    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+  } else {
     await AudioConverter.processBmsFolders({
       rootDir,
       inputExtensions: ['wav'],
@@ -172,16 +174,14 @@ export async function updateRawpackToHq(
       removeOnFail: true,
       skipOnFail: false,
     });
-  } else {
-    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
   }
 
   // 4. 清理冗余媒体文件
   console.log(` > 4. Clean up redundant media files`);
-  if (!dryRun) {
-    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
-  } else {
+  if (dryRun) {
     console.log('[dry-run] Would clean up redundant media files in', rootDir);
+  } else {
+    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
   }
 
   // 5. 软同步
@@ -305,7 +305,9 @@ export async function packRawToHq(
     console.log(' > 1. Audio conversion: WAV -> FLAC');
     progressManager?.setMessage('音频转换: WAV -> FLAC');
 
-    if (!dryRun) {
+    if (dryRun) {
+      console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+    } else {
       await AudioConverter.processBmsFolders({
         rootDir,
         inputExtensions: ['wav'],
@@ -315,18 +317,16 @@ export async function packRawToHq(
         skipOnFail: false,
         progressManager,
       });
-    } else {
-      console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
     }
 
     // 2. 清理冗余媒体文件
     console.log(' > 2. Clean up redundant media files');
     progressManager?.setMessage('清理冗余媒体文件');
 
-    if (!dryRun) {
-      await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
-    } else {
+    if (dryRun) {
       console.log('[dry-run] Would clean up redundant media files in', rootDir);
+    } else {
+      await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
     }
 
     progressManager?.update(100, 100, 'Raw -> HQ 转换完成');

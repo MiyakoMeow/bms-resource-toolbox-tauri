@@ -150,6 +150,7 @@ export class AudioConverter {
     // 使用并发池处理文件
     const pool = new ConcurrencyPool(64);
 
+    const promises: Promise<unknown>[] = [];
     for (const filePath of files) {
       // 检查是否应该停止（暂停或取消）
       if (progressManager?.shouldStop()) {
@@ -161,23 +162,27 @@ export class AudioConverter {
         await progressManager.waitForResume();
       }
 
-      const success = await pool.add(async () => {
-        return await this.convertFile(
-          filePath,
-          presets,
-          removeOnSuccess,
-          removeOnFail,
-          removeExisting,
-          progressManager
-        );
-      });
+      promises.push(
+        pool.add(async () => {
+          const success = await this.convertFile(
+            filePath,
+            presets,
+            removeOnSuccess,
+            removeOnFail,
+            removeExisting,
+            progressManager
+          );
 
-      if (!success) {
-        hadError = true;
-        const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
-        failures.push(fileName);
-      }
+          if (!success) {
+            hadError = true;
+            const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+            failures.push(fileName);
+          }
+        })
+      );
     }
+
+    await Promise.all(promises);
 
     // 等待所有任务完成
     await pool.drain();
