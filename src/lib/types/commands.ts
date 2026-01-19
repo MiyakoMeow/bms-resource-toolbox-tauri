@@ -4,14 +4,14 @@
  * 定义了命令系统的核心接口和类型
  */
 
-import type { ParameterType, CommandCategory } from './enums.js';
+import type { CommandCategory, ParameterType } from './enums';
 
 /**
  * 命令参数定义
  */
 export interface CommandParameter {
-  /** 参数名（对应 Rust 函数参数名） */
-  name: string;
+  /** 参数 key（用于内部标识和绑定） */
+  key: string;
   /** 参数类型 */
   type: ParameterType;
   /** 是否必需 */
@@ -27,6 +27,8 @@ export interface CommandParameter {
   }>;
   /** 验证函数（可选） */
   validation?: (value: unknown) => boolean | string;
+  /** TypeScript 类型字符串（用于代码生成，运行时可选） */
+  typeString?: string;
 }
 
 /**
@@ -50,6 +52,8 @@ export interface CommandDefinition {
   dangerous: boolean;
   /** 使用示例（可选） */
   example?: string;
+  /** 是否为前端命令（不需要调用 Tauri 后端） */
+  isFrontendCommand?: boolean;
 }
 
 /**

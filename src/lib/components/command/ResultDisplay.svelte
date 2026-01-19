@@ -27,83 +27,28 @@ let isObject = $derived(result !== null && typeof result === 'object' && !Array.
 let isArray = $derived(Array.isArray(result));
 </script>
 
-<div class="result-display">
+<div class="flex flex-col gap-2">
   {#if typeof result === 'boolean'}
-    <span class="result-boolean {result ? 'true' : 'false'}">
+    <span class="font-medium {result ? 'text-green-400' : 'text-red-400'}">
       {result ? '✓ 是' : '✗ 否'}
     </span>
   {:else if typeof result === 'number'}
-    <span class="result-number">{result}</span>
+    <span class="font-mono text-orange-300">{result}</span>
   {:else if typeof result === 'string'}
-    <span class="result-string">{result}</span>
+    <span class="text-teal-300">{result}</span>
   {:else if isArray}
-    <div class="result-array">
-      <span class="result-label">数组 ({(result as Array<unknown>).length} 项)</span>
-      <pre class="result-json">{formatted}</pre>
+    <div class="flex flex-col gap-2">
+      <span class="text-sm text-white/60">数组 ({(result as Array<unknown>).length} 项)</span>
+      <pre
+        class="m-0 overflow-x-auto rounded-lg bg-black/30 p-3 text-sm wrap-break-word whitespace-pre-wrap text-white/90">{formatted}</pre>
     </div>
   {:else if isObject}
-    <div class="result-object">
-      <span class="result-label">对象</span>
-      <pre class="result-json">{formatted}</pre>
+    <div class="flex flex-col gap-2">
+      <span class="text-sm text-white/60">对象</span>
+      <pre
+        class="m-0 overflow-x-auto rounded-lg bg-black/30 p-3 text-sm wrap-break-word whitespace-pre-wrap text-white/90">{formatted}</pre>
     </div>
   {:else}
-    <span class="result-other">{formatted}</span>
+    <span class="text-white/70">{formatted}</span>
   {/if}
 </div>
-
-<style>
-.result-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.result-boolean {
-  font-weight: 500;
-}
-
-.result-boolean.true {
-  color: rgb(134 239 172);
-}
-
-.result-boolean.false {
-  color: rgb(252 165 165);
-}
-
-.result-number {
-  color: rgb(253 186 116);
-  font-family: monospace;
-}
-
-.result-string {
-  color: rgb(167 243 208);
-}
-
-.result-array,
-.result-object {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.result-label {
-  font-size: 0.875rem;
-  color: rgb(255 255 255 / 0.6);
-}
-
-.result-json {
-  margin: 0;
-  padding: 0.75rem;
-  background-color: rgb(0 0 0 / 0.3);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.9);
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.result-other {
-  color: rgb(255 255 255 / 0.7);
-}
-</style>

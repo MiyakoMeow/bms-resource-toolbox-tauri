@@ -20,3 +20,5 @@ yarn.lock
 pnpm-lock.yaml
 bun.lock
 target
+legacy
+.vite

@@ -12,60 +12,19 @@ let { selectedCategory }: Props = $props();
 const commands = $derived.by(() => getCommandsByCategory(selectedCategory));
 </script>
 
-<div class="command-list-panel">
-  <header class="panel-header">
-    <h2 class="panel-title">命令列表</h2>
-    <span class="command-count">{commands.length} 个命令</span>
+<div class="flex h-full flex-col gap-4 overflow-y-auto">
+  <header class="flex items-center justify-between border-b border-white/10 pb-4">
+    <h2 class="text-2xl font-bold text-white/90">命令列表</h2>
+    <span class="text-sm text-white/60">{commands.length} 个命令</span>
   </header>
 
   {#if commands.length === 0}
-    <p class="empty-message">该分类下暂无命令</p>
+    <p class="py-8 text-center text-white/40">该分类下暂无命令</p>
   {:else}
-    <div class="command-grid">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
       {#each commands as command (command.id)}
         <CommandCard {command} />
       {/each}
     </div>
   {/if}
 </div>
-
-<style>
-.command-list-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgb(255 255 255 / 0.1);
-}
-
-.panel-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: rgb(255 255 255 / 0.9);
-}
-
-.command-count {
-  font-size: 0.875rem;
-  color: rgb(255 255 255 / 0.6);
-}
-
-.empty-message {
-  text-align: center;
-  color: rgb(255 255 255 / 0.4);
-  padding: 2rem;
-}
-
-.command-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-}
-</style>

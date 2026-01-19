@@ -4,6 +4,15 @@
  * 定义了所有后端 Rust 枚举对应的 TypeScript 枚举类型
  */
 
+import type { IProgressManager } from '../utils/progress';
+import type { AeryFixParams } from '../utils/wasted/aery_fix';
+import type { SetFileNumParams } from '../utils/rawpack/numbering';
+
+export type { AeryFixParams, IProgressManager, SetFileNumParams };
+
+export { AudioPreset } from '../utils/media/types';
+export { VideoPreset } from '../utils/media/types';
+
 /**
  * BMS 文件夹命名类型
  * 对应 Rust: BmsFolderSetNameType
@@ -35,6 +44,7 @@ export enum ReplacePreset {
 export enum BMSEvent {
   BOFNT = 19,
   BOFTT = 20,
+  BOF21 = 21,
   LetsBMSEdit = 101,
   LetsBMSEdit2 = 102,
   LetsBMSEdit3 = 103,
@@ -87,20 +97,16 @@ export enum CommandStatus {
 export enum CommandCategory {
   /** BMS 操作 - BMS 文件解析和目录检查 */
   BMS = 'bms',
-  /** 文件系统 - 文件系统操作和比较 */
-  FS = 'fs',
-  /** 工作目录 - 工作目录重命名和管理 */
-  Work = 'work',
-  /** 根目录 - 根目录批量操作 */
-  Root = 'root',
-  /** 大包管理 - 大型包的拆分和合并 */
-  BigPack = 'bigpack',
-  /** 包转换 - 包格式转换（Raw/HQ/LQ） */
-  Pack = 'pack',
-  /** 原始包 - 原始压缩包解压 */
-  Rawpack = 'rawpack',
-  /** 活动管理 - BMS 活动目录管理 */
-  RootEvent = 'root_event',
   /** BMS 活动 - BMS 活动相关操作 */
   BMSEvent = 'bms_event',
+  /** BMS 文件夹 - BMS 根目录和工作目录操作 */
+  BMSFolder = 'bmsfolder',
+  /** 大包管理 - 大型包的拆分和合并 */
+  BigPack = 'bigpack',
+  /** 包处理 - 压缩包解压和格式转换 */
+  Pack = 'pack',
+  /** 媒体处理 - 音视频文件处理和探测 */
+  Media = 'media',
+  /** Wasted - 特殊工具集 */
+  Wasted = 'wasted',
 }

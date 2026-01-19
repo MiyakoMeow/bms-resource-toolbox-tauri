@@ -1,0 +1,162 @@
+/**
+ * 根目录批量操作工具
+ */
+
+import { readDir, rename } from '@tauri-apps/plugin-fs';
+import { BmsFolderSetNameType, setNameByBms, undoSetNameByBms } from '../work/rename';
+import { ReplacePreset } from '../fs/moving';
+
+/**
+ * 递归设置目录名（根目录版本）
+ *
+ * @command
+ * @category bmsfolder
+ * @dangerous true
+ * @name 批量重命名工作目录
+ * @description 递归为根目录下的所有工作目录设置名称
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @param {ReplacePreset} replacePreset - 文件替换策略
+ *
+ * @returns {Promise<void>}
+ */
+export async function rootSetNameByBms(
+  rootDir: string,
+  setType: BmsFolderSetNameType,
+  dryRun: boolean,
+  replacePreset: ReplacePreset
+): Promise<void> {
+  const entries = await readDir(rootDir);
+
+  for (const entry of entries) {
+    // 只处理目录
+    if (!entry.isDirectory) {
+      continue;
+    }
+
+    if (!entry.name) {
+      continue;
+    }
+
+    const workDir = `${rootDir}/${entry.name}`;
+    await setNameByBms(workDir, setType, dryRun, replacePreset, false);
+  }
+}
+
+/**
+ * 递归撤销目录名设置（根目录版本）
+ *
+ * @command
+ * @category bmsfolder
+ * @dangerous true
+ * @name 批量撤销重命名
+ * @description 递归撤销根目录下所有工作目录的名称设置
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {BmsFolderSetNameType} setType - 命名方式
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ */
+export async function rootUndoSetNameByBms(
+  rootDir: string,
+  setType: BmsFolderSetNameType,
+  dryRun: boolean
+): Promise<void> {
+  const entries = await readDir(rootDir);
+
+  for (const entry of entries) {
+    // 只处理目录
+    if (!entry.isDirectory) {
+      continue;
+    }
+
+    if (!entry.name) {
+      continue;
+    }
+
+    const workDir = `${rootDir}/${entry.name}`;
+    await undoSetNameByBms(workDir, setType, dryRun);
+  }
+}
+
+/**
+ * 复制编号目录名
+ *
+ * @command
+ * @category bmsfolder
+ * @dangerous true
+ * @name 复制编号目录名称
+ * @description 复制编号目录的名称到目标目录
+ * @frontend true
+ *
+ * @param {string} fromDir - 源目录路径
+ * @param {string} toDir - 目标目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ *
+ * @returns {Promise<void>}
+ */
+export async function copyNumberedWorkdirNames(
+  fromDir: string,
+  toDir: string,
+  dryRun: boolean
+): Promise<void> {
+  const entries = await readDir(fromDir);
+  const nameMap = new Map<string, string>();
+
+  // 构建编号到名称的映射
+  for (const entry of entries) {
+    if (!entry.isDirectory) {
+      continue;
+    }
+
+    if (!entry.name) {
+      continue;
+    }
+
+    const match = entry.name.match(/^(\d+)\s+(.+)$/);
+    if (match) {
+      const [, num, name] = match;
+      nameMap.set(num, name);
+    }
+  }
+
+  // 应用到目标目录
+  const toEntries = await readDir(toDir);
+
+  for (const entry of toEntries) {
+    if (!entry.isDirectory) {
+      continue;
+    }
+
+    if (!entry.name) {
+      continue;
+    }
+
+    const match = entry.name.match(/^(\d+)\s+(.+)$/);
+    if (match) {
+      const [, num] = match;
+      const newName = nameMap.get(num);
+
+      if (newName) {
+        const newDirName = `${num} ${newName}`;
+        const oldPath = `${toDir}/${entry.name}`;
+        const newPath = `${toDir}/${newDirName}`;
+
+        if (dryRun) {
+          console.log(`[dry-run] Would rename: ${oldPath} -> ${newPath}`);
+        } else {
+          try {
+            await rename(oldPath, newPath);
+          } catch (error) {
+            console.error(`Failed to rename ${oldPath}:`, error);
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# Ignore generated files
+*.generated.ts
+
+# Ignore build outputs
+dist/
+build/
+coverage/
+
+# Ignore node_modules (if present)
+node_modules/
+
+# Ignore dependencies
+static/
+
+# Ignore lock files
+*.lock
