@@ -18,99 +18,189 @@ import type { IProgressManager } from '../progress';
 
 /**
  * Pack 生成脚本：Raw pack -> HQ pack
+ * 对应 Python: pack_setup_rawpack_to_hq (scripts/pack.py:101-136)
+ *
+ * @command
+ * @category pack
+ * @dangerous true
+ * @name 大包生成脚本：原包 -> HQ版大包
+ * @description 快速创建大包，从已编号的原始包到目标BMS文件夹
+ * @frontend true
+ *
+ * @param {string} packDir - 压缩包目录路径
+ * @param {string} rootDir - 目标根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @returns {Promise<void>}
  */
-export async function setupRawpackToHq(packDir: string, rootDir: string): Promise<void> {
+export async function setupRawpackToHq(
+  packDir: string,
+  rootDir: string,
+  dryRun: boolean
+): Promise<void> {
   // Setup
-  await mkdir(rootDir, { recursive: true });
+  if (!dryRun) {
+    await mkdir(rootDir, { recursive: true });
+  } else {
+    console.log('[dry-run] Would create directory:', rootDir);
+  }
 
   // 1. 解压包
   console.log(` > 1. Unzip packs from ${packDir} to ${rootDir}`);
   const cacheDir = `${rootDir}/CacheDir`;
-  await mkdir(cacheDir, { recursive: true });
+  if (!dryRun) {
+    await mkdir(cacheDir, { recursive: true });
+  }
 
   const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
-  await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
+  if (!dryRun) {
+    await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
+  } else {
+    console.log('[dry-run] Would unzip packs from', packDir, 'to', rootDir);
+  }
 
   // 检查缓存目录是否为空，删除如果为空
   const { readDir } = await import('@tauri-apps/plugin-fs');
-  const cacheEntries = await readDir(cacheDir);
-  if (cacheEntries.length === 0) {
-    await remove(cacheDir, { recursive: true });
+  if (!dryRun) {
+    const cacheEntries = await readDir(cacheDir);
+    if (cacheEntries.length === 0) {
+      await remove(cacheDir, { recursive: true });
+    }
   }
 
   // 2. 同步文件夹名称
   console.log(` > 2. Setting dir names from BMS Files`);
-  const entries = await readDir(rootDir);
-  for (const entry of entries) {
-    if (entry.isDirectory && entry.name) {
-      const path = `${rootDir}/${entry.name}`;
-      await setNameByBms(
-        path,
-        BmsFolderSetNameType.AppendTitleArtist,
-        false,
-        ReplacePreset.UpdatePack,
-        true
-      );
+  if (!dryRun) {
+    const entries = await readDir(rootDir);
+    for (const entry of entries) {
+      if (entry.isDirectory && entry.name) {
+        const path = `${rootDir}/${entry.name}`;
+        await setNameByBms(
+          path,
+          BmsFolderSetNameType.AppendTitleArtist,
+          false,
+          ReplacePreset.UpdatePack,
+          true
+        );
+      }
     }
+  } else {
+    console.log('[dry-run] Would set dir names from BMS files in', rootDir);
   }
 
-  // 3. 音频转换 (WAV -> FLAC) - 已迁移到前端
+  // 3. 音频转换 (WAV -> FLAC)
   console.log(` > 3. Media processing (WAV -> FLAC)`);
-  await AudioConverter.processBmsFolders({
-    rootDir,
-    inputExtensions: ['wav'],
-    presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
-    removeOnSuccess: true,
-    removeOnFail: true,
-    skipOnFail: false,
-  });
+  if (!dryRun) {
+    await AudioConverter.processBmsFolders({
+      rootDir,
+      inputExtensions: ['wav'],
+      presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
+      removeOnSuccess: true,
+      removeOnFail: true,
+      skipOnFail: false,
+    });
+  } else {
+    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+  }
 
   // 4. 清理冗余媒体文件
   console.log(` > 4. Clean up redundant media files`);
-  await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
+  if (!dryRun) {
+    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
+  } else {
+    console.log('[dry-run] Would clean up redundant media files in', rootDir);
+  }
 }
 
 /**
  * Pack 更新脚本：Raw pack -> HQ pack
+ * 对应 Python: pack_update_rawpack_to_hq (scripts/pack.py:164-202)
+ *
+ * @command
+ * @category pack
+ * @dangerous true
+ * @name 大包更新脚本：原包 -> HQ版大包
+ * @description 快速更新大包，从已编号的原始包到增量BMS文件夹
+ * @frontend true
+ *
+ * @param {string} packDir - 压缩包目录路径
+ * @param {string} rootDir - 增量根目录路径
+ * @param {string} syncDir - 已存在的BMS文件夹路径（用于名称同步和文件检查）
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @returns {Promise<void>}
  */
 export async function updateRawpackToHq(
   packDir: string,
   rootDir: string,
-  syncDir: string
+  syncDir: string,
+  dryRun: boolean
 ): Promise<void> {
   // Setup
-  await mkdir(rootDir, { recursive: true });
+  if (!dryRun) {
+    await mkdir(rootDir, { recursive: true });
+  } else {
+    console.log('[dry-run] Would create directory:', rootDir);
+  }
 
   // 1. 解压包
   console.log(` > 1. Unzip packs from ${packDir} to ${rootDir}`);
   const cacheDir = `${rootDir}/CacheDir`;
-  await mkdir(cacheDir, { recursive: true });
+  if (!dryRun) {
+    await mkdir(cacheDir, { recursive: true });
+  }
 
   const { unzipNumericToBmsFolder } = await import('../rawpack/unzip');
-  await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
+  if (!dryRun) {
+    await unzipNumericToBmsFolder(packDir, cacheDir, rootDir, false, ReplacePreset.UpdatePack);
+  } else {
+    console.log('[dry-run] Would unzip packs from', packDir, 'to', rootDir);
+  }
 
   // 2. 同步文件夹名称
   console.log(` > 2. Syncing dir name from ${syncDir} to ${rootDir}`);
-  await copyNumberedWorkdirNames(syncDir, rootDir, false);
+  if (!dryRun) {
+    await copyNumberedWorkdirNames(syncDir, rootDir, false);
+  } else {
+    console.log('[dry-run] Would copy numbered directory names from', syncDir, 'to', rootDir);
+  }
 
-  // 3. 音频转换 (WAV -> FLAC) - 已迁移到前端
+  // 3. 音频转换 (WAV -> FLAC)
   console.log(` > 3. Media processing (WAV -> FLAC)`);
-  await AudioConverter.processBmsFolders({
-    rootDir,
-    inputExtensions: ['wav'],
-    presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
-    removeOnSuccess: true,
-    removeOnFail: true,
-    skipOnFail: false,
-  });
+  if (!dryRun) {
+    await AudioConverter.processBmsFolders({
+      rootDir,
+      inputExtensions: ['wav'],
+      presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
+      removeOnSuccess: true,
+      removeOnFail: true,
+      skipOnFail: false,
+    });
+  } else {
+    console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+  }
 
-  // 4. 软同步
-  console.log(` > 4. Syncing dir files from ${rootDir} to ${syncDir}`);
-  await syncFolder(rootDir, syncDir, presetForAppend());
+  // 4. 清理冗余媒体文件
+  console.log(` > 4. Clean up redundant media files`);
+  if (!dryRun) {
+    await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
+  } else {
+    console.log('[dry-run] Would clean up redundant media files in', rootDir);
+  }
 
-  // 5. 删除空文件夹
-  console.log(` > 5. Remove empty folder in ${rootDir}`);
-  await removeEmptyFolders(rootDir, false);
+  // 5. 软同步
+  console.log(` > 5. Syncing dir files from ${rootDir} to ${syncDir}`);
+  if (!dryRun) {
+    await syncFolder(rootDir, syncDir, presetForAppend());
+  } else {
+    console.log('[dry-run] Would sync files from', rootDir, 'to', syncDir);
+  }
+
+  // 6. 删除空文件夹
+  console.log(` > 6. Remove empty folder in ${rootDir}`);
+  if (!dryRun) {
+    await removeEmptyFolders(rootDir, false);
+  } else {
+    console.log('[dry-run] Would remove empty folders in', rootDir);
+  }
 }
 
 /**
@@ -182,6 +272,67 @@ export async function packHqToLq(
     // 完成
     progressManager?.update(100, 100, 'HQ -> LQ 转换完成');
     console.log('HQ -> LQ conversion completed successfully');
+  } catch (error) {
+    progressManager?.reportError(error instanceof Error ? error.message : String(error));
+    throw error;
+  }
+}
+
+/**
+ * BMS大包脚本：Raw -> HQ
+ * 对应 Python: pack_raw_to_hq (scripts/pack.py:35-52)
+ * 该函数用于将Raw版本转换为HQ版本，适用于beatoraja/Qwilight玩家
+ *
+ * @command
+ * @category pack
+ * @dangerous true
+ * @name BMS大包脚本：原包 -> HQ版大包
+ * @description 将Raw版本转换为HQ版本，用于beatoraja/Qwilight玩家
+ * @frontend true
+ *
+ * @param {string} rootDir - 根目录路径
+ * @param {boolean} dryRun - 模拟运行（不实际执行）
+ * @param {IProgressManager} progressManager - 进度管理器（可选）
+ * @returns {Promise<void>}
+ */
+export async function packRawToHq(
+  rootDir: string,
+  dryRun: boolean,
+  progressManager?: IProgressManager
+): Promise<void> {
+  progressManager?.start();
+
+  try {
+    // 1. 音频转换 (WAV -> FLAC)
+    console.log(' > 1. Audio conversion: WAV -> FLAC');
+    progressManager?.setMessage('音频转换: WAV -> FLAC');
+
+    if (!dryRun) {
+      await AudioConverter.processBmsFolders({
+        rootDir,
+        inputExtensions: ['wav'],
+        presetNames: [AudioPreset.FLAC, AudioPreset.FLAC_FFMPEG],
+        removeOnSuccess: true,
+        removeOnFail: true,
+        skipOnFail: false,
+        progressManager,
+      });
+    } else {
+      console.log('[dry-run] Would convert WAV to FLAC in', rootDir);
+    }
+
+    // 2. 清理冗余媒体文件
+    console.log(' > 2. Clean up redundant media files');
+    progressManager?.setMessage('清理冗余媒体文件');
+
+    if (!dryRun) {
+      await MediaCleaner.removeUnneedMediaFiles(rootDir, RemoveMediaPreset.Oraja);
+    } else {
+      console.log('[dry-run] Would clean up redundant media files in', rootDir);
+    }
+
+    progressManager?.update(100, 100, 'Raw -> HQ 转换完成');
+    console.log('Raw -> HQ conversion completed successfully');
   } catch (error) {
     progressManager?.reportError(error instanceof Error ? error.message : String(error));
     throw error;

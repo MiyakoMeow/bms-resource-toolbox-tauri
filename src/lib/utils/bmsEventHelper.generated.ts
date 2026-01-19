@@ -268,9 +268,27 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'pack_setup_rawpack_to_hq') {
+      const { setupRawpackToHq } = await import('$lib/utils/pack/pack.js');
+      await setupRawpackToHq(params.packDir as string, params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'pack_update_rawpack_to_hq') {
+      const { updateRawpackToHq } = await import('$lib/utils/pack/pack.js');
+      await updateRawpackToHq(params.packDir as string, params.rootDir as string, params.syncDir as string, params.dryRun as boolean);
+      return { success: true, data: undefined };
+    }
+
     if (commandId === 'pack_pack_hq_to_lq') {
       const { packHqToLq } = await import('$lib/utils/pack/pack.js');
       await packHqToLq(params.rootDir as string, params.dryRun as boolean, params.progressManager as IProgressManager);
+      return { success: true, data: undefined };
+    }
+
+    if (commandId === 'pack_pack_raw_to_hq') {
+      const { packRawToHq } = await import('$lib/utils/pack/pack.js');
+      await packRawToHq(params.rootDir as string, params.dryRun as boolean, params.progressManager as IProgressManager);
       return { success: true, data: undefined };
     }
 
@@ -332,5 +350,8 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'root_root_set_name_by_bms',
   'root_root_undo_set_name_by_bms',
   'root_copy_numbered_workdir_names',
-  'pack_pack_hq_to_lq'
+  'pack_setup_rawpack_to_hq',
+  'pack_update_rawpack_to_hq',
+  'pack_pack_hq_to_lq',
+  'pack_pack_raw_to_hq'
 ];

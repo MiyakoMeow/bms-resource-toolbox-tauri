@@ -1192,6 +1192,79 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     isFrontendCommand: true
   },
   {
+    id: 'pack_setup_rawpack_to_hq',
+    name: '大包生成脚本：原包 -> HQ版大包',
+    category: CommandCategory.Pack,
+    description: `快速创建大包，从已编号的原始包到目标BMS文件夹`,
+    parameters: [
+      {
+        name: 'packDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 压缩包目录路径`
+      },
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 目标根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'pack_update_rawpack_to_hq',
+    name: '大包更新脚本：原包 -> HQ版大包',
+    category: CommandCategory.Pack,
+    description: `快速更新大包，从已编号的原始包到增量BMS文件夹`,
+    parameters: [
+      {
+        name: 'packDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 压缩包目录路径`
+      },
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 增量根目录路径`
+      },
+      {
+        name: 'syncDir',
+        type: ParameterType.String,
+        typeString: 'string',
+        required: true,
+        description: `- 已存在的BMS文件夹路径（用于名称同步和文件检查）`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
     id: 'pack_pack_hq_to_lq',
     name: 'HQ 版本转 LQ 版本',
     category: CommandCategory.Pack,
@@ -1223,10 +1296,43 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     returnType: 'void',
     dangerous: true,
     isFrontendCommand: true
+  },
+  {
+    id: 'pack_pack_raw_to_hq',
+    name: 'BMS大包脚本：原包 -> HQ版大包',
+    category: CommandCategory.Pack,
+    description: `将Raw版本转换为HQ版本，用于beatoraja/Qwilight玩家`,
+    parameters: [
+      {
+        name: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        name: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: true,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      },
+      {
+        name: 'progressManager',
+        type: ParameterType.Enum,
+        typeString: 'IProgressManager',
+        required: false,
+        description: `- 进度管理器（可选）`
+      }
+    ],
+    returnType: 'void',
+    dangerous: true,
+    isFrontendCommand: true
   }
 ];
 
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 43;
+export const COMMAND_COUNT = 46;

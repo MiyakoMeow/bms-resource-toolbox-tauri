@@ -3,4 +3,4 @@
  * 导出所有公共 API
  */
 
-export * from './pack';
+export { setupRawpackToHq, updateRawpackToHq, packHqToLq, packRawToHq } from './pack';
