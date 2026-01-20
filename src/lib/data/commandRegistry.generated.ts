@@ -92,14 +92,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
         key: 'cacheDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
@@ -139,14 +139,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
         key: 'cacheDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
@@ -1199,7 +1199,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`
@@ -1232,7 +1232,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`

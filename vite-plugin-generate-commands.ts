@@ -322,6 +322,9 @@ export class CommandGenerator {
         } else if (defaultStr.startsWith('BmsFolderSetNameType.')) {
           const enumValue = defaultStr.split('.')[1];
           defaultValue = `BmsFolderSetNameType.${enumValue}`;
+        } else if (defaultStr.startsWith('BMSEvent.')) {
+          const enumValue = defaultStr.split('.')[1];
+          defaultValue = `BMSEvent.${enumValue}`;
         } else if (!isNaN(Number(defaultStr))) {
           defaultValue = Number(defaultStr);
         } else if (defaultStr === 'true') {
@@ -575,6 +578,10 @@ ${parameters}
       'fromdir',
       'todir',
       'outputdir',
+      'cachedir', // 新增：缓存目录
+      'packdir', // 新增：压缩包目录
+      'sourcedir', // 新增：源目录
+      'targetdir', // 新增：目标目录
     ];
 
     // 文件路径参数模式

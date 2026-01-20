@@ -3,11 +3,7 @@
  */
 
 import { readDir, rename } from '@tauri-apps/plugin-fs';
-import {
-  BmsFolderSetNameType,
-  setNameByBmsOptimized,
-  undoSetNameByBms,
-} from '../work/rename';
+import { BmsFolderSetNameType, setNameByBmsOptimized, undoSetNameByBms } from '../work/rename';
 import { ReplacePreset } from '../fs/moving';
 
 /**

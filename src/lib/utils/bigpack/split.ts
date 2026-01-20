@@ -104,9 +104,14 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
     return;
   }
 
-  const charMap = new Map<string, string[]>();
+  // 获取父目录路径（对应 Python: parent_dir = os.path.join(root_dir, "..")）
+  const pathParts = rootDir.split(/[/\\]/);
+  pathParts.pop(); // 移除当前目录名
+  const parentDir = pathParts.join('/') || rootDir;
 
   // 按首字符规则分组
+  const charMap = new Map<string, string[]>();
+
   for (const entry of entries) {
     if (!entry.name) {
       continue;
@@ -121,36 +126,39 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
       charMap.set(groupName, []);
     }
 
-    charMap.get(groupName)!.push(`${rootDir}/${entry.name}`);
+    charMap.get(groupName)!.push(entry.name);
   }
 
-  // 创建拆分目录
-  for (const [groupName, folders] of charMap) {
-    const targetDir = `${rootDir}/${groupName}`;
+  // 创建拆分目录并移动文件夹
+  for (const [groupName, folderNames] of charMap) {
+    // 对应 Python: target_dir = os.path.join(parent_dir, f"{root_folder_name} [{rule}]")
+    const targetDir = `${parentDir}/${rootFolderName} [${groupName}]`;
 
     if (!dryRun) {
       await mkdir(targetDir, { recursive: true });
     }
 
-    console.log(`Processing ${groupName}: ${folders.length} folders`);
+    console.log(`Processing ${groupName}: ${folderNames.length} folders`);
 
     // 移动文件夹
-    for (const folder of folders) {
-      const folderName = folder.split('/').pop() || folder.split('\\').pop() || folder;
+    for (const folderName of folderNames) {
+      const sourcePath = `${rootDir}/${folderName}`;
       const targetPath = `${targetDir}/${folderName}`;
 
       if (dryRun) {
-        console.log(`[dry-run] Would move: ${folder} -> ${targetPath}`);
+        console.log(`[dry-run] Would move: ${sourcePath} -> ${targetPath}`);
       } else {
-        await rename(folder, targetPath);
+        await rename(sourcePath, targetPath);
       }
     }
   }
 
   // 移除原始文件夹（如果可能）
   if (!dryRun) {
-    const entries = await readDir(rootDir);
-    const hasContent = entries.length > 0;
+    const remainingEntries = await readDir(rootDir);
+    const hasContent =
+      remainingEntries.length > 0 &&
+      !(remainingEntries.length === 1 && remainingEntries[0].name === '.');
     if (!hasContent) {
       await remove(rootDir, { recursive: true });
     }
@@ -175,6 +183,7 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
  */
 export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
+  const rootFolderName = rootDir.split('/').pop() || rootDir.split('\\').pop() || rootDir;
 
   // 获取所有规则名称
   const ruleNames = FIRST_CHAR_RULES.map((r) => r.name);
@@ -184,34 +193,39 @@ export async function undoSplitPack(rootDir: string, dryRun: boolean): Promise<v
       continue;
     }
 
-    // 检查是否为规则定义的目录名（支持多字符如 "0-9", "ABCD", "平假名"）
-    if (!ruleNames.includes(entry.name)) {
-      continue;
-    }
-
-    const charDir = `${rootDir}/${entry.name}`;
-
-    // 移动所有子目录到根目录
-    const subEntries = await readDir(charDir);
-
-    for (const subEntry of subEntries) {
-      if (!subEntry.isDirectory || !subEntry.name) {
+    // 检查是否为规则定义的目录名（格式：rootFolderName [规则名]）
+    // 对应 Python: folder_name.startswith(f"{root_folder_name} [") and folder_name.endswith("]")
+    if (entry.name.startsWith(`${rootFolderName} [`) && entry.name.endsWith(']')) {
+      // 提取规则名称
+      const rulePart = entry.name.slice(entry.name.lastIndexOf('[') + 1, -1);
+      if (!ruleNames.includes(rulePart)) {
         continue;
       }
 
-      const sourcePath = `${charDir}/${subEntry.name}`;
-      const targetPath = `${rootDir}/${subEntry.name}`;
+      const charDir = `${rootDir}/${entry.name}`;
 
-      if (dryRun) {
-        console.log(`[dry-run] Would move: ${sourcePath} -> ${targetPath}`);
-      } else {
-        await rename(sourcePath, targetPath);
+      // 移动所有子目录到根目录
+      const subEntries = await readDir(charDir);
+
+      for (const subEntry of subEntries) {
+        if (!subEntry.isDirectory || !subEntry.name) {
+          continue;
+        }
+
+        const sourcePath = `${charDir}/${subEntry.name}`;
+        const targetPath = `${rootDir}/${subEntry.name}`;
+
+        if (dryRun) {
+          console.log(`[dry-run] Would move: ${sourcePath} -> ${targetPath}`);
+        } else {
+          await rename(sourcePath, targetPath);
+        }
       }
-    }
 
-    // 删除空的规则目录
-    if (!dryRun) {
-      await remove(charDir, { recursive: true });
+      // 删除空的规则目录
+      if (!dryRun) {
+        await remove(charDir, { recursive: true });
+      }
     }
   }
 }
@@ -616,7 +630,6 @@ export async function moveWorksWithSameNameToSiblings(
  * 1. 对于 fromDir 中的每个子文件夹 A
  * 2. 在 toDir 中查找名称包含 A 的子文件夹 B
  * 3. 如果找到，将 A 的内容合并到 B 中
- * 4. 递归处理子文件夹内的文件结构
  *
  * @command
  * @category bigpack
@@ -682,6 +695,7 @@ export async function moveWorksWithSameName(
   console.log(`目标目录 ${toDir} 中有 ${toSubdirs.length} 个子文件夹`);
 
   // 收集合并对： (fromDirName, fromDirPath, toDirName, toDirPath)
+  // 对应 Python: 简单的名称包含检查
   const pairs: Array<{ fromDirName: string; fromPath: string; toDirName: string; toPath: string }> =
     [];
 
@@ -689,70 +703,15 @@ export async function moveWorksWithSameName(
   for (const fromDirName of fromSubdirs) {
     const fromPath = `${fromDir}/${fromDirName}`;
 
-    // 查找匹配的目标子文件夹
-    // 匹配规则：
-    // 1. 完全相同
-    // 2. 源文件夹名是目标文件夹名的子串（但要确保不是偶然匹配）
-    // 3. 提取编号和名称部分进行匹配
-    let bestMatch: string | null = null;
-    let bestScore = 0;
-
+    // 在目标目录中查找名称包含源文件夹名的子文件夹
+    // 对应 Python: if from_dir_name in to_dir_name:
     for (const toDirName of toSubdirs) {
-      // 规则1：完全相同
-      if (fromDirName === toDirName) {
+      if (toDirName.includes(fromDirName)) {
         const toPath = `${toDir}/${toDirName}`;
         pairs.push({ fromDirName, fromPath, toDirName, toPath });
-        break;
+        console.log(`  找到匹配: ${fromDirName} -> ${toDirName}`);
+        break; // 只匹配第一个
       }
-
-      // 规则2：提取编号和名称部分进行匹配
-      const fromMatch = fromDirName.match(/^(\d+)\s+(.+)$/);
-      const toMatch = toDirName.match(/^(\d+)\s+(.+)$/);
-
-      if (fromMatch && toMatch) {
-        // 如果编号相同，比较名称部分
-        if (fromMatch[1] === toMatch[1]) {
-          const fromName = fromMatch[2].trim();
-          const toName = toMatch[2].trim();
-
-          // 计算相似度（使用简单的字符包含和子串长度）
-          let score = 0;
-          if (fromName === toName) {
-            score = 100;
-          } else if (toName.includes(fromName)) {
-            score = 80 - Math.abs(toName.length - fromName.length);
-          } else if (fromName.includes(toName)) {
-            score = 70 - Math.abs(toName.length - fromName.length);
-          } else if (fromDirName.includes(toDirName)) {
-            // 如果源文件夹名包含目标文件夹名
-            score = 50;
-          }
-
-          // 只在得分较高时才认为匹配
-          if (score >= 50 && score > bestScore) {
-            bestScore = score;
-            bestMatch = toDirName;
-          }
-        }
-      } else if (fromDirName.includes(toDirName) || toDirName.includes(fromDirName)) {
-        // 如果无法提取编号和名称，使用简单的包含检查
-        // 但要确保不是太短的匹配（避免误匹配）
-        const minLength = Math.min(fromDirName.length, toDirName.length);
-        if (minLength >= 5) {
-          const score = 40;
-          if (score > bestScore) {
-            bestScore = score;
-            bestMatch = toDirName;
-          }
-        }
-      }
-    }
-
-    // 使用最佳匹配
-    if (bestMatch && bestScore >= 50) {
-      const toPath = `${toDir}/${bestMatch}`;
-      pairs.push({ fromDirName, fromPath, toDirName: bestMatch, toPath });
-      console.log(`  Matched: ${fromDirName} -> ${bestMatch} (score: ${bestScore})`);
     }
   }
 
