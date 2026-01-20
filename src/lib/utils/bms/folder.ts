@@ -168,10 +168,7 @@ export async function setNameByBms(
     const workDir = `${rootDir}/${entry.name}`;
     const result = await workdirSetNameByBms(workDir, dryRun);
 
-    if (result.success) {
-      if (!dryRun && result.newPath) {
-        await rename(workDir, result.newPath);
-      }
+    if (result.success && result.newPath) {
       results.push({
         originalName: entry.name,
         newName: result.newName || entry.name,
@@ -389,7 +386,7 @@ async function workdirAppendNameByBms(
   newPath?: string;
   reason?: string;
 }> {
-  const dirName = workDir.split('/').pop() || workDir.split('\\').pop() || '';
+  const dirName = workDir.split(/[/\\]/).pop() || '';
 
   // 检查是否已经处理过（以]结尾）
   if (dirName.endsWith(']')) {
@@ -418,7 +415,7 @@ async function workdirAppendNameByBms(
 
   return {
     success: true,
-    newName: newDirPath.split('/').pop() || newDirPath.split('\\').pop() || '',
+    newName: newDirPath.split(/[/\\]/).pop() || '',
     newPath: newDirPath,
   };
 }

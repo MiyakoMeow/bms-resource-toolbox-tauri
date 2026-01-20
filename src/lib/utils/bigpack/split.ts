@@ -383,20 +383,31 @@ export async function mergeFoldersWithSameNameWithinDir(
     }
   }
 
-  // 检查重复（一个目标文件夹被多个源文件夹合并）
+  // 检查重复（检查是否同一个文件夹既作为源又作为目标）
   const dupList: string[] = [];
-  let lastTargetFolder = '';
+  const sourceFolders = new Set<string>();
+  const targetFolders = new Set<string>();
 
+  // 收集所有源文件夹
   for (const [name, folders] of nameMap) {
     if (folders.length <= 1) {
       continue;
     }
+    // 从第二个开始都是源文件夹
+    for (let i = 1; i < folders.length; i++) {
+      sourceFolders.add(folders[i]);
+    }
+  }
 
+  // 检查目标文件夹是否也是源文件夹
+  for (const [name, folders] of nameMap) {
+    if (folders.length <= 1) {
+      continue;
+    }
     const targetFolder = folders[0];
-    if (lastTargetFolder === targetFolder) {
+    if (sourceFolders.has(targetFolder)) {
       dupList.push(name);
     }
-    lastTargetFolder = targetFolder;
   }
 
   // 如果发现重复，报错并退出

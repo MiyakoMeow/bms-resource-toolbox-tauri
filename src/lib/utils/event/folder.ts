@@ -58,8 +58,15 @@ export async function createNumFolders(dir: string, max: number): Promise<void> 
   for (let id = 1; id <= max; id++) {
     const newDirName = `${id}`;
 
-    // 检查是否存在以该编号开头的文件夹
-    const idExists = existingDirs.some((elementName) => elementName.startsWith(newDirName));
+    // 检查是否存在以该编号开头的文件夹（检查常见分隔符）
+    const idExists = existingDirs.some(
+      (elementName) =>
+        elementName === newDirName ||
+        elementName.startsWith(`${newDirName} `) ||
+        elementName.startsWith(`${newDirName}.`) ||
+        elementName.startsWith(`${newDirName}-`) ||
+        elementName.startsWith(`${newDirName}_`)
+    );
 
     if (idExists) {
       continue;

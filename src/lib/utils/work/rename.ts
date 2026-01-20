@@ -153,7 +153,7 @@ export async function setNameByBms(
   const validArtist = getValidFileName(artist);
 
   // 获取当前目录名
-  const workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
+  const workDirName = workDir.split(/[/\\]/).pop() || workDir;
 
   // 如果启用跳过已格式化目录的选项
   if (skipAlreadyFormatted && isAlreadyFormatted(workDirName, setType)) {
@@ -241,7 +241,7 @@ export async function undoSetNameByBms(
     console.log(`[dry-run] Start: work::undoSetNameByBms`);
   }
 
-  const workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
+  const workDirName = workDir.split(/[/\\]/).pop() || workDir;
 
   // 根据不同的 set_type，提取原始目录名
   let originalDirName: string;
@@ -284,7 +284,7 @@ export async function undoSetNameByBms(
     // 避免无限循环，最多尝试100次
     if (counter > 100) {
       console.warn(`Failed to find available name after 100 attempts for: ${originalDirName}`);
-      break;
+      return;
     }
   }
 
@@ -437,13 +437,14 @@ export async function setNameByBmsOptimized(
     case BmsFolderSetNameType.ReplaceTitleArtist:
       targetDirName = `${validTitle} [${validArtist}]`;
       break;
-    case BmsFolderSetNameType.AppendTitleArtist:
-      workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
-      targetDirName = `${workDirName} ${validTitle} [${validArtist}]`;
+    case BmsFolderSetNameType.AppendTitleArtist: {
+      const dirNameForAppend = workDir.split(/[/\\]/).pop() || workDir;
+      targetDirName = `${dirNameForAppend} ${validTitle} [${validArtist}]`;
       break;
+    }
     case BmsFolderSetNameType.AppendArtist: {
-      const workDirName2 = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
-      targetDirName = `${workDirName2} [${validArtist}]`;
+      const dirNameForArtist = workDir.split(/[/\\]/).pop() || workDir;
+      targetDirName = `${dirNameForArtist} [${validArtist}]`;
       break;
     }
   }

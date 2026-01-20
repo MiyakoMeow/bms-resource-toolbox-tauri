@@ -34,7 +34,7 @@ function isTempFile(fileName: string): boolean {
     return true;
   }
   for (const prefix of TEMP_FILE_PREFIXES) {
-    if (fileName.startsWith(prefix)) {
+    if (lowerName.startsWith(prefix.toLowerCase())) {
       return true;
     }
   }
