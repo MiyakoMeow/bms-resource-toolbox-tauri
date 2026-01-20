@@ -292,6 +292,60 @@ export async function executeGeneratedFrontendCommand(
       return { success: true, data: undefined };
     }
 
+    if (commandId === 'scan_folder_similar_folders') {
+      const { scanFolderSimilarFolders } = await import('$lib/utils/bms/folder.js');
+      const result = await scanFolderSimilarFolders(params.rootDir as string, params.similarityTrigger as number);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'set_name_by_bms') {
+      const { setNameByBms } = await import('$lib/utils/bms/folder.js');
+      const result = await setNameByBms(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'append_name_by_bms') {
+      const { appendNameByBms } = await import('$lib/utils/bms/folder.js');
+      const result = await appendNameByBms(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'append_artist_name_by_bms') {
+      const { appendArtistNameByBms } = await import('$lib/utils/bms/folder.js');
+      const result = await appendArtistNameByBms(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'copy_numbered_workdir_names') {
+      const { copyNumberedWorkdirNames } = await import('$lib/utils/bms/folder.js');
+      const result = await copyNumberedWorkdirNames(params.rootDirFrom as string, params.rootDirTo as string, params.dryRun as boolean);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'undo_set_name') {
+      const { undoSetName } = await import('$lib/utils/bms/folder.js');
+      const result = await undoSetName(params.rootDir as string, params.dryRun as boolean);
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'check_ffmpeg_exec') {
+      const { checkFfmpegExec } = await import('$lib/utils/system/check.js');
+      const result = await checkFfmpegExec();
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'check_flac_exec') {
+      const { checkFlacExec } = await import('$lib/utils/system/check.js');
+      const result = await checkFlacExec();
+      return { success: true, data: result };
+    }
+
+    if (commandId === 'check_oggenc_exec') {
+      const { checkOggencExec } = await import('$lib/utils/system/check.js');
+      const result = await checkOggencExec();
+      return { success: true, data: result };
+    }
+
     return {
       success: false,
       error: '未知的前端命令'
@@ -353,5 +407,14 @@ export const FRONTEND_COMMAND_IDS: string[] = [
   'pack_setup_rawpack_to_hq',
   'pack_update_rawpack_to_hq',
   'pack_pack_hq_to_lq',
-  'pack_pack_raw_to_hq'
+  'pack_pack_raw_to_hq',
+  'scan_folder_similar_folders',
+  'set_name_by_bms',
+  'append_name_by_bms',
+  'append_artist_name_by_bms',
+  'copy_numbered_workdir_names',
+  'undo_set_name',
+  'check_ffmpeg_exec',
+  'check_flac_exec',
+  'check_oggenc_exec'
 ];

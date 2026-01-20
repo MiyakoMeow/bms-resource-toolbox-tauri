@@ -76,9 +76,11 @@ export function openBMSEventWorks(event: BMSEvent, workIds: number[]): void {
   }
 
   // 验证每个 ID 是否为正整数
-  const invalidIds = workIds.filter(id => !Number.isInteger(id) || id <= 0);
+  const invalidIds = workIds.filter((id) => !Number.isInteger(id) || id <= 0);
   if (invalidIds.length > 0) {
-    throw new Error(`Invalid work IDs: ${invalidIds.join(', ')}. All IDs must be positive integers.`);
+    throw new Error(
+      `Invalid work IDs: ${invalidIds.join(', ')}. All IDs must be positive integers.`
+    );
   }
 
   for (const workId of workIds) {
