@@ -36,6 +36,10 @@ export async function unzipNumericToBmsFolder(
   await mkdir(cacheDir, { recursive: true });
   await mkdir(rootDir, { recursive: true });
 
+  // 确保已处理文件目录存在
+  const usedPackDir = `${packDir}/BOFTTPacks`;
+  await mkdir(usedPackDir, { recursive: true });
+
   // 获取数字编号文件列表
   const fileNames = await getNumSetFileNames(packDir);
 
@@ -118,6 +122,10 @@ export async function unzipWithNameToBmsFolder(
   await mkdir(cacheDir, { recursive: true });
   await mkdir(rootDir, { recursive: true });
 
+  // 确保已处理文件目录存在
+  const usedPackDir = `${packDir}/BOFTTPacks`;
+  await mkdir(usedPackDir, { recursive: true });
+
   // 获取所有压缩包文件
   const entries = await readDir(packDir);
   const packFiles = entries.filter((e) => !e.isDirectory);
@@ -159,6 +167,15 @@ export async function unzipWithNameToBmsFolder(
       await rename(workCacheDir, targetDir);
     } else {
       await moveElementsAcrossDir(workCacheDir, targetDir, replaceOptionsFromPreset(replacePreset));
+    }
+
+    // 移动已处理的文件到 BOFTTPacks 目录
+    console.log(` > Finish dealing with file: ${entry.name}`);
+    const usedFilePath = `${usedPackDir}/${entry.name}`;
+    try {
+      await rename(packFile, usedFilePath);
+    } catch (error) {
+      console.error(`Failed to move processed file ${entry.name}:`, error);
     }
   }
 }

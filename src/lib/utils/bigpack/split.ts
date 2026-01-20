@@ -365,6 +365,31 @@ export async function mergeFoldersWithSameNameWithinDir(
     }
   }
 
+  // 检查重复（一个目标文件夹被多个源文件夹合并）
+  const dupList: string[] = [];
+  let lastTargetFolder = '';
+
+  for (const [name, folders] of nameMap) {
+    if (folders.length <= 1) {
+      continue;
+    }
+
+    const targetFolder = folders[0];
+    if (lastTargetFolder === targetFolder) {
+      dupList.push(name);
+    }
+    lastTargetFolder = targetFolder;
+  }
+
+  // 如果发现重复，报错并退出
+  if (dupList.length > 0) {
+    console.error('Duplicate detected!');
+    for (const name of dupList) {
+      console.error(`  -> ${name}`);
+    }
+    throw new Error('Duplicate target folders detected. Merge operation aborted.');
+  }
+
   // 合并同名文件夹
   for (const [name, folders] of nameMap) {
     if (folders.length <= 1) {
@@ -660,17 +685,70 @@ export async function moveWorksWithSameName(
   for (const fromDirName of fromSubdirs) {
     const fromPath = `${fromDir}/${fromDirName}`;
 
-    // 查找匹配的目标子文件夹（名称包含源文件夹名）
+    // 查找匹配的目标子文件夹
+    // 匹配规则：
+    // 1. 完全相同
+    // 2. 源文件夹名是目标文件夹名的子串（但要确保不是偶然匹配）
+    // 3. 提取编号和名称部分进行匹配
+    let bestMatch: string | null = null;
+    let bestScore = 0;
+
     for (const toDirName of toSubdirs) {
-      if (
-        fromDirName === toDirName ||
-        toDirName.includes(fromDirName) ||
-        fromDirName.includes(toDirName)
-      ) {
+      // 规则1：完全相同
+      if (fromDirName === toDirName) {
         const toPath = `${toDir}/${toDirName}`;
         pairs.push({ fromDirName, fromPath, toDirName, toPath });
         break;
       }
+
+      // 规则2：提取编号和名称部分进行匹配
+      const fromMatch = fromDirName.match(/^(\d+)\s+(.+)$/);
+      const toMatch = toDirName.match(/^(\d+)\s+(.+)$/);
+
+      if (fromMatch && toMatch) {
+        // 如果编号相同，比较名称部分
+        if (fromMatch[1] === toMatch[1]) {
+          const fromName = fromMatch[2].trim();
+          const toName = toMatch[2].trim();
+
+          // 计算相似度（使用简单的字符包含和子串长度）
+          let score = 0;
+          if (fromName === toName) {
+            score = 100;
+          } else if (toName.includes(fromName)) {
+            score = 80 - Math.abs(toName.length - fromName.length);
+          } else if (fromName.includes(toName)) {
+            score = 70 - Math.abs(toName.length - fromName.length);
+          } else if (fromDirName.includes(toDirName)) {
+            // 如果源文件夹名包含目标文件夹名
+            score = 50;
+          }
+
+          // 只在得分较高时才认为匹配
+          if (score >= 50 && score > bestScore) {
+            bestScore = score;
+            bestMatch = toDirName;
+          }
+        }
+      } else if (fromDirName.includes(toDirName) || toDirName.includes(fromDirName)) {
+        // 如果无法提取编号和名称，使用简单的包含检查
+        // 但要确保不是太短的匹配（避免误匹配）
+        const minLength = Math.min(fromDirName.length, toDirName.length);
+        if (minLength >= 5) {
+          const score = 40;
+          if (score > bestScore) {
+            bestScore = score;
+            bestMatch = toDirName;
+          }
+        }
+      }
+    }
+
+    // 使用最佳匹配
+    if (bestMatch && bestScore >= 50) {
+      const toPath = `${toDir}/${bestMatch}`;
+      pairs.push({ fromDirName, fromPath, toDirName: bestMatch, toPath });
+      console.log(`  Matched: ${fromDirName} -> ${bestMatch} (score: ${bestScore})`);
     }
   }
 

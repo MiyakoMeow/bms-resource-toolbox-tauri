@@ -225,7 +225,8 @@ export async function undoSetNameByBms(
   // 构建新目录路径
   const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
   const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
-  let newDirPath = `${parentDir}/${originalDirName}`;
+  const baseNewDirPath = `${parentDir}/${originalDirName}`;
+  let newDirPath = baseNewDirPath;
 
   // 如果源目录与目标目录相同，则跳过操作
   if (workDir === newDirPath) {
@@ -237,9 +238,16 @@ export async function undoSetNameByBms(
 
   // 检查目标目录是否已存在，如果存在则添加数字后缀
   let counter = 1;
+
   while (await exists(newDirPath)) {
-    newDirPath = `${parentDir}/${originalDirName}_${counter}`;
+    newDirPath = `${baseNewDirPath}_${counter}`;
     counter++;
+
+    // 避免无限循环，最多尝试100次
+    if (counter > 100) {
+      console.warn(`Failed to find available name after 100 attempts for: ${originalDirName}`);
+      break;
+    }
   }
 
   console.log(`Undo rename: ${workDir} -> ${newDirPath}`);
