@@ -782,7 +782,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     id: 'work_remove_zero_sized_media_files',
     name: '删除零字节媒体文件',
     category: CommandCategory.BMSFolder,
-    description: `递归删除工作目录中所有零字节媒体文件`,
+    description: `递归删除工作目录中所有零字节媒体文件和临时文件`,
     parameters: [
       {
         key: 'dir',
