@@ -270,7 +270,11 @@ export async function moveWorksInPack(
     if (dryRun) {
       console.log(`[dry-run] Would move: ${sourcePath} -> ${targetPath}`);
     } else {
-      await rename(sourcePath, targetPath);
+      await moveElementsAcrossDir(
+        sourcePath,
+        targetPath,
+        replaceOptionsFromPreset(ReplacePreset.UpdatePack)
+      );
     }
   }
 }
