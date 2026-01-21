@@ -97,7 +97,7 @@ function findFirstCharRule(name: string): string {
  */
 export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean): Promise<void> {
   const entries = await readDir(rootDir);
-  const rootFolderName = rootDir.split('/').pop() || rootDir.split('\\').pop() || rootDir;
+  const rootFolderName = path.basename(rootDir);
 
   // 检查是否以 ']' 结尾
   if (rootFolderName.endsWith(']')) {
@@ -382,41 +382,6 @@ export async function mergeFoldersWithSameNameWithinDir(
     }
   }
 
-  // 检查重复（检查是否同一个文件夹既作为源又作为目标）
-  const dupList: string[] = [];
-  const sourceFolders = new Set<string>();
-
-  // 收集所有源文件夹
-  for (const [, folders] of nameMap) {
-    if (folders.length <= 1) {
-      continue;
-    }
-    // 从第二个开始都是源文件夹
-    for (let i = 1; i < folders.length; i++) {
-      sourceFolders.add(folders[i]);
-    }
-  }
-
-  // 检查目标文件夹是否也是源文件夹
-  for (const [name, folders] of nameMap) {
-    if (folders.length <= 1) {
-      continue;
-    }
-    const targetFolder = folders[0];
-    if (sourceFolders.has(targetFolder)) {
-      dupList.push(name);
-    }
-  }
-
-  // 如果发现重复，报错并退出
-  if (dupList.length > 0) {
-    console.error('Duplicate detected!');
-    for (const name of dupList) {
-      console.error(`  -> ${name}`);
-    }
-    throw new Error('Duplicate target folders detected. Merge operation aborted.');
-  }
-
   // 合并同名文件夹
   for (const [name, folders] of nameMap) {
     if (folders.length <= 1) {
@@ -431,6 +396,11 @@ export async function mergeFoldersWithSameNameWithinDir(
     // 移动其他文件夹的内容到目标文件夹
     for (let i = 1; i < folders.length; i++) {
       const sourceFolder = folders[i];
+
+      if (sourceFolder === targetFolder) {
+        console.warn(`Skipping self-merge: ${sourceFolder}`);
+        continue;
+      }
 
       if (dryRun) {
         console.log(`[dry-run] Would merge: ${sourceFolder} -> ${targetFolder}`);
