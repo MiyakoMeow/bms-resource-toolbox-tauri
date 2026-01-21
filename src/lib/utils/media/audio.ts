@@ -4,6 +4,7 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { ProcessRunner } from './processRunner';
 import { ConcurrencyPool } from './concurrency';
 import { AUDIO_PRESETS } from './presets';
@@ -271,7 +272,7 @@ export class AudioConverter {
 
           if (!success) {
             hadError = true;
-            const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+            const fileName = path.basename(filePath);
             failures.push(fileName);
           }
         })
@@ -337,7 +338,7 @@ export class AudioConverter {
       const outputPath = this.replaceExtension(filePath, preset.outputFormat);
 
       // 更新进度消息
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const fileName = path.basename(filePath);
       progressManager?.setMessage(`转换 ${fileName} [${currentPresetIndex + 1}/${presets.length}]`);
 
       // 如果目标文件已存在

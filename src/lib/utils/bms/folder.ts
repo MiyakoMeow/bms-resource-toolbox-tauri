@@ -12,6 +12,7 @@
  */
 
 import { readDir, rename, exists, remove } from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { getDirBmsInfo } from './scanner';
 import { getValidFsName } from '../fs/name';
 import { bmsDirSimilarity } from '../fs/similarity';
@@ -386,7 +387,7 @@ async function workdirAppendNameByBms(
   newPath?: string;
   reason?: string;
 }> {
-  const dirName = workDir.split(/[/\\]/).pop() || '';
+  const dirName = path.basename(workDir);
 
   // 检查是否已经处理过（以]结尾）
   if (dirName.endsWith(']')) {
@@ -415,7 +416,7 @@ async function workdirAppendNameByBms(
 
   return {
     success: true,
-    newName: newDirPath.split(/[/\\]/).pop() || '',
+    newName: path.basename(newDirPath),
     newPath: newDirPath,
   };
 }

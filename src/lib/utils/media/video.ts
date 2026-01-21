@@ -4,6 +4,7 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { ProcessRunner } from './processRunner';
 import { ConcurrencyPool } from './concurrency';
 import { VIDEO_PRESETS } from './presets';
@@ -310,7 +311,7 @@ export class VideoConverter {
         await progressManager.waitForResume();
       }
 
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const fileName = path.basename(filePath);
       progressManager?.setMessage(`转换 ${fileName}`);
 
       pool.add(async () => {
@@ -384,7 +385,7 @@ export class VideoConverter {
 
         if (!success) {
           hadError.value = true;
-          const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+          const fileName = path.basename(filePath);
           failures.push(fileName);
           console.error(`All presets failed for: ${filePath}`);
         }

@@ -6,6 +6,7 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { REMOVE_MEDIA_RULES } from './presets';
 import { RemoveMediaPreset } from '../../types/enums';
 import type { RemoveMediaRule } from './types';
@@ -291,9 +292,8 @@ export class MediaCleaner {
 
     // 删除文件
     for (const [filePath, replacingFilePath] of removePairs) {
-      const replacingFileName =
-        replacingFilePath.split('/').pop() || replacingFilePath.split('\\').pop() || '';
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const replacingFileName = path.basename(replacingFilePath);
+      const fileName = path.basename(filePath);
       console.log(`- Remove file ${replacingFileName}, because ${fileName} exists.`);
 
       try {

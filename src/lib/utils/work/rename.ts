@@ -3,6 +3,7 @@
  */
 
 import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { getDirBmsInfo } from '../bms/scanner';
 import { getValidFileName } from '../fs/path';
 import { bmsDirSimilarity } from '../fs/similarity';
@@ -153,7 +154,7 @@ export async function setNameByBms(
   const validArtist = getValidFileName(artist);
 
   // 获取当前目录名
-  const workDirName = workDir.split(/[/\\]/).pop() || workDir;
+  const workDirName = path.basename(workDir);
 
   // 如果启用跳过已格式化目录的选项
   if (skipAlreadyFormatted && isAlreadyFormatted(workDirName, setType)) {
@@ -241,7 +242,7 @@ export async function undoSetNameByBms(
     console.log(`[dry-run] Start: work::undoSetNameByBms`);
   }
 
-  const workDirName = workDir.split(/[/\\]/).pop() || workDir;
+  const workDirName = path.basename(workDir);
 
   // 根据不同的 set_type，提取原始目录名
   let originalDirName: string;
@@ -431,19 +432,18 @@ export async function setNameByBmsOptimized(
   const validTitle = getValidFileName(title);
   const validArtist = getValidFileName(artist);
   let targetDirName: string;
-  let workDirName: string;
 
   switch (setType) {
     case BmsFolderSetNameType.ReplaceTitleArtist:
       targetDirName = `${validTitle} [${validArtist}]`;
       break;
     case BmsFolderSetNameType.AppendTitleArtist: {
-      const dirNameForAppend = workDir.split(/[/\\]/).pop() || workDir;
+      const dirNameForAppend = path.basename(workDir);
       targetDirName = `${dirNameForAppend} ${validTitle} [${validArtist}]`;
       break;
     }
     case BmsFolderSetNameType.AppendArtist: {
-      const dirNameForArtist = workDir.split(/[/\\]/).pop() || workDir;
+      const dirNameForArtist = path.basename(workDir);
       targetDirName = `${dirNameForArtist} [${validArtist}]`;
       break;
     }

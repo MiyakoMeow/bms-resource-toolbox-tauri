@@ -4,6 +4,7 @@
  */
 
 import { mkdir, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { moveElementsAcrossDir, replaceOptionsFromPreset, ReplacePreset } from '../fs/moving';
 
 // 正则表达式
@@ -105,9 +106,7 @@ export async function splitFoldersWithFirstChar(rootDir: string, dryRun: boolean
   }
 
   // 获取父目录路径（对应 Python: parent_dir = os.path.join(root_dir, "..")）
-  const pathParts = rootDir.split(/[/\\]/);
-  pathParts.pop(); // 移除当前目录名
-  const parentDir = pathParts.join('/') || rootDir;
+  const parentDir = path.dirname(rootDir);
 
   // 按首字符规则分组
   const charMap = new Map<string, string[]>();
@@ -386,10 +385,9 @@ export async function mergeFoldersWithSameNameWithinDir(
   // 检查重复（检查是否同一个文件夹既作为源又作为目标）
   const dupList: string[] = [];
   const sourceFolders = new Set<string>();
-  const targetFolders = new Set<string>();
 
   // 收集所有源文件夹
-  for (const [name, folders] of nameMap) {
+  for (const [, folders] of nameMap) {
     if (folders.length <= 1) {
       continue;
     }
@@ -551,9 +549,8 @@ export async function moveWorksWithSameNameToSiblings(
   }
 
   // 获取父目录路径
-  const pathParts = rootDir.split(/[/\\]/);
-  const baseName = pathParts.pop() || '';
-  const parentDir = pathParts.join('/') || rootDir;
+  const parentDir = path.dirname(rootDir);
+  const baseName = path.basename(rootDir);
 
   if (!baseName) {
     console.error('无法提取目录名称');
@@ -607,8 +604,8 @@ export async function moveWorksWithSameNameToSiblings(
 
   console.log(`\n找到 ${pairs.length} 个合并操作：`);
   for (const { from, target, sibling } of pairs) {
-    const fromName = from.split(/[/\\]/).pop() || '';
-    const toName = target.split(/[/\\]/).pop() || '';
+    const fromName = path.basename(from);
+    const toName = path.basename(target);
     console.log(`  ${fromName} => ${sibling}/${toName}`);
   }
 
@@ -621,8 +618,8 @@ export async function moveWorksWithSameNameToSiblings(
 
   // 执行合并
   for (const { from, target } of pairs) {
-    const fromName = from.split(/[/\\]/).pop() || '';
-    const targetName = target.split(/[/\\]/).pop() || '';
+    const fromName = path.basename(from);
+    const targetName = path.basename(target);
 
     console.log(`  合并: '${fromName}' -> '${targetName}'`);
 
