@@ -63,6 +63,13 @@ export const CATEGORY_METADATA: Record<CommandCategory, CategoryMetadata> = {
     description: '特殊工具集',
     color: 'from-slate-500 to-gray-500',
   },
+  [CommandCategory.System]: {
+    id: CommandCategory.System,
+    name: '系统工具',
+    icon: '🔧',
+    description: '系统工具和检查',
+    color: 'from-amber-500 to-orange-500',
+  },
 };
 
 /**

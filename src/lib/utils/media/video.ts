@@ -4,6 +4,7 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { ProcessRunner } from './processRunner';
 import { ConcurrencyPool } from './concurrency';
 import { VIDEO_PRESETS } from './presets';
@@ -15,6 +16,151 @@ import { VIDEO_FILE_EXTS } from '../bms/scanner';
  * 视频转换器类
  */
 export class VideoConverter {
+  /**
+   * 静态记录失败文件的映射
+   * Key: 目录路径, Value: 失败的文件列表
+   */
+  private static failedFilesMap = new Map<string, string[]>();
+
+  /**
+   * 获取失败文件列表
+   * @param dirPath - 目录路径
+   * @returns 失败的文件列表
+   */
+  static getFailedFiles(dirPath: string): string[] {
+    return this.failedFilesMap.get(dirPath) || [];
+  }
+
+  /**
+   * 清除失败文件记录
+   * @param dirPath - 目录路径（可选，不传则清除所有）
+   */
+  static clearFailedFiles(dirPath?: string): void {
+    if (dirPath) {
+      this.failedFilesMap.delete(dirPath);
+    } else {
+      this.failedFilesMap.clear();
+    }
+  }
+
+  /**
+   * 重试失败文件的转换
+   * @param dirPath - 目录路径
+   * @param inputExtensions - 输入文件扩展名列表
+   * @param presetNames - 预设名称列表
+   * @param removeOriginal - 成功时是否删除原文件
+   * @param removeExisting - 是否删除已存在的输出文件
+   * @param usePreferred - 是否使用推荐预设
+   * @returns 是否完全成功
+   */
+  static async retryFailedFiles(
+    dirPath: string,
+    inputExtensions: string[],
+    presetNames: string[],
+    removeOriginal: boolean,
+    removeExisting: boolean,
+    usePreferred: boolean
+  ): Promise<boolean> {
+    const failedFiles = this.getFailedFiles(dirPath);
+    if (failedFiles.length === 0) {
+      console.log(`No failed files to retry in ${dirPath}`);
+      return true;
+    }
+
+    console.log(`Retrying ${failedFiles.length} failed files in ${dirPath}`);
+    const newFailures: string[] = [];
+    const hadError = { value: false };
+
+    // 使用并发池重试失败的文件
+    const pool = new ConcurrencyPool(64);
+
+    for (const fileName of failedFiles) {
+      const filePath = `${dirPath}/${fileName}`;
+
+      pool.add(async () => {
+        let success = false;
+        let presetsToTry = presetNames;
+        if (usePreferred) {
+          try {
+            const preferred = await this.getPreferredPresets(filePath);
+            presetsToTry = [...preferred, ...presetNames];
+          } catch (error) {
+            console.error(`Failed to get preferred presets: ${error}`);
+          }
+        }
+
+        for (const presetName of presetsToTry) {
+          const preset = VIDEO_PRESETS[presetName];
+          if (!preset) continue;
+
+          const outputPath = this.replaceExtension(filePath, preset.outputExt);
+
+          // 检查输出文件是否存在
+          const outputExists = await this.fileExists(outputPath);
+          if (outputExists) {
+            if (removeExisting) {
+              try {
+                await fs.remove(outputPath);
+              } catch (error) {
+                console.error(`Failed to remove existing file: ${outputPath}`, error);
+              }
+            } else {
+              console.log(`Output file exists, skipping: ${outputPath}`);
+              continue;
+            }
+          }
+
+          // 构建命令
+          const args = this.buildCommandArgs(filePath, outputPath, preset);
+          console.log(`Executing: ${preset.executor} ${args.join(' ')}`);
+
+          const result = await ProcessRunner.exec(preset.executor, args);
+
+          if (result.success) {
+            console.log(`Successfully converted: ${outputPath}`);
+            success = true;
+            if (removeOriginal) {
+              try {
+                await fs.remove(filePath);
+              } catch (error) {
+                console.error(`Failed to remove original file: ${filePath}`, error);
+              }
+            }
+            break;
+          } else {
+            console.error(`Conversion failed for preset ${presetName}: ${result.stderr}`);
+            // 删除失败的输出文件
+            if (await this.fileExists(outputPath)) {
+              try {
+                await fs.remove(outputPath);
+              } catch (error) {
+                console.error(`Failed to remove failed output: ${outputPath}`, error);
+              }
+            }
+          }
+        }
+
+        if (!success) {
+          hadError.value = true;
+          newFailures.push(fileName);
+        }
+      });
+    }
+
+    await pool.drain();
+
+    // 更新失败文件列表
+    this.failedFilesMap.set(dirPath, newFailures);
+
+    if (newFailures.length === 0) {
+      console.log(`All ${failedFiles.length} files succeeded on retry`);
+      this.failedFilesMap.delete(dirPath);
+    } else {
+      console.log(`${newFailures.length} files still failed after retry:`, newFailures);
+    }
+
+    return newFailures.length === 0;
+  }
   /**
    * 批量处理 BMS 文件夹
    * 对应 Rust: process_bms_video_folders (video.rs:448-490)
@@ -147,6 +293,7 @@ export class VideoConverter {
     // 收集需要处理的文件
     const files = await this.collectFiles(dirPath, inputExtensions);
 
+    const failures: string[] = [];
     const hadError = { value: false };
 
     // 使用并发池处理文件
@@ -164,7 +311,7 @@ export class VideoConverter {
         await progressManager.waitForResume();
       }
 
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const fileName = path.basename(filePath);
       progressManager?.setMessage(`转换 ${fileName}`);
 
       pool.add(async () => {
@@ -238,6 +385,8 @@ export class VideoConverter {
 
         if (!success) {
           hadError.value = true;
+          const fileName = path.basename(filePath);
+          failures.push(fileName);
           console.error(`All presets failed for: ${filePath}`);
         }
       });
@@ -245,6 +394,11 @@ export class VideoConverter {
 
     // 等待所有任务完成
     await pool.drain();
+
+    // 记录失败文件到静态映射
+    if (failures.length > 0) {
+      this.failedFilesMap.set(dirPath, failures);
+    }
 
     return !hadError.value;
   }

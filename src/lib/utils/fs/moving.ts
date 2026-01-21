@@ -3,6 +3,7 @@
  */
 
 import { exists, readDir, remove, rename, stat } from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { isDirHavingContent, isFileSameContent } from './compare';
 import { getFileExtension, getFileStem } from './path';
 
@@ -331,7 +332,7 @@ async function moveFile(src: string, dst: string, options: ReplaceOptions): Prom
  * 重命名移动文件（带重试）
  */
 async function moveFileRename(src: string, dstDir: string): Promise<void> {
-  const srcFileName = src.split('/').pop() || src.split('\\').pop() || 'file';
+  const srcFileName = path.basename(src);
 
   const stem = getFileStem(srcFileName);
   const ext = getFileExtension(srcFileName);
@@ -347,7 +348,7 @@ async function moveFileRename(src: string, dstDir: string): Promise<void> {
       newName = count === 1 ? `${stem}` : `${stem}.${count}`;
     }
 
-    const dst = `${dstDir.split('/').slice(0, -1).join('/')}/${newName}`;
+    const dst = `${path.dirname(dstDir)}/${newName}`;
 
     if (!(await exists(dst))) {
       await rename(src, dst);

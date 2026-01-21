@@ -3,6 +3,7 @@
  */
 
 import { exists, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { getDirBmsInfo } from '../bms/scanner';
 import { getValidFileName } from '../fs/path';
 import { bmsDirSimilarity } from '../fs/similarity';
@@ -92,6 +93,7 @@ async function tryMoveOutNestedFiles(workDir: string): Promise<boolean> {
 
 /**
  * 根据 BMS 信息设置目录名
+ * 对应 Python: set_name_by_bms (bms_folder.py:89-168)
  *
  * @command
  * @category bmsfolder
@@ -115,18 +117,44 @@ export async function setNameByBms(
   replacePreset: ReplacePreset,
   skipAlreadyFormatted: boolean
 ): Promise<void> {
-  const bmsInfo = await getDirBmsInfo(workDir);
+  // 获取 BMS 信息，如果没有则尝试处理嵌套目录
+  let bmsInfo = await getDirBmsInfo(workDir);
 
-  if (!bmsInfo) {
-    console.log(`BMS file not found, skipping: ${workDir}`);
+  while (!bmsInfo) {
+    // 尝试从嵌套目录中移出文件
+    const moved = await tryMoveOutNestedFiles(workDir);
+    if (!moved) {
+      console.log(`${workDir} has no bms/bmson files!`);
+      return;
+    }
+    // 再次尝试获取 BMS 信息
+    bmsInfo = await getDirBmsInfo(workDir);
+  }
+
+  // 获取父目录路径
+  const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
+  const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
+
+  if (!parentDir) {
+    console.error('Parent directory is empty!');
     return;
   }
 
   const title = bmsInfo.bms.musicInfo.title || DEFAULT_TITLE;
   const artist = bmsInfo.bms.musicInfo.artist || DEFAULT_ARTIST;
 
+  // 检查标题和艺术家是否为空
+  if (title === DEFAULT_TITLE && artist === DEFAULT_ARTIST) {
+    console.log(`${workDir}: Info title and artist is EMPTY!`);
+    return;
+  }
+
+  // 获取有效的文件系统名称
+  const validTitle = getValidFileName(title);
+  const validArtist = getValidFileName(artist);
+
   // 获取当前目录名
-  const workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
+  const workDirName = path.basename(workDir);
 
   // 如果启用跳过已格式化目录的选项
   if (skipAlreadyFormatted && isAlreadyFormatted(workDirName, setType)) {
@@ -140,22 +168,17 @@ export async function setNameByBms(
   let targetDirName: string;
   switch (setType) {
     case BmsFolderSetNameType.ReplaceTitleArtist:
-      targetDirName = `${title} [${artist}]`;
+      targetDirName = `${validTitle} [${validArtist}]`;
       break;
     case BmsFolderSetNameType.AppendTitleArtist:
-      targetDirName = `${workDirName} ${title} [${artist}]`;
+      targetDirName = `${workDirName} ${validTitle} [${validArtist}]`;
       break;
     case BmsFolderSetNameType.AppendArtist:
-      targetDirName = `${workDirName} [${artist}]`;
+      targetDirName = `${workDirName} [${validArtist}]`;
       break;
   }
 
-  // 获取有效的文件系统名称
-  targetDirName = getValidFileName(targetDirName);
-
   // 构建目标目录路径
-  const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
-  const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
   const targetWorkDir = `${parentDir}/${targetDirName}`;
 
   // 如果源目录与目标目录相同，则跳过操作
@@ -166,11 +189,27 @@ export async function setNameByBms(
     return;
   }
 
-  console.log(`Rename work dir by moving content: ${workDir} -> ${targetWorkDir}`);
+  console.log(`${workDir}: Rename! Title: ${title}; Artist: ${artist}`);
 
-  if (!dryRun) {
-    const replaceOptions = replaceOptionsFromPreset(replacePreset);
-    await moveElementsAcrossDir(workDir, targetWorkDir, replaceOptions);
+  if (await exists(targetWorkDir)) {
+    // 目标目录已存在，计算相似度
+    const similarity = await bmsDirSimilarity(workDir, targetWorkDir);
+    console.log(` - Directory ${targetWorkDir} exists! Similarity: ${similarity}`);
+
+    if (similarity < 0.8) {
+      console.log(' - Merge canceled (similarity < 0.8)');
+      return;
+    }
+
+    console.log(' - Merge start!');
+    if (!dryRun) {
+      await moveElementsAcrossDir(workDir, targetWorkDir, replaceOptionsFromPreset(replacePreset));
+    }
+  } else {
+    // 目标目录不存在，直接移动
+    if (!dryRun) {
+      await rename(workDir, targetWorkDir);
+    }
   }
 
   if (dryRun) {
@@ -203,7 +242,7 @@ export async function undoSetNameByBms(
     console.log(`[dry-run] Start: work::undoSetNameByBms`);
   }
 
-  const workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
+  const workDirName = path.basename(workDir);
 
   // 根据不同的 set_type，提取原始目录名
   let originalDirName: string;
@@ -225,7 +264,8 @@ export async function undoSetNameByBms(
   // 构建新目录路径
   const lastSlashIndex = Math.max(workDir.lastIndexOf('/'), workDir.lastIndexOf('\\'));
   const parentDir = lastSlashIndex === -1 ? '' : workDir.substring(0, lastSlashIndex);
-  let newDirPath = `${parentDir}/${originalDirName}`;
+  const baseNewDirPath = `${parentDir}/${originalDirName}`;
+  let newDirPath = baseNewDirPath;
 
   // 如果源目录与目标目录相同，则跳过操作
   if (workDir === newDirPath) {
@@ -237,9 +277,16 @@ export async function undoSetNameByBms(
 
   // 检查目标目录是否已存在，如果存在则添加数字后缀
   let counter = 1;
+
   while (await exists(newDirPath)) {
-    newDirPath = `${parentDir}/${originalDirName}_${counter}`;
+    newDirPath = `${baseNewDirPath}_${counter}`;
     counter++;
+
+    // 避免无限循环，最多尝试100次
+    if (counter > 100) {
+      console.warn(`Failed to find available name after 100 attempts for: ${originalDirName}`);
+      return;
+    }
   }
 
   console.log(`Undo rename: ${workDir} -> ${newDirPath}`);
@@ -385,19 +432,19 @@ export async function setNameByBmsOptimized(
   const validTitle = getValidFileName(title);
   const validArtist = getValidFileName(artist);
   let targetDirName: string;
-  let workDirName: string;
 
   switch (setType) {
     case BmsFolderSetNameType.ReplaceTitleArtist:
       targetDirName = `${validTitle} [${validArtist}]`;
       break;
-    case BmsFolderSetNameType.AppendTitleArtist:
-      workDirName = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
-      targetDirName = `${workDirName} ${validTitle} [${validArtist}]`;
+    case BmsFolderSetNameType.AppendTitleArtist: {
+      const dirNameForAppend = path.basename(workDir);
+      targetDirName = `${dirNameForAppend} ${validTitle} [${validArtist}]`;
       break;
+    }
     case BmsFolderSetNameType.AppendArtist: {
-      const workDirName2 = workDir.split('/').pop() || workDir.split('\\').pop() || workDir;
-      targetDirName = `${workDirName2} [${validArtist}]`;
+      const dirNameForArtist = path.basename(workDir);
+      targetDirName = `${dirNameForArtist} [${validArtist}]`;
       break;
     }
   }

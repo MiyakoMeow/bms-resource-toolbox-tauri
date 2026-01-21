@@ -70,6 +70,19 @@ export function openBMSEventList(event: BMSEvent): void {
  * @param workIds - 作品 ID 列表
  */
 export function openBMSEventWorks(event: BMSEvent, workIds: number[]): void {
+  // 验证 workIds 数组
+  if (!workIds || !Array.isArray(workIds)) {
+    throw new Error('workIds must be an array');
+  }
+
+  // 验证每个 ID 是否为正整数
+  const invalidIds = workIds.filter((id) => !Number.isInteger(id) || id <= 0);
+  if (invalidIds.length > 0) {
+    throw new Error(
+      `Invalid work IDs: ${invalidIds.join(', ')}. All IDs must be positive integers.`
+    );
+  }
+
   for (const workId of workIds) {
     const url = getBMSEventWorkUrl(event, workId);
     globalThis.open(url, '_blank');

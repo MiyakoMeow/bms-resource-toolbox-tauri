@@ -3,7 +3,7 @@
  */
 
 import { readDir, rename } from '@tauri-apps/plugin-fs';
-import { BmsFolderSetNameType, setNameByBms, undoSetNameByBms } from '../work/rename';
+import { BmsFolderSetNameType, setNameByBmsOptimized, undoSetNameByBms } from '../work/rename';
 import { ReplacePreset } from '../fs/moving';
 
 /**
@@ -42,7 +42,8 @@ export async function rootSetNameByBms(
     }
 
     const workDir = `${rootDir}/${entry.name}`;
-    await setNameByBms(workDir, setType, dryRun, replacePreset, false);
+    // 使用优化版本，支持嵌套目录处理和相似度合并
+    await setNameByBmsOptimized(workDir, setType, dryRun, replacePreset);
   }
 }
 

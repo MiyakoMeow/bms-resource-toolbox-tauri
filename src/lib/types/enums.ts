@@ -109,4 +109,6 @@ export enum CommandCategory {
   Media = 'media',
   /** Wasted - 特殊工具集 */
   Wasted = 'wasted',
+  /** 系统工具 - 系统工具和检查 */
+  System = 'system',
 }

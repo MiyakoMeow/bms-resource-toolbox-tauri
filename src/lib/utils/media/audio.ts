@@ -4,6 +4,7 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { ProcessRunner } from './processRunner';
 import { ConcurrencyPool } from './concurrency';
 import { AUDIO_PRESETS } from './presets';
@@ -15,6 +16,102 @@ import { AUDIO_FILE_EXTS } from '../bms/scanner';
  * 音频转换器类
  */
 export class AudioConverter {
+  /**
+   * 静态记录失败文件的映射
+   * Key: 目录路径, Value: 失败的文件列表
+   */
+  private static failedFilesMap = new Map<string, string[]>();
+
+  /**
+   * 获取失败文件列表
+   * @param dirPath - 目录路径
+   * @returns 失败的文件列表
+   */
+  static getFailedFiles(dirPath: string): string[] {
+    return this.failedFilesMap.get(dirPath) || [];
+  }
+
+  /**
+   * 清除失败文件记录
+   * @param dirPath - 目录路径（可选，不传则清除所有）
+   */
+  static clearFailedFiles(dirPath?: string): void {
+    if (dirPath) {
+      this.failedFilesMap.delete(dirPath);
+    } else {
+      this.failedFilesMap.clear();
+    }
+  }
+
+  /**
+   * 重试失败文件的转换
+   * @param dirPath - 目录路径
+   * @param inputExtensions - 输入文件扩展名列表
+   * @param presets - 音频预设列表
+   * @param removeOnSuccess - 成功时是否删除原文件
+   * @param removeOnFail - 失败时是否删除原文件
+   * @param removeExisting - 是否删除已存在的输出文件
+   * @param progressManager - 进度管理器（可选）
+   * @returns 是否完全成功
+   */
+  static async retryFailedFiles(
+    dirPath: string,
+    inputExtensions: string[],
+    presets: Array<{ executor: string; outputFormat: string; arguments?: string[] }>,
+    removeOnSuccess: boolean,
+    removeOnFail: boolean,
+    removeExisting: boolean,
+    progressManager?: IProgressManager
+  ): Promise<boolean> {
+    const failedFiles = this.getFailedFiles(dirPath);
+    if (failedFiles.length === 0) {
+      console.log(`No failed files to retry in ${dirPath}`);
+      return true;
+    }
+
+    console.log(`Retrying ${failedFiles.length} failed files in ${dirPath}`);
+    const newFailures: string[] = [];
+
+    // 使用并发池重试失败的文件
+    const pool = new ConcurrencyPool(64);
+    const promises: Promise<unknown>[] = [];
+
+    for (const fileName of failedFiles) {
+      const filePath = `${dirPath}/${fileName}`;
+
+      promises.push(
+        pool.add(async () => {
+          const success = await this.convertFile(
+            filePath,
+            presets,
+            removeOnSuccess,
+            removeOnFail,
+            removeExisting,
+            progressManager
+          );
+
+          if (!success) {
+            newFailures.push(fileName);
+          }
+        })
+      );
+    }
+
+    await Promise.all(promises);
+    await pool.drain();
+
+    // 更新失败文件列表
+    this.failedFilesMap.set(dirPath, newFailures);
+
+    if (newFailures.length === 0) {
+      console.log(`All ${failedFiles.length} files succeeded on retry`);
+      this.failedFilesMap.delete(dirPath);
+    } else {
+      console.log(`${newFailures.length} files still failed after retry:`, newFailures);
+    }
+
+    return newFailures.length === 0;
+  }
   /**
    * 批量处理 BMS 文件夹
    * 对应 Rust: process_bms_folders (audio.rs:323-382)
@@ -175,7 +272,7 @@ export class AudioConverter {
 
           if (!success) {
             hadError = true;
-            const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+            const fileName = path.basename(filePath);
             failures.push(fileName);
           }
         })
@@ -193,6 +290,8 @@ export class AudioConverter {
     }
     if (failures.length > 0) {
       console.log(`${failures.length} files failed all presets:`, failures);
+      // 记录失败文件到静态映射
+      this.failedFilesMap.set(dirPath, failures);
     }
     if (hadError && removeOnFail) {
       console.log('Original files for failed conversions were removed');
@@ -239,7 +338,7 @@ export class AudioConverter {
       const outputPath = this.replaceExtension(filePath, preset.outputFormat);
 
       // 更新进度消息
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const fileName = path.basename(filePath);
       progressManager?.setMessage(`转换 ${fileName} [${currentPresetIndex + 1}/${presets.length}]`);
 
       // 如果目标文件已存在

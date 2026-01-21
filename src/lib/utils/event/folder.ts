@@ -51,12 +51,32 @@ export async function checkNumFolder(dir: string, max: number): Promise<string[]
  * @returns {Promise<void>}
  */
 export async function createNumFolders(dir: string, max: number): Promise<void> {
-  for (let i = 1; i <= max; i++) {
-    const folderPath = `${dir}/${i}`;
+  // 获取现有元素并过滤出目录
+  const existingEntries = await readDir(dir);
+  const existingDirs = existingEntries.filter((e) => e.isDirectory && e.name).map((e) => e.name!);
 
-    if (!(await exists(folderPath))) {
-      await mkdir(folderPath, { recursive: true });
-      console.log(`Created folder: ${folderPath}`);
+  for (let id = 1; id <= max; id++) {
+    const newDirName = `${id}`;
+
+    // 检查是否存在以该编号开头的文件夹（检查常见分隔符）
+    const idExists = existingDirs.some(
+      (elementName) =>
+        elementName === newDirName ||
+        elementName.startsWith(`${newDirName} `) ||
+        elementName.startsWith(`${newDirName}.`) ||
+        elementName.startsWith(`${newDirName}-`) ||
+        elementName.startsWith(`${newDirName}_`)
+    );
+
+    if (idExists) {
+      continue;
+    }
+
+    const newDirPath = `${dir}/${newDirName}`;
+
+    if (!(await exists(newDirPath))) {
+      await mkdir(newDirPath, { recursive: true });
+      console.log(`Created folder: ${newDirPath}`);
     }
   }
 }

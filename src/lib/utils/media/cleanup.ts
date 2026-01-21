@@ -6,23 +6,56 @@
  */
 
 import * as fs from '@tauri-apps/plugin-fs';
+import path from 'node:path';
 import { REMOVE_MEDIA_RULES } from './presets';
 import { RemoveMediaPreset } from '../../types/enums';
 import type { RemoveMediaRule } from './types';
+
+/**
+ * 临时文件名列表（不区分大小写）
+ * 对应 Python: legacy/options/bms_folder.py:244-248
+ */
+const TEMP_FILE_NAMES = new Set(['desktop.ini', 'thumbs.db', '.ds_store']);
+
+/**
+ * 临时文件前缀列表
+ */
+const TEMP_FILE_PREFIXES = ['.trash-', '._'];
+
+/**
+ * 检查是否为临时文件
+ * 对应 Python: legacy/options/bms_folder.py:244-248
+ *
+ * @param fileName - 文件名
+ * @returns 是否为临时文件
+ */
+function isTempFile(fileName: string): boolean {
+  const lowerName = fileName.toLowerCase();
+  if (TEMP_FILE_NAMES.has(lowerName)) {
+    return true;
+  }
+  for (const prefix of TEMP_FILE_PREFIXES) {
+    if (lowerName.startsWith(prefix.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+}
 
 /**
  * 媒体文件清理器类
  */
 export class MediaCleaner {
   /**
-   * 删除零字节媒体文件
+   * 删除零字节媒体文件和临时文件
    * 对应 Rust: remove_zero_sized_media_files (work.rs:264-312)
+   * 从 Python 代码迁移：legacy/options/bms_folder.py:230-273
    *
    * @command
    * @category bmsfolder
    * @dangerous true
    * @name 删除零字节媒体文件
-   * @description 递归删除工作目录中所有零字节媒体文件
+   * @description 递归删除工作目录中所有零字节媒体文件和临时文件
    * @frontend true
    *
    * @param {string} dir - 工作目录路径
@@ -48,50 +81,92 @@ export class MediaCleaner {
 
         const path = `${currentDir}/${entry.name}`;
 
-        // 检查是否是文件
         let isFile = false;
+        let isDir = false;
         let size = 0;
         try {
           const metadata = await fs.stat(path);
           isFile = metadata.isFile ?? false;
+          isDir = metadata.isDirectory ?? false;
           size = metadata.size || 0;
         } catch {
           continue;
         }
 
-        if (isFile && size === 0) {
-          // 异步删除，任务句柄进入数组
-          if (dryRun) {
-            console.log(`Would remove empty file: ${path}`);
-          } else {
-            tasks.push(
-              (async () => {
-                try {
-                  await fs.remove(path);
-                } catch (error) {
-                  console.error(`Failed to remove file: ${path}`, error);
-                }
-              })()
-            );
-          }
-        } else {
-          // 检查是否是目录，继续推入栈
-          let isDir = false;
-          try {
-            const metadata = await fs.stat(path);
-            isDir = metadata.isDirectory ?? false;
-          } catch {
+        if (isFile) {
+          const fileName = entry.name;
+
+          // 检查是否为临时文件
+          // 对应 Python: legacy/options/bms_folder.py:244-248
+          if (isTempFile(fileName)) {
+            if (dryRun) {
+              console.log(`[dry-run] Would remove temp file: ${path}`);
+            } else {
+              tasks.push(
+                (async () => {
+                  try {
+                    await fs.remove(path);
+                    console.log(` - Remove temp file: ${path}`);
+                  } catch (error) {
+                    console.error(`Failed to remove temp file: ${path}`, error);
+                  }
+                })()
+              );
+            }
             continue;
           }
 
-          if (isDir) {
-            stack.push(path);
+          // 检查是否为临时文件扩展名（系统临时文件）
+          const fileExt = this.getExtension(fileName);
+          const isSystemTempExt = ['.tmp', '.temp', '.log'].includes(`.${fileExt}`);
+          if (isSystemTempExt && size === 0) {
+            if (dryRun) {
+              console.log(`[dry-run] Would remove temp file (empty): ${path}`);
+            } else {
+              tasks.push(
+                (async () => {
+                  try {
+                    await fs.remove(path);
+                    console.log(` - Remove temp file (empty): ${path}`);
+                  } catch (error) {
+                    console.error(`Failed to remove temp file: ${path}`, error);
+                  }
+                })()
+              );
+            }
+            continue;
           }
+
+          // 只处理媒体文件的零字节文件
+          // 对应 Python: legacy/options/bms_folder.py:259
+          const mediaExts = ['.ogg', '.wav', '.flac', '.bmp', '.mpg', '.wmv', '.mp4'];
+          if (!mediaExts.includes(`.${fileExt}`)) {
+            continue;
+          }
+
+          // 删除零字节媒体文件
+          if (size === 0) {
+            if (dryRun) {
+              console.log(`[dry-run] Would remove empty file: ${path}`);
+            } else {
+              tasks.push(
+                (async () => {
+                  try {
+                    await fs.remove(path);
+                    console.log(` - Remove empty file: ${path}`);
+                  } catch (error) {
+                    console.error(`Failed to remove file: ${path}`, error);
+                  }
+                })()
+              );
+            }
+          }
+        } else if (isDir) {
+          stack.push(path);
         }
       }
     }
 
-    // 等待所有删除任务完成
     if (!dryRun) {
       await Promise.all(tasks);
     }
@@ -217,9 +292,8 @@ export class MediaCleaner {
 
     // 删除文件
     for (const [filePath, replacingFilePath] of removePairs) {
-      const replacingFileName =
-        replacingFilePath.split('/').pop() || replacingFilePath.split('\\').pop() || '';
-      const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || '';
+      const replacingFileName = path.basename(replacingFilePath);
+      const fileName = path.basename(filePath);
       console.log(`- Remove file ${replacingFileName}, because ${fileName} exists.`);
 
       try {

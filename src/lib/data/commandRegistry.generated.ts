@@ -92,14 +92,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
         key: 'cacheDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
@@ -139,14 +139,14 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录`
       },
       {
         key: 'cacheDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 缓存目录`
@@ -782,7 +782,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     id: 'work_remove_zero_sized_media_files',
     name: '删除零字节媒体文件',
     category: CommandCategory.BMSFolder,
-    description: `递归删除工作目录中所有零字节媒体文件`,
+    description: `递归删除工作目录中所有零字节媒体文件和临时文件`,
     parameters: [
       {
         key: 'dir',
@@ -1199,7 +1199,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`
@@ -1232,7 +1232,7 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     parameters: [
       {
         key: 'packDir',
-        type: ParameterType.String,
+        type: ParameterType.Directory,
         typeString: 'string',
         required: true,
         description: `- 压缩包目录路径`
@@ -1329,10 +1329,208 @@ export const GENERATED_COMMAND_REGISTRY: CommandDefinition[] = [
     returnType: 'void',
     dangerous: true,
     isFrontendCommand: true
+  },
+  {
+    id: 'scan_folder_similar_folders',
+    name: '扫描相似文件夹',
+    category: CommandCategory.BMSFolder,
+    description: `扫描根目录下名称相似的文件夹`,
+    parameters: [
+      {
+        key: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        key: 'similarityTrigger',
+        type: ParameterType.Number,
+        typeString: 'number',
+        required: false,
+        description: `- 相似度阈值（默认 0.7）`
+      }
+    ],
+    returnType: 'SimilarFolderResult[]',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'set_name_by_bms',
+    name: '按BMS设置文件夹名',
+    category: CommandCategory.BMSFolder,
+    description: `将文件夹重命名为 "标题 [艺术家]" 格式`,
+    parameters: [
+      {
+        key: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        key: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'append_name_by_bms',
+    name: '按BMS追加文件夹名',
+    category: CommandCategory.BMSFolder,
+    description: `在文件夹名后追加 ". 标题 [艺术家]"`,
+    parameters: [
+      {
+        key: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        key: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'append_artist_name_by_bms',
+    name: '按BMS追加艺术家名',
+    category: CommandCategory.BMSFolder,
+    description: `在文件夹名后追加 " [艺术家]"`,
+    parameters: [
+      {
+        key: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        key: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'copy_numbered_workdir_names',
+    name: '克隆带编号的文件夹名',
+    category: CommandCategory.BMSFolder,
+    description: `将源目录的带编号文件夹名同步到目标目录`,
+    parameters: [
+      {
+        key: 'rootDirFrom',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 源根目录路径`
+      },
+      {
+        key: 'rootDirTo',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 目标根目录路径`
+      },
+      {
+        key: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'undo_set_name',
+    name: '撤销命名操作',
+    category: CommandCategory.BMSFolder,
+    description: `将命名操作还原为纯编号格式`,
+    parameters: [
+      {
+        key: 'rootDir',
+        type: ParameterType.Directory,
+        typeString: 'string',
+        required: true,
+        description: `- 根目录路径`
+      },
+      {
+        key: 'dryRun',
+        type: ParameterType.Boolean,
+        typeString: 'boolean',
+        required: false,
+        description: `- 模拟运行（不实际执行）`,
+        defaultValue: true
+      }
+    ],
+    returnType: 'RenameOperation[]',
+    dangerous: true,
+    isFrontendCommand: true
+  },
+  {
+    id: 'check_ffmpeg_exec',
+    name: '检查 ffmpeg',
+    category: CommandCategory.System,
+    description: `检查系统是否安装了 ffmpeg`,
+    parameters: [
+
+    ],
+    returnType: 'CheckResult',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'check_flac_exec',
+    name: '检查 flac',
+    category: CommandCategory.System,
+    description: `检查系统是否安装了 flac`,
+    parameters: [
+
+    ],
+    returnType: 'CheckResult',
+    dangerous: false,
+    isFrontendCommand: true
+  },
+  {
+    id: 'check_oggenc_exec',
+    name: '检查 oggenc',
+    category: CommandCategory.System,
+    description: `检查系统是否安装了 oggenc`,
+    parameters: [
+
+    ],
+    returnType: 'CheckResult',
+    dangerous: false,
+    isFrontendCommand: true
   }
 ];
 
 /**
  * 获取命令总数
  */
-export const COMMAND_COUNT = 46;
+export const COMMAND_COUNT = 55;

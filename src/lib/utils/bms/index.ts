@@ -8,3 +8,4 @@ export * from './parser';
 export * from './scanner';
 export * from './encoding';
 export * from './work';
+export * from './folder';
